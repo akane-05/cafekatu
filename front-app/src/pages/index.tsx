@@ -5,7 +5,6 @@ const Home: NextPage = () => {
   return (
     <>
       <Button variant="contained">Hello World</Button>
-      <Button variant="contained">test</Button>
     </>
   )
 }
