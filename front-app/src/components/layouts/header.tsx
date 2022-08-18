@@ -78,26 +78,9 @@ export default function Header() {
   return (
     <AppBar position="static" style={{ backgroundColor: '#CC74AB' }}>
       <Toolbar>
-        <Button color="inherit">メニュー</Button>
-
-        <Typography
-          variant="h5"
-          noWrap
-          component="a"
-          href=""
-          sx={{
-            mr: 2,
-            display: { xs: 'flex', md: 'none' },
-            flexGrow: 1,
-            fontFamily: 'monospace',
-            fontWeight: 700,
-            letterSpacing: '.3rem',
-            color: 'inherit',
-            textDecoration: 'none',
-          }}
-        >
-          ゲスト様
-        </Typography>
+        <Box sx={{ m: 0 }}>
+          <Button color="inherit">メニュー</Button>
+        </Box>
 
         <Search>
           <SearchIconWrapper>
@@ -109,7 +92,13 @@ export default function Header() {
           />
         </Search>
 
-        <Box sx={{ flexGrow: 0 }}>
+        <Box sx={{ flexGrow: 1 }} />
+
+        <Typography color="inherit" component="div" sx={{ mr: 2 }}>
+          ゲスト様
+        </Typography>
+
+        <Box sx={{ flexGrow: 0 }} textAlign="right">
           <Tooltip title="設定を開く">
             <IconButton
               size="large"
