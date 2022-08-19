@@ -20,7 +20,6 @@ function Home() {
       >
         <Grid item xs={12}>
           <Typography>TOP画面</Typography>
-          <Typography>test</Typography>
         </Grid>
         <Grid item xs={12}>
           <TextField
