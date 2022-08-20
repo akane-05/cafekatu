@@ -7,18 +7,16 @@ import React from 'react'
 export default class MyDocument extends Document {
   render() {
     return (
-      <Html lang="ja">
+      // <Html lang="ja">
+      <Html>
         <Head>
           <meta name="theme-color" content={theme.palette.primary.main} />
-          <link
-            rel="stylesheet"
-            href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap"
-          />
-          <link
+          <link href="https://fonts.googleapis.com/css2?family=Kaisei+Decol&display=swap" rel="stylesheet">
+            {/* <link
             rel="stylesheet"
             href="https://fonts.googleapis.com/icon?family=Material+Icons"
-          />
-          {(this.props as any).emotionStyleTags}
+          /> */}
+            {/* {(this.props as any).emotionStyleTags} */}
         </Head>
         <body>
           <Main />
@@ -29,6 +27,8 @@ export default class MyDocument extends Document {
   }
 }
 
+
+{/* 
 MyDocument.getInitialProps = async (ctx) => {
   const originalRenderPage = ctx.renderPage
   const cache = createEmotionCache()
@@ -57,4 +57,4 @@ MyDocument.getInitialProps = async (ctx) => {
     ...initialProps,
     emotionStyleTags,
   }
-}
+} */}

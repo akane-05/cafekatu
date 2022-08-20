@@ -6,7 +6,7 @@ import {
   IconButton,
   Box,
   Tooltip,
-  Typography,
+  Typography,Menu,MenuItem 
 } from '@mui/material'
 import { AccountCircle } from '@mui/icons-material'
 import SearchIcon from '@mui/icons-material/Search'
@@ -16,22 +16,23 @@ import React from 'react'
 
 export default function Header() {
   // const [anchorElNav, setAnchorElNav] = React.useState<null | HTMLElement>(null);
-  // const [anchorElUser, setAnchorElUser] = React.useState<null | HTMLElement>(null);
+  const [anchorElUser, setAnchorElUser] = React.useState<null | HTMLElement>(null);
+  const settings = ['マイページ', 'ログアウト'];
 
   // const handleOpenNavMenu = (event: React.MouseEvent<HTMLElement>) => {
   //   setAnchorElNav(event.currentTarget)
   // }
-  // const handleOpenUserMenu = (event: React.MouseEvent<HTMLElement>) => {
-  //   setAnchorElUser(event.currentTarget)
-  // }
+  const handleOpenUserMenu = (event: React.MouseEvent<HTMLElement>) => {
+    setAnchorElUser(event.currentTarget)
+  }
 
   // const handleCloseNavMenu = () => {
   //   setAnchorElNav(null)
   // }
 
-  // const handleCloseUserMenu = () => {
-  //   setAnchorElUser(null)
-  // }
+  const handleCloseUserMenu = () => {
+    setAnchorElUser(null)
+  }
 
   const Search = styled('div')(({ theme }) => ({
     position: 'relative',
@@ -105,13 +106,13 @@ export default function Header() {
               aria-label="account of current user"
               aria-controls="menu-appbar"
               aria-haspopup="true"
-              //onClick={handleOpenUserMenu}
+              onClick={handleOpenUserMenu}
               sx={{ p: 0 }}
             >
               <AccountCircle />
             </IconButton>
           </Tooltip>
-          {/* <Menu
+          <Menu
             sx={{ mt: '45px' }}
             id="menu-appbar"
             anchorEl={anchorElUser}
@@ -132,7 +133,7 @@ export default function Header() {
                 <Typography textAlign="center">{setting}</Typography>
               </MenuItem>
             ))}
-          </Menu> */}
+          </Menu>
         </Box>
       </Toolbar>
     </AppBar>
