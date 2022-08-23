@@ -19,12 +19,23 @@ function Home() {
         direction="column"
       >
         <Grid item xs={12}>
-          <Typography>TOP画面</Typography>
+          <Typography>ログイン画面</Typography>
         </Grid>
         <Grid item xs={12}>
           <TextField
             type="text"
-            label="キーワード"
+            label="email"
+            required
+            // value={name}
+            // error={hasNameError}
+            // onChange={inputName}
+            // helperText={hasNameError ? '名前を入力してください。' : ''}
+          />
+        </Grid>
+        <Grid item xs={12}>
+          <TextField
+            type="text"
+            label="password"
             required
             // value={name}
             // error={hasNameError}
@@ -36,9 +47,18 @@ function Home() {
         <Grid item xs={12}>
           <Button
             variant="contained"
-            onClick={() => handleLink('./search/searchResult')}
+            // onClick={() => handleLink('./search/searchResult')}
           >
-            検索
+            ログイン
+          </Button>
+        </Grid>
+
+        <Grid item xs={12}>
+          <Button
+            variant="contained"
+            // onClick={() => handleLink('./search/searchResult')}
+          >
+            新規会員登録
           </Button>
         </Grid>
       </Grid>

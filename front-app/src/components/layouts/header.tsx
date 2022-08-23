@@ -6,32 +6,36 @@ import {
   IconButton,
   Box,
   Tooltip,
-  Typography,Menu,MenuItem 
+  Typography,
+  Menu,
+  MenuItem,
 } from '@mui/material'
 import { AccountCircle } from '@mui/icons-material'
 import SearchIcon from '@mui/icons-material/Search'
 import { styled, alpha } from '@mui/material/styles'
 import InputBase from '@mui/material/InputBase'
-import React from 'react'
+import * as React from 'react'
+import Router from 'next/router'
 
 export default function Header() {
-  // const [anchorElNav, setAnchorElNav] = React.useState<null | HTMLElement>(null);
-  const [anchorElUser, setAnchorElUser] = React.useState<null | HTMLElement>(null);
-  const settings = ['マイページ', 'ログアウト'];
+  const [anchorElUser, setAnchorElUser] = React.useState<null | HTMLElement>(
+    null,
+  )
+  const settings = ['マイページ', 'ログアウト']
 
-  // const handleOpenNavMenu = (event: React.MouseEvent<HTMLElement>) => {
-  //   setAnchorElNav(event.currentTarget)
-  // }
   const handleOpenUserMenu = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorElUser(event.currentTarget)
   }
 
-  // const handleCloseNavMenu = () => {
-  //   setAnchorElNav(null)
-  // }
-
   const handleCloseUserMenu = () => {
     setAnchorElUser(null)
+  }
+
+  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault()
+
+    const path: string = './cafeSearch/searchResult'
+    Router.push(path)
   }
 
   const Search = styled('div')(({ theme }) => ({
@@ -83,21 +87,19 @@ export default function Header() {
           <Button color="inherit">メニュー</Button>
         </Box>
 
-        <Search>
-          <SearchIconWrapper>
-            <SearchIcon />
-          </SearchIconWrapper>
-          <StyledInputBase
-            placeholder="Search…"
-            inputProps={{ 'aria-label': 'search' }}
-          />
-        </Search>
+        <form onSubmit={handleSubmit}>
+          <Search sx={{ mr: 'auto', ml: 'auto' }}>
+            <SearchIconWrapper>
+              <SearchIcon />
+            </SearchIconWrapper>
+            <StyledInputBase
+              placeholder="検索…"
+              inputProps={{ 'aria-label': 'search' }}
+            />
+          </Search>
+        </form>
 
         <Box sx={{ flexGrow: 1 }} />
-
-        <Typography color="inherit" component="div" sx={{ mr: 2 }}>
-          ゲスト様
-        </Typography>
 
         <Box sx={{ flexGrow: 0 }} textAlign="right">
           <Tooltip title="設定を開く">

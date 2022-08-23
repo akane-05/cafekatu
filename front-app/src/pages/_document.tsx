@@ -11,12 +11,10 @@ export default class MyDocument extends Document {
       <Html>
         <Head>
           <meta name="theme-color" content={theme.palette.primary.main} />
-          <link href="https://fonts.googleapis.com/css2?family=Kaisei+Decol&display=swap" rel="stylesheet">
-            {/* <link
+          <link
+            href="https://fonts.googleapis.com/css2?family=Kaisei+Decol&display=swap"
             rel="stylesheet"
-            href="https://fonts.googleapis.com/icon?family=Material+Icons"
-          /> */}
-            {/* {(this.props as any).emotionStyleTags} */}
+          />
         </Head>
         <body>
           <Main />
@@ -27,8 +25,10 @@ export default class MyDocument extends Document {
   }
 }
 
+// export default MyApp
 
-{/* 
+{
+  /* 
 MyDocument.getInitialProps = async (ctx) => {
   const originalRenderPage = ctx.renderPage
   const cache = createEmotionCache()
@@ -57,4 +57,5 @@ MyDocument.getInitialProps = async (ctx) => {
     ...initialProps,
     emotionStyleTags,
   }
-} */}
+} */
+}
