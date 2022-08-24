@@ -98,18 +98,15 @@ export default function Cafe(props: Props) {
               住所
             </Typography>
 
-          </CardContent>
+            <Typography
+              variant="subtitle1"
+              color="text.secondary"
+              component="div"
+            >
+              営業時間
+            </Typography>
 
-          <Grid
-            container
-            direction="row"
-            justifyContent="flex-end"
-            alignItems="center"
-          >
-            <Button variant="contained" color="primary" sx={{ mb: 2, mr: 2 }}>
-              ボタン
-            </Button>
-          </Grid>
+          </CardContent>
         </Grid>
       </Grid>
     </Card>

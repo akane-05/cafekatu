@@ -20,16 +20,11 @@ interface Props {
   num: number
 }
 
-export default function Cafe(props: Props) {
+export default function Comment(props: Props) {
   // const handleLink = (path: string) => {
   //   Router.push(path)
   // }
-  const [isFavorite, setIsFavorite] = useState(false);
-  
-  const toggleFavorite = (e: React.MouseEvent<HTMLInputElement>) => {
-    const value:boolean = e.target.value
-    setIsFavorite({value});
-  }
+
 
 
   return (
@@ -46,27 +41,10 @@ export default function Cafe(props: Props) {
 
         <Grid xs={12} sm={9}>
           <CardContent sx={{ alignSelf: 'stretch' }}>
-          <Grid
-            container
-            direction="row"
-            justifyContent="flex-end"
-            alignItems="center"
-          >
-
-<span
-	onClick={toggleFavorite}
-        role="presentation"
-    >
- {isFavorite ? (
-	   <FavoriteIcon />
-      ) : (
-        <FavoriteBorderIcon />
-      )}
-     </span>
-          </Grid>
+          
             <Typography component="div" variant="h5">
               {/* {props.num} */}
-              店名
+              ユーザー名
             </Typography>
 
             <Grid container>
@@ -90,26 +68,26 @@ export default function Cafe(props: Props) {
               </Grid>
             </Grid>
 
-            <Typography
-              variant="subtitle1"
-              color="text.secondary"
-              component="div"
-            >
-              住所
-            </Typography>
+<TextField
+          id="comment"
+          label="comment"
+          multiline
+          rows={4}
+          defaultValue="コメント"
+        />
 
-          </CardContent>
-
-          <Grid
+            <Grid
             container
             direction="row"
             justifyContent="flex-end"
             alignItems="center"
           >
             <Button variant="contained" color="primary" sx={{ mb: 2, mr: 2 }}>
-              ボタン
+              投稿
             </Button>
           </Grid>
+
+          </CardContent>
         </Grid>
       </Grid>
     </Card>

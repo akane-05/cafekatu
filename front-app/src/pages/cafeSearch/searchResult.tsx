@@ -5,7 +5,7 @@ import React from 'react'
 import Cafe from 'src/components/elements/cafe'
 
 export default function SearchResult() {
-  var numbers: number[] = [1, 2, 3, 4, 5]
+  var numbers: number[] = [1, 2, 3, 4]
 
   return (
     <Paper

@@ -1,13 +1,35 @@
 import { NextPage } from 'next'
 import Router from 'next/router'
-import { Typography, Container, Grid, TextField, Button } from '@mui/material'
+import { Typography, Container, Grid, TextField, Button,Input,Span } from '@mui/material'
 import theme from '../styles/theme'
 import { ThemeProvider } from '@mui/material/styles'
+import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
+import RemoveRedEyeIcon from '@mui/icons-material/RemoveRedEye';
+import styles from '/src/styles/layout.module.css'
 
 function Home() {
-  const handleLink = (path: string) => {
-    Router.push(path)
+  const [formData, setFormData] = useState<FormData>({
+    email: '',
+    password: ''
+  })
+
+  // 共通化したstate更新処理
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target
+    setFormData({ ...formData, [name]: value })
   }
+
+  const [isRevealPassword, setIsRevealPassword] = useState(false);
+  
+  const togglePassword = (e: React.MouseEvent<HTMLInputElement>) => {
+    const value:boolean = e.target.value
+    setIsRevealPassword({value});
+  }
+
+  const handleClick = () => {
+    // ログインAPIにPOSTする処理
+  }
+
 
   return (
     <ThemeProvider theme={theme}>
@@ -19,35 +41,50 @@ function Home() {
         direction="column"
       >
         <Grid item xs={12}>
-          <Typography>ログイン画面</Typography>
+          <Typography>Cafe活</Typography>
         </Grid>
         <Grid item xs={12}>
-          <TextField
+          <Input
+            name="email"
             type="text"
             label="email"
             required
-            // value={name}
-            // error={hasNameError}
-            // onChange={inputName}
-            // helperText={hasNameError ? '名前を入力してください。' : ''}
+          value={formData.email}
+          // error={hasNameError}
+          onChange={handleChange}
+          // helperText={hasNameError ? '名前を入力してください。' : ''}
           />
         </Grid>
         <Grid item xs={12}>
-          <TextField
-            type="text"
+          <Input
+            name="password"
+            // type="password"
+            type={isRevealPassword ? 'text' : 'password'}
             label="password"
             required
-            // value={name}
-            // error={hasNameError}
-            // onChange={inputName}
-            // helperText={hasNameError ? '名前を入力してください。' : ''}
+          value={formData.password}
+          // error={handleChangePassword}
+          onChange={handleChange}
+          // helperText={hasNameError ? '名前を入力してください。' : ''}
           />
+
+<span
+	onClick={togglePassword}
+        role="presentation"
+	className={styles.passwordReveal}
+    >
+      {isRevealPassword ? (
+	   <RemoveRedEyeIcon />
+      ) : (
+        <VisibilityOffIcon />
+      )}
+     </span>
         </Grid>
 
         <Grid item xs={12}>
           <Button
             variant="contained"
-            // onClick={() => handleLink('./search/searchResult')}
+          // onClick={() => handleLink('./search/searchResult')}
           >
             ログイン
           </Button>
@@ -56,7 +93,7 @@ function Home() {
         <Grid item xs={12}>
           <Button
             variant="contained"
-            // onClick={() => handleLink('./search/searchResult')}
+          // onClick={() => handleLink('./search/searchResult')}
           >
             新規会員登録
           </Button>

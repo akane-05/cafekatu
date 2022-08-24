@@ -13,56 +13,72 @@ import {
   CardActions,
 } from '@mui/material'
 import React from 'react'
+import FavoriteIcon from '@mui/icons-material/Favorite';
+import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
 
-export default function Comment() {
+interface Props {
+  num: number
+}
+
+export default function Comment(props: Props) {
   // const handleLink = (path: string) => {
   //   Router.push(path)
   // }
-  return (
-    <>
-      <Card sx={{ display: 'flex' }}>
-        <CardMedia
-          component="img"
-          sx={{ width: 151 }}
-          image="public/favicon.ico"
-          alt="写真の説明"
-        />
 
-        <Box sx={{ display: 'flex', flexDirection: 'column' }}>
-          <CardContent sx={{ flex: '1 0 auto' }}>
+
+
+  return (
+    <Card sx={{ mt: 1, mb: 1 }}>
+      <Grid container>
+        <Grid xs={12} sm={3}>
+          <CardMedia
+            component="img"
+            // sx={{ width: 151 }}
+            image="/cake.jpg"
+            alt="写真の説明"
+          />
+        </Grid>
+
+        <Grid xs={12} sm={9}>
+          <CardContent sx={{ alignSelf: 'stretch' }}>
+          
             <Typography component="div" variant="h5">
-              名前
+              {/* {props.num} */}
+              ユーザー名
             </Typography>
+
+            <Grid container>
+              <Grid xs={6}>
+                <Typography
+                  variant="subtitle1"
+                  color="text.secondary"
+                  sx={{ mr: 3 }}
+                >
+                  ☆☆☆
+                </Typography>
+              </Grid>
+              <Grid xs={6}>
+                <Typography
+                  variant="subtitle1"
+                  color="text.secondary"
+                  sx={{ mr: 3 }}
+                >
+                  3.0
+                </Typography>
+              </Grid>
+            </Grid>
+
             <Typography
               variant="subtitle1"
               color="text.secondary"
               component="div"
             >
-              ○○○
+              コメント
             </Typography>
-            <Typography
-              variant="subtitle1"
-              color="text.secondary"
-              component="div"
-            >
-              ○○○
-            </Typography>
-            <Box sx={{ display: 'flex', mr: 3 }}>
-              <Typography variant="subtitle1" color="text.secondary">
-                ☆☆☆
-              </Typography>
-              <Typography variant="subtitle1" color="text.secondary">
-                3.0
-              </Typography>
-            </Box>
+
           </CardContent>
-          <CardActions>
-            <Button variant="contained" color="primary">
-              ボタン
-            </Button>
-          </CardActions>
-        </Box>
-      </Card>
-    </>
+        </Grid>
+      </Grid>
+    </Card>
   )
 }
