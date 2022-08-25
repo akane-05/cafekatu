@@ -34,7 +34,7 @@ export default function Header() {
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault()
 
-    const path: string = './cafeSearch/searchResult'
+    const path: string = './cafe/searchResult'
     Router.push(path)
   }
 
@@ -84,7 +84,9 @@ export default function Header() {
     <AppBar position="static" style={{ backgroundColor: '#CC74AB' }}>
       <Toolbar>
         <Box sx={{ m: 0 }}>
-          <Button color="inherit">メニュー</Button>
+          <Button size="medium" color="inherit">
+            Cafe活
+          </Button>
         </Box>
 
         <form onSubmit={handleSubmit}>

@@ -1,35 +1,59 @@
 import { NextPage } from 'next'
 import Router from 'next/router'
-import { Typography, Container, Grid, TextField, Button,Input,Span } from '@mui/material'
+import {
+  Typography,
+  Grid,
+  Button,
+  FormControl,
+  InputLabel,
+  OutlinedInput,
+  InputAdornment,
+  IconButton,
+} from '@mui/material'
 import theme from '../styles/theme'
 import { ThemeProvider } from '@mui/material/styles'
-import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
-import RemoveRedEyeIcon from '@mui/icons-material/RemoveRedEye';
-import styles from '/src/styles/layout.module.css'
+import Visibility from '@mui/icons-material/Visibility'
+import VisibilityOff from '@mui/icons-material/VisibilityOff'
+import React, { useState } from 'react'
+import { styled } from '@mui/system'
+
+interface State {
+  email: string
+  password: string
+  showPassword: boolean
+}
 
 function Home() {
-  const [formData, setFormData] = useState<FormData>({
+  const [values, setValues] = React.useState<State>({
     email: '',
-    password: ''
+    password: '',
+    showPassword: false,
   })
 
-  // 共通化したstate更新処理
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target
-    setFormData({ ...formData, [name]: value })
+  const CustomButton = styled(Button)(() => ({
+    maxWidth: '120px',
+    // maxHeight: '30px',
+    minWidth: '120px',
+    // minHeight: '30px',
+  }))
+
+  const handleChange =
+    (prop: keyof State) => (event: React.ChangeEvent<HTMLInputElement>) => {
+      setValues({ ...values, [prop]: event.target.value })
+    }
+
+  const handleClickShowPassword = () => {
+    setValues({
+      ...values,
+      showPassword: !values.showPassword,
+    })
   }
 
-  const [isRevealPassword, setIsRevealPassword] = useState(false);
-  
-  const togglePassword = (e: React.MouseEvent<HTMLInputElement>) => {
-    const value:boolean = e.target.value
-    setIsRevealPassword({value});
+  const handleMouseDownPassword = (
+    event: React.MouseEvent<HTMLButtonElement>,
+  ) => {
+    event.preventDefault()
   }
-
-  const handleClick = () => {
-    // ログインAPIにPOSTする処理
-  }
-
 
   return (
     <ThemeProvider theme={theme}>
@@ -41,62 +65,65 @@ function Home() {
         direction="column"
       >
         <Grid item xs={12}>
-          <Typography>Cafe活</Typography>
-        </Grid>
-        <Grid item xs={12}>
-          <Input
-            name="email"
-            type="text"
-            label="email"
-            required
-          value={formData.email}
-          // error={hasNameError}
-          onChange={handleChange}
-          // helperText={hasNameError ? '名前を入力してください。' : ''}
-          />
-        </Grid>
-        <Grid item xs={12}>
-          <Input
-            name="password"
-            // type="password"
-            type={isRevealPassword ? 'text' : 'password'}
-            label="password"
-            required
-          value={formData.password}
-          // error={handleChangePassword}
-          onChange={handleChange}
-          // helperText={hasNameError ? '名前を入力してください。' : ''}
-          />
-
-<span
-	onClick={togglePassword}
-        role="presentation"
-	className={styles.passwordReveal}
-    >
-      {isRevealPassword ? (
-	   <RemoveRedEyeIcon />
-      ) : (
-        <VisibilityOffIcon />
-      )}
-     </span>
+          <Typography variant="h2" color="primary">
+            Cafe活
+          </Typography>
         </Grid>
 
         <Grid item xs={12}>
-          <Button
+          <FormControl sx={{ m: 1, width: '25ch' }} variant="outlined">
+            <InputLabel htmlFor="email">email</InputLabel>
+            <OutlinedInput
+              id="email"
+              type="text"
+              value={values.email}
+              onChange={handleChange('email')}
+              label="email"
+            />
+          </FormControl>
+        </Grid>
+
+        <Grid item xs={12}>
+          <FormControl sx={{ m: 1, width: '25ch' }} variant="outlined">
+            <InputLabel htmlFor="password">Password</InputLabel>
+            <OutlinedInput
+              id="password"
+              type={values.showPassword ? 'text' : 'password'}
+              value={values.password}
+              onChange={handleChange('password')}
+              endAdornment={
+                <InputAdornment position="end">
+                  <IconButton
+                    aria-label="toggle password visibility"
+                    onClick={handleClickShowPassword}
+                    onMouseDown={handleMouseDownPassword}
+                    edge="end"
+                  >
+                    {values.showPassword ? <VisibilityOff /> : <Visibility />}
+                  </IconButton>
+                </InputAdornment>
+              }
+              label="Password"
+            />
+          </FormControl>
+        </Grid>
+
+        <Grid item xs={12}>
+          <CustomButton
             variant="contained"
-          // onClick={() => handleLink('./search/searchResult')}
+            // onClick={() => handleLink('./search/searchResult')}
           >
             ログイン
-          </Button>
+          </CustomButton>
         </Grid>
 
         <Grid item xs={12}>
-          <Button
+          <CustomButton
             variant="contained"
-          // onClick={() => handleLink('./search/searchResult')}
+            // onClick={() => handleLink('./search/searchResult')}
           >
             新規会員登録
-          </Button>
+          </CustomButton>
         </Grid>
       </Grid>
     </ThemeProvider>
