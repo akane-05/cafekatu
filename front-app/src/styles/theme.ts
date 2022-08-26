@@ -16,6 +16,9 @@ const theme = createTheme({
   },
   typography: {
     fontFamily: ['Kaisei Decol'].join(','),
+    button: {
+      textTransform: 'none',
+    },
   },
 })
 

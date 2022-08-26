@@ -11,50 +11,43 @@ import {
   Box,
   Typography,
   CardActions,
+  Hidden,
 } from '@mui/material'
 import React from 'react'
+import FavoriteIcon from '@mui/icons-material/Favorite'
+import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder'
 
 interface Props {
   num: number
 }
 
-export default function Cafe(props: Props) {
+export default function Comment(props: Props) {
   // const handleLink = (path: string) => {
   //   Router.push(path)
   // }
+
   return (
     <Card sx={{ mt: 1, mb: 1 }}>
       <Grid container>
-        <Grid xs={12} sm={3}>
+        <Grid item xs={12} sm={3}>
           <CardMedia
             component="img"
             // sx={{ width: 151 }}
             image="/cake.jpg"
             alt="写真の説明"
+            sx={{ width: '100%', height: '100%' }}
           />
         </Grid>
 
-        <Grid xs={12} sm={9}>
+        <Grid item xs={12} sm={9}>
           <CardContent sx={{ alignSelf: 'stretch' }}>
-            <Typography component="div" variant="h5">
-              {props.num}
+            <Typography component="div" variant="h5" sx={{ mb: 1 }}>
+              {/* {props.num} */}
+              ユーザー名
             </Typography>
-            <Typography
-              variant="subtitle1"
-              color="text.secondary"
-              component="div"
-            >
-              ○○○
-            </Typography>
-            <Typography
-              variant="subtitle1"
-              color="text.secondary"
-              component="div"
-            >
-              ○○○
-            </Typography>
+
             <Grid container>
-              <Grid xs={6}>
+              <Grid item xs={6} sm={3}>
                 <Typography
                   variant="subtitle1"
                   color="text.secondary"
@@ -63,7 +56,7 @@ export default function Cafe(props: Props) {
                   ☆☆☆
                 </Typography>
               </Grid>
-              <Grid xs={6}>
+              <Grid item xs={6} sm={3}>
                 <Typography
                   variant="subtitle1"
                   color="text.secondary"
@@ -72,19 +65,20 @@ export default function Cafe(props: Props) {
                   3.0
                 </Typography>
               </Grid>
+              <Grid item xs={0} sm={6}>
+                <Hidden></Hidden>
+              </Grid>
             </Grid>
-          </CardContent>
 
-          <Grid
-            container
-            direction="row"
-            justifyContent="flex-end"
-            alignItems="center"
-          >
-            <Button variant="contained" color="primary" sx={{ mb: 2, mr: 2 }}>
-              ボタン
-            </Button>
-          </Grid>
+            <Typography
+              variant="subtitle1"
+              color="text.secondary"
+              component="div"
+              sx={{ mb: 1 }}
+            >
+              コメント
+            </Typography>
+          </CardContent>
         </Grid>
       </Grid>
     </Card>

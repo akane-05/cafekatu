@@ -3,3 +3,10 @@
   padding: 0 1rem;
   margin: 3rem auto 6rem;
 }
+
+.passwordReveal {
+  left: auto;
+  position: absolute;
+  right: 10px;
+  top: 10px;
+}
