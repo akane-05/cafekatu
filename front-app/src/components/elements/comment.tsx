@@ -19,16 +19,23 @@ import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder'
 
 interface Props {
   num: number
+  mypage: boolean | null
 }
 
 export default function Comment(props: Props) {
   // const handleLink = (path: string) => {
   //   Router.push(path)
   // }
+  const mypage = props.mypage ? true : false
 
   return (
     <Card sx={{ mt: 1, mb: 1 }}>
-      <Grid container>
+      <Grid
+        container
+        direction="row"
+        justifyContent="flex-start"
+        alignItems="center"
+      >
         <Grid item xs={12} sm={3}>
           <CardMedia
             component="img"
@@ -78,6 +85,14 @@ export default function Comment(props: Props) {
             >
               コメント
             </Typography>
+            <Grid
+              container
+              direction="row"
+              justifyContent="flex-end"
+              alignItems="flex-end"
+            >
+              {props.mypage ? <Button variant="contained">削除</Button> : <></>}
+            </Grid>
           </CardContent>
         </Grid>
       </Grid>
