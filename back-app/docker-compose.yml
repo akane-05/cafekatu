@@ -1,0 +1,24 @@
+
+version: '2.2'
+services:
+  db:
+    image: demo-app-db
+    container_name: demo-app-db
+    build: 
+      context: .
+      dockerfile: ./build/db/Dockerfile
+    environment:
+      MYSQL_ROOT_PASSWORD: demo-password
+      TZ: "UTC"
+    ports:
+      - "3306:3306"
+  api-server:
+    image: demo-app-server
+    container_name: demo-app-server
+    build:
+      context: .
+      dockerfile: ./Dockerfile
+    ports:
+      - "8080:8080"
+    depends_on:
+      - db

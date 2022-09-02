@@ -1,0 +1,6 @@
+FROM mysql:8.0
+
+ENV MYSQL_DATABASE demo
+
+COPY sql/01_insert.sql /docker-entrypoint-initdb.d/01_insert.sql
+COPY sql/01_table.sql /docker-entrypoint-initdb.d/01_table.sql

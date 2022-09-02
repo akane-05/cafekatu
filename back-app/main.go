@@ -3,8 +3,15 @@ package main
 import (
     "net/http"
 	"fmt"
+
+	"github.com/akane-05/demo-app/back-app/controller"
+	"github.com/akane-05/demo-app/back-app/model/repository"
 )
 
+var dr = repository.NewDemoRepository()
+var dc = controller.NewDemoController(dr)
+var ro = controller.NewRouter(dc)
+s
 func main() {
 
 http.HandleFunc("/", handler)
