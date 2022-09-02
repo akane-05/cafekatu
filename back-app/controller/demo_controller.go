@@ -18,7 +18,7 @@ type demoController struct {
 	dr repository.DemoRepository
 }
 
-func NewDemoController(tr repository.DemoRepository) DemoController {
+func NewDemoController(dr repository.DemoRepository) DemoController {
 	return &demoController{dr}
 }
 

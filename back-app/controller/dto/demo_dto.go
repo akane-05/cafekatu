@@ -1,22 +1,22 @@
 package dto
 
 type DemoResponse struct {
-	id         int   `json:"id"`
-    name       string   `json:"name"`
-    prefecture_id int `json:"prefecture_id"`
-    city     string `json:"city"`
-    street   string `json:"street"`
-    business_hours string `json:"business_hours"`
-    approved      int `json:"approved"`
-    deleted       int `json:"deleted"`
-    created_at    string `json:"created_at"`
-    updated_at    string `json:"updated_at"`
+	Id         int   `json:"id"`
+    Name       string   `json:"name"`
+    PrefectureId int `json:"prefecture_id"`
+    City     string `json:"city"`
+    Street   string `json:"street"`
+    Business_hours string `json:"business_hours"`
+    Approved      int `json:"approved"`
+    Deleted       int `json:"deleted"`
+    CreatedAt    string `json:"created_at"`
+    UpdatedAt    string `json:"updated_at"`
 }
 
 type DemoRequest struct {
 
 }
 
-type TodosResponse struct {
+type DemosResponse struct {
 	Demos []DemoResponse `json:"demos"`
 }

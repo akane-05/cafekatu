@@ -17,7 +17,7 @@ services:
     container_name: demo-app-server
     build:
       context: .
-      dockerfile: ./Dockerfile
+      dockerfile: ./build/demo-app/Dockerfile
     ports:
       - "8080:8080"
     depends_on:
