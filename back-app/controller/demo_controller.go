@@ -3,11 +3,11 @@ package controller
 import (
 	"encoding/json"
 	"net/http"
-	"path"
-	"strconv"
+	// "path"
+	// "strconv"
 
 	"github.com/akane-05/demo-app/back-app/controller/dto"
-	"github.com/akane-05/demo-app/back-app/model/entity"
+	// "github.com/akane-05/demo-app/back-app/model/entity"
 	"github.com/akane-05/demo-app/back-app/model/repository")
 
 type DemoController interface {
@@ -23,7 +23,7 @@ func NewDemoController(dr repository.DemoRepository) DemoController {
 }
 
 func (dc *demoController) GetDemos(w http.ResponseWriter, r *http.Request) {
-	todos, err := dc.dr.GetDemos()
+	demos, err := dc.dr.GetDemos()
 	if err != nil {
 		w.WriteHeader(500)
 		return
@@ -34,8 +34,8 @@ func (dc *demoController) GetDemos(w http.ResponseWriter, r *http.Request) {
 		demoResponses = append(demoResponses, dto.DemoResponse{Id: v.Id, Name: v.Name, PrefectureId: v.PrefectureId})	
 	}
 
-	var demoResponses dto.DemoResponse
-	demosResponse.Todos = demoResponse
+	var demosResponse dto.DemosResponse
+	demosResponse.Demos = demoResponses
 
 	output, _ := json.MarshalIndent(demosResponse.Demos, "", "\t\t")
 

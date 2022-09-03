@@ -2,7 +2,7 @@ package main
 
 import (
     "net/http"
-	"fmt"
+	// "fmt"
 
 	"github.com/akane-05/demo-app/back-app/controller"
 	"github.com/akane-05/demo-app/back-app/model/repository"

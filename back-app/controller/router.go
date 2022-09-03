@@ -22,7 +22,7 @@ func NewRouter(dc DemoController) Router {
 func (ro *router) HandleTodosRequest(w http.ResponseWriter, r *http.Request) {
 	switch r.Method {
 	case "GET":
-		ro.dc.GetTodos(w, r)
+		ro.dc.GetDemos(w, r)
 	// case "POST":
 	// 	ro.tc.PostTodo(w, r)
 	// case "PUT":
