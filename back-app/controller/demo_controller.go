@@ -3,12 +3,14 @@ package controller
 import (
 	"encoding/json"
 	"net/http"
+
 	// "path"
 	// "strconv"
 
 	"github.com/akane-05/demo-app/back-app/controller/dto"
 	// "github.com/akane-05/demo-app/back-app/model/entity"
-	"github.com/akane-05/demo-app/back-app/model/repository")
+	"github.com/akane-05/demo-app/back-app/model/repository"
+)
 
 type DemoController interface {
 	GetDemos(w http.ResponseWriter, r *http.Request)
@@ -31,7 +33,7 @@ func (dc *demoController) GetDemos(w http.ResponseWriter, r *http.Request) {
 
 	var demoResponses []dto.DemoResponse
 	for _, v := range demos {
-		demoResponses = append(demoResponses, dto.DemoResponse{Id: v.Id, Name: v.Name, PrefectureId: v.PrefectureId})	
+		demoResponses = append(demoResponses, dto.DemoResponse{Id: v.Id, Name: v.Name, PrefectureId: v.PrefectureId})
 	}
 
 	var demosResponse dto.DemosResponse
@@ -41,4 +43,5 @@ func (dc *demoController) GetDemos(w http.ResponseWriter, r *http.Request) {
 
 	w.Header().Set("Content-Type", "application/json")
 	w.Write(output)
+
 }
