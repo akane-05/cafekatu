@@ -128,17 +128,6 @@ export default function CafeDetail(props: Props) {
                   }}
                 />
               </Grid>
-              <Grid item xs={12}>
-                <TextField
-                  id="creatDate"
-                  label="登録日"
-                  type="date"
-                  InputProps={{
-                    readOnly: true,
-                  }}
-                />
-              </Grid>
-
               <Grid
                 container
                 direction="row"

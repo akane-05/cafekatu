@@ -83,6 +83,19 @@ export default function RegisterForm() {
       >
         <Grid item xs={12}>
           <FormControl sx={{ m: 1, width: '25ch' }} variant="outlined">
+            <InputLabel htmlFor="nickname">ニックネーム</InputLabel>
+            <OutlinedInput
+              id="nickname"
+              type="text"
+              value={values.nickname}
+              onChange={handleChange('nickname')}
+              label="nickname"
+            />
+          </FormControl>
+        </Grid>
+
+        <Grid item xs={12}>
+          <FormControl sx={{ m: 1, width: '25ch' }} variant="outlined">
             <InputLabel htmlFor="email">email</InputLabel>
             <OutlinedInput
               id="email"
@@ -140,19 +153,6 @@ export default function RegisterForm() {
                 </InputAdornment>
               }
               label="Password"
-            />
-          </FormControl>
-        </Grid>
-
-        <Grid item xs={12}>
-          <FormControl sx={{ m: 1, width: '25ch' }} variant="outlined">
-            <InputLabel htmlFor="nickname">ニックネーム</InputLabel>
-            <OutlinedInput
-              id="nickname"
-              type="text"
-              value={values.nickname}
-              onChange={handleChange('nickname')}
-              label="nickname"
             />
           </FormControl>
         </Grid>
