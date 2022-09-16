@@ -25,6 +25,7 @@ func NewDemoRepository() DemoRepository {
 //ポインタレシーバ(*demoRepository)にメソッドを追加
 func (tr *demoRepository) GetDemos() (demos []entity.DemoEntity, err error) {
 	demos = []entity.DemoEntity{}
+	//SQLを実行
 	rows, err := Db.
 		Query("SELECT id, name, prefecture_id FROM cafes ORDER BY id DESC")
 	if err != nil {
@@ -32,6 +33,7 @@ func (tr *demoRepository) GetDemos() (demos []entity.DemoEntity, err error) {
 		return
 	}
 
+	//検索結果にたいして処理を実行
 	for rows.Next() {
 		demo := entity.DemoEntity{}
 		err = rows.Scan(&demo.Id, &demo.Name, &demo.PrefectureId)

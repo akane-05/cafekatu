@@ -36,6 +36,7 @@ func (dc *demoController) GetDemos(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	//検索結果を取得
 	var demoResponses []dto.DemoResponse
 	for _, v := range demos {
 		demoResponses = append(demoResponses, dto.DemoResponse{Id: v.Id, Name: v.Name, PrefectureId: v.PrefectureId})
@@ -46,6 +47,7 @@ func (dc *demoController) GetDemos(w http.ResponseWriter, r *http.Request) {
 
 	output, _ := json.MarshalIndent(demosResponse.Demos, "", "\t\t")
 
+	//画面に出力
 	w.Header().Set("Content-Type", "application/json")
 	w.Write(output)
 
