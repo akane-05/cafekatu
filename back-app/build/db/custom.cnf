@@ -1,6 +1,7 @@
 [mysqld]
 lower_case_table_names=1
 explicit_defaults_for_timestamp=true
+ALL=allow
 
 skip_ssl
 character-set-server=utf8mb4

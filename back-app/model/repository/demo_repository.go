@@ -7,17 +7,22 @@ import (
 	"github.com/akane-05/demo-app/back-app/model/entity"
 )
 
+//DIを用いたリポジトリの実装
+//インターフェースで実装すべきメソッドを決める
 type DemoRepository interface {
 	GetDemos() (demos []entity.DemoEntity, err error)
 }
 
+//構造体の宣言
 type demoRepository struct {
 }
 
+//demoRepositoryのコンストラクタ
 func NewDemoRepository() DemoRepository {
 	return &demoRepository{}
 }
 
+//ポインタレシーバ(*demoRepository)にメソッドを追加
 func (tr *demoRepository) GetDemos() (demos []entity.DemoEntity, err error) {
 	demos = []entity.DemoEntity{}
 	rows, err := Db.

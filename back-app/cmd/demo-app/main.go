@@ -8,25 +8,21 @@ import (
 	"github.com/akane-05/demo-app/back-app/model/repository"
 )
 
+//DIを行う	
 var dr = repository.NewDemoRepository()
 var dc = controller.NewDemoController(dr)
 var ro = controller.NewRouter(dc)
 
 func main() {
 
-// http.HandleFunc("/", handler)
-
-//     // 8080ポートで起動
-//     http.ListenAndServe(":8080", nil)
-// }
-
-// 	// リクエストを処理する関数
-// func handler(w http.ResponseWriter, r *http.Request) {
-//     fmt.Fprint(w, "Hello  Go.")
-
+//型定義と代入同時
 server := http.Server{
 		Addr: ":8080",
 	}
+
 	http.HandleFunc("/", ro.HandleTodosRequest)
+
+	//server(http.Server)のListenAndServeメソッドを使用
+	//サーバーを起動
 	server.ListenAndServe()
 }

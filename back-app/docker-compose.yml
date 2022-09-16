@@ -12,7 +12,9 @@ services:
       MYSQL_ROOT_PASSWORD: demo-password
       TZ: "UTC"
     ports:
-      - "3306:3306"
+      - 3307:3306
+    expose:
+      - 3307
   api-server:
     image: demo-app-server
     container_name: demo-app-server

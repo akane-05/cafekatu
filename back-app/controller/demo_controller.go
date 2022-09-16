@@ -12,18 +12,23 @@ import (
 	"github.com/akane-05/demo-app/back-app/model/repository"
 )
 
+//DIを用いたコントローラーの実装
+//インターフェースで実装すべきメソッドを決める
 type DemoController interface {
 	GetDemos(w http.ResponseWriter, r *http.Request)
 }
 
+//構造体の宣言
 type demoController struct {
 	dr repository.DemoRepository
 }
 
+//demoControllerのコンストラクタ
 func NewDemoController(dr repository.DemoRepository) DemoController {
 	return &demoController{dr}
 }
 
+//ポインタレシーバ(*demoController)にメソッドを追加
 func (dc *demoController) GetDemos(w http.ResponseWriter, r *http.Request) {
 	demos, err := dc.dr.GetDemos()
 	if err != nil {

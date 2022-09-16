@@ -14,11 +14,13 @@ type router struct {
 	dc DemoController
 }
 
-// Routerのコンストラクタ。引数にTodoControllerを受け取り、Router構造体のポインタを返却する。
+// Routerのコンストラクタ。
+//引数にTodoControllerを受け取り、Router構造体のポインタを返却する。
 func NewRouter(dc DemoController) Router {
 	return &router{dc}
 }
 
+//ポインタレシーバ(*router)にメソッドを追加
 func (ro *router) HandleTodosRequest(w http.ResponseWriter, r *http.Request) {
 	switch r.Method {
 	case "GET":
