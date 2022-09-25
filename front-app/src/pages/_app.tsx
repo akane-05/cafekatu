@@ -34,12 +34,17 @@ import theme from '../styles/theme'
 import '../styles/global.css'
 import { ThemeProvider } from '@mui/material/styles'
 
+import { QueryClientProvider } from 'react-query'
+import { queryClient } from '@/lib/react-query'
+
 function MyApp({ Component, pageProps }: AppProps) {
   return (
     <ThemeProvider theme={theme}>
-      <Layout>
-        <Component {...pageProps} />
-      </Layout>
+      <QueryClientProvider client={queryClient}>
+        <Layout>
+          <Component {...pageProps} />
+        </Layout>
+      </QueryClientProvider>
     </ThemeProvider>
   )
 }

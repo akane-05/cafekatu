@@ -11,9 +11,9 @@ import {
   Paper,
   TextField,
 } from '@mui/material'
-import theme from 'styles/theme'
+import theme from '@/styles/theme'
 import { ThemeProvider } from '@mui/material/styles'
-import CustomPaper from 'components/layouts/customPaper'
+import CustomPaper from '@/components/layouts/CustomPaper'
 
 interface Props {
   num: number

@@ -2,10 +2,10 @@
 // import Router from 'next/router'
 import { Button, Paper } from '@mui/material'
 import React, { useState } from 'react'
-import CafeInfo from 'components/elements/cafeInfo'
-import Comment from 'components/elements/comment'
-import CommentPost from 'components/elements/commentPost'
-import CustomPaper from 'components/layouts/customPaper'
+import CafeInfo from '@/components/elements/CafeInfo'
+import Comment from '@/components/elements/comment'
+import CommentPost from '@/components/elements/commentPost'
+import CustomPaper from '@/components/layouts/CustomPaper'
 
 interface Props {
   num: number
@@ -45,7 +45,7 @@ export default function CafeDetail(props: Props) {
         </Button>
 
         {values.isCommentPost ? <CommentPost num={1}></CommentPost> : <></>}
-        <Comment></Comment>
+        <Comment mypage={true}></Comment>
       </CustomPaper>
     </>
   )

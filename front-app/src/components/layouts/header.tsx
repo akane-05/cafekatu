@@ -34,7 +34,7 @@ export default function Header() {
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault()
 
-    const path: string = './cafe/searchResult'
+    const path = './cafes/CafesList'
     Router.push(path)
   }
 
