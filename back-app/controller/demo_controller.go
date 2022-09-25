@@ -2,6 +2,7 @@ package controller
 
 import (
 	"encoding/json"
+	"log"
 	"net/http"
 
 	// "path"
@@ -30,6 +31,8 @@ func NewDemoController(dr repository.DemoRepository) DemoController {
 
 //ポインタレシーバ(*demoController)にメソッドを追加
 func (dc *demoController) GetDemos(w http.ResponseWriter, r *http.Request) {
+
+	log.Println("GetDemos")
 
 	w.Header().Set("Content-Type", "application/json")
 	w.Header().Set("Access-Control-Allow-Origin", "*")
