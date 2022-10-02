@@ -1,31 +1,71 @@
 // import { NextPage } from 'next'
 // import Router from 'next/router'
-import { Paper, Grid } from '@mui/material'
+import { Paper, Grid, Button } from '@mui/material'
 import React from 'react'
 import CafeCard from '@/components/elements/CafeCard'
 import CustomPaper from '@/components/layouts/CustomPaper'
 
 import { useCafes } from '@/features/cafes/api/getCafes'
-import { Cafe } from '@/features/cafes/types'
+import { CafeInfo } from '@/features/cafes/types'
+import { useRouter } from 'next/router'
 
 export default function CafesList() {
-  const cafesQuery = useCafes()
+  const { data, isLoading, isError, error } = useCafes()
+  const router = useRouter() //useRouterフックを定義して
 
-  if (!cafesQuery.data) return 'データがありません'
+  const handleTopPage = (path: string) => {
+    router.push({
+      pathname: path,
+    })
+  }
+  // console.log(cafesQuery)
+  // const { data, isLoading } = useCafes()
 
-  // if (cafesQuery.isLoading) {
-  //   return (
-  //     <div className="w-full h-48 flex justify-center items-center">
-  //       <Spinner size="lg" />
-  //     </div>
-  //   )
-  // }
+  if (isLoading) {
+    return <span>読み込み中...</span>
+  }
+
+  if (isError) {
+    // return <span>Error: {error.message}</span>
+    return (
+      <>
+        <span>エラーが発生しました</span>
+        <Button
+          variant="contained"
+          color="primary"
+          onClick={() => handleTopPage('/')}
+        >
+          Top画面に戻る
+        </Button>
+      </>
+    )
+  }
 
   return (
     <CustomPaper>
-      {cafesQuery.data.map((cafe: Cafe, index) => {
-        return <CafeCard key={index} num={cafe.id} /> //keyを指定
-      })}
+      {data.cafes.Count() == 0 ? (
+        <>
+          検索条件に一致する店舗が存在しません
+          <Button
+            variant="contained"
+            color="primary"
+            onClick={() => handleTopPage('/')}
+          >
+            Top画面に戻る
+          </Button>
+        </>
+      ) : (
+        data.cafes.map((cafeInfo: CafeInfo) => {
+          return <CafeCard key={cafeInfo.id} cafeInfo={cafeInfo} /> //keyを指定
+        })
+      )}
     </CustomPaper>
+
+    // <CustomPaper>
+
+    //   {/* {data.cafes.map((cafeInfo: CafeInfo) => {
+    //     return <CafeCard key={cafeInfo.id} cafeInfo={cafeInfo} /> //keyを指定
+    //   })} */}
+    // </CustomPaper>
   )
 }

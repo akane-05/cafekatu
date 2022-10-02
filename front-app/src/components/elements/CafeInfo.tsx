@@ -18,8 +18,10 @@ import React, { useState } from 'react'
 import FavoriteIcon from '@mui/icons-material/Favorite'
 import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder'
 
+import { CafeInfo } from '@/features/cafes/types'
+
 interface Props {
-  num: number
+  cafeInfo: CafeInfo
 }
 
 interface State {
@@ -27,6 +29,10 @@ interface State {
 }
 
 export default function cafeInfo(props: Props) {
+  const [cafeInfo] = useState(props.cafeInfo)
+
+  console.log(cafeInfo)
+
   const [values, setValues] = React.useState<State>({
     isFavorite: false,
   })
@@ -89,7 +95,7 @@ export default function cafeInfo(props: Props) {
               </Grid>
               <Grid item xs={12} sm={11}>
                 <Typography component="div" variant="h5" sx={{ mb: 1 }}>
-                  店名
+                  {cafeInfo.name}
                 </Typography>
               </Grid>
             </Grid>
@@ -110,7 +116,7 @@ export default function cafeInfo(props: Props) {
                   color="text.secondary"
                   sx={{ mr: 3 }}
                 >
-                  3.0
+                  {cafeInfo.rating}
                 </Typography>
               </Grid>
               <Grid item xs={0} sm={6}>
@@ -123,7 +129,9 @@ export default function cafeInfo(props: Props) {
               color="text.secondary"
               component="div"
             >
-              住所
+              {cafeInfo.prefecture_id}
+              {cafeInfo.city}
+              {cafeInfo.street}
             </Typography>
 
             <Typography
@@ -131,7 +139,7 @@ export default function cafeInfo(props: Props) {
               color="text.secondary"
               component="div"
             >
-              営業時間
+              {cafeInfo.business_hours}
             </Typography>
           </CardContent>
         </Grid>

@@ -17,9 +17,13 @@ import {
 import React, { useState } from 'react'
 import FavoriteIcon from '@mui/icons-material/Favorite'
 import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder'
+import { Cafe, CafeInfo } from '@/features/cafes/types'
+
+import { useRouter } from 'next/router'
 
 interface Props {
-  num: number
+  // cafe: Cafe
+  cafeInfo: CafeInfo
 }
 
 interface State {
@@ -27,14 +31,25 @@ interface State {
 }
 
 export default function CafeCard(props: Props) {
+  const router = useRouter() //useRouterフックを定義して
+
   const [values, setValues] = React.useState<State>({
     isFavorite: false,
   })
+
+  const [cafeInfo] = useState(props.cafeInfo)
 
   const handleClickFavorite = () => {
     setValues({
       ...values,
       isFavorite: !values.isFavorite,
+    })
+  }
+
+  const handleDetailsPage = (path: string) => {
+    router.push({
+      pathname: path,
+      query: { id: cafeInfo.id },
     })
   }
 
@@ -89,7 +104,7 @@ export default function CafeCard(props: Props) {
               </Grid>
               <Grid item xs={12} sm={11}>
                 <Typography component="div" variant="h5" sx={{ mb: 1 }}>
-                  店名
+                  {cafeInfo.name}
                 </Typography>
               </Grid>
             </Grid>
@@ -110,7 +125,7 @@ export default function CafeCard(props: Props) {
                   color="text.secondary"
                   sx={{ mr: 3 }}
                 >
-                  3.0
+                  {cafeInfo.rating}
                 </Typography>
               </Grid>
               <Grid item xs={0} sm={6}>
@@ -123,7 +138,9 @@ export default function CafeCard(props: Props) {
               color="text.secondary"
               component="div"
             >
-              住所
+              {cafeInfo.prefecture_id}
+              {cafeInfo.city}
+              {cafeInfo.street}
             </Typography>
 
             <Grid
@@ -132,7 +149,11 @@ export default function CafeCard(props: Props) {
               justifyContent="flex-end"
               alignItems="flex-end"
             >
-              <Button variant="contained" color="primary">
+              <Button
+                variant="contained"
+                color="primary"
+                onClick={() => handleDetailsPage('./CafeDetail')}
+              >
                 詳細
               </Button>
             </Grid>

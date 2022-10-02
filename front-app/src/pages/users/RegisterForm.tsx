@@ -13,7 +13,7 @@ import {
   DialogActions,
   DialogTitle,
 } from '@mui/material'
-import theme from 'styles/theme'
+import theme from '@/styles/theme'
 import { ThemeProvider } from '@mui/material/styles'
 import Visibility from '@mui/icons-material/Visibility'
 import VisibilityOff from '@mui/icons-material/VisibilityOff'

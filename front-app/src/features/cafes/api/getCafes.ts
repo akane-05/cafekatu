@@ -1,13 +1,45 @@
 import { useQuery } from 'react-query'
 
-import { Cafe } from '@/features/cafes/types'
+import { CafeInfo } from '@/features/cafes/types'
 import { APIClient } from '@/lib/axios'
+import { AxiosRequestConfig, AxiosResponse } from 'axios'
 
-// import { ExtractFnReturnType, QueryConfig } from '@/lib/react-query'
-
-export const getCafes = (): Promise<Cafe[]> => {
-  return APIClient.get('/cafes')
+export const useCafes = () => {
+  return useQuery('cafes', () => getCafes())
 }
+
+export const getCafes = async () => {
+  const options: AxiosRequestConfig = {
+    url: `cafes`,
+    method: 'GET',
+  }
+
+  const res = await APIClient(options)
+  return res.data
+}
+
+export const useCafe = (id: string) => {
+  return useQuery('cafe', () => getCafe(id))
+}
+
+export const getCafe = async (id: string) => {
+  const options: AxiosRequestConfig = {
+    url: `cafes`,
+    method: 'GET',
+    params: {
+      id: id,
+    },
+  }
+
+  const res = await APIClient(options)
+  return res.data
+}
+
+//   await APIClient(options).then((res: AxiosResponse<CafeInfo[]>) => {
+//     const { data, status } = res
+//     return data
+//   })
+// }
 
 // type QueryFnType = typeof getCafes
 
@@ -22,7 +54,3 @@ export const getCafes = (): Promise<Cafe[]> => {
 //     queryFn: () => getCafes(),
 //   })
 // }
-
-export const useCafes = () => {
-  return useQuery('cafes', () => getCafes())
-}

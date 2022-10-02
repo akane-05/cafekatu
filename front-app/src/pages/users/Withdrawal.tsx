@@ -14,8 +14,7 @@ import {
   Hidden,
 } from '@mui/material'
 import React, { useState } from 'react'
-import Comment from 'components/elements/comment'
-import CustomPaper from 'components/layouts/customPaper'
+import CustomPaper from '@/components/layouts/CustomPaper'
 import Visibility from '@mui/icons-material/Visibility'
 import VisibilityOff from '@mui/icons-material/VisibilityOff'
 

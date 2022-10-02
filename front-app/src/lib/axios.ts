@@ -5,8 +5,6 @@ export const APIClient = axios.create({
   responseType: 'json',
   headers: {
     'Content-Type': 'application/json',
-    // 'Content-Type': 'application/x-www-form-urlencoded',
     'Access-Control-Allow-Origin': '*',
   },
-  withCredentials: true,
 })

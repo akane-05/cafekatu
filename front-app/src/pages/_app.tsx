@@ -29,7 +29,7 @@
 // export default MyApp
 
 import type { AppProps } from 'next/app'
-import { default as Layout } from '../components/layouts/layout'
+import { default as Layout } from '../components/layouts/Layout'
 import theme from '../styles/theme'
 import '../styles/global.css'
 import { ThemeProvider } from '@mui/material/styles'
