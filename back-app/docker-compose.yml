@@ -1,0 +1,27 @@
+
+version: '2.2'
+services:
+  db:
+    image: demo-app-db
+    container_name: demo-app-db
+    command: --default-authentication-plugin=mysql_native_password
+    build: 
+      context: .
+      dockerfile: ./build/db/Dockerfile
+    environment:
+      MYSQL_ROOT_PASSWORD: demo-password
+      TZ: "UTC"
+    ports:
+      - 3307:3306
+    expose:
+      - 3307
+  api-server:
+    image: demo-app-server
+    container_name: demo-app-server
+    build:
+      context: .
+      dockerfile: ./build/demo-app/Dockerfile
+    ports:
+      - "8080:8080"
+    depends_on:
+      - db

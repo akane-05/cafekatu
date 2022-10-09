@@ -1,0 +1,9 @@
+{
+  "[go]": {
+    "editor.defaultFormatter": "golang.go",
+    "editor.tabSize": 2,
+    "editor.insertSpaces": false,
+    "editor.formatOnSave": true
+  },
+  "go.gopath": "/home/akane-w/go"
+}
