@@ -7,9 +7,9 @@ import (
 	"log"
 	"net/http"
 
-	"github.com/akane-05/demo-app/back-app/controller/dto"
-	"github.com/akane-05/demo-app/back-app/model/entity"
-	"github.com/akane-05/demo-app/back-app/model/repository"
+	"github.com/akane-05/cafekatu/goapi/controller/dto"
+	"github.com/akane-05/cafekatu/goapi/model/entity"
+	"github.com/akane-05/cafekatu/goapi/model/repository"
 )
 
 // DIを用いたコントローラーの実装

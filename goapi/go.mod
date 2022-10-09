@@ -1,4 +1,4 @@
-module github.com/akane-05/demo-app/back-app
+module github.com/akane-05/cafekatu/goapi
 
 go 1.18
 

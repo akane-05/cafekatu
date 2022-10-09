@@ -3,27 +3,27 @@ package repository
 import (
 	"log"
 
-	"github.com/akane-05/demo-app/back-app/model/entity"
+	"github.com/akane-05/cafekatu/goapi/model/entity"
 	_ "github.com/go-sql-driver/mysql"
 )
 
-//DIを用いたリポジトリの実装
-//インターフェースで実装すべきメソッドを決める
+// DIを用いたリポジトリの実装
+// インターフェースで実装すべきメソッドを決める
 type CafesRepository interface {
 	// GetCafes() (cafes []entity.CafeEntity, err error)
 	GetCafes() (cafes []entity.CafeInfo, err error)
 }
 
-//構造体の宣言
+// 構造体の宣言
 type cafesRepository struct {
 }
 
-//cafesRepositoryのコンストラクタ
+// cafesRepositoryのコンストラクタ
 func NewCafesRepository() CafesRepository {
 	return &cafesRepository{}
 }
 
-//ポインタレシーバ(*demoRepository)にメソッドを追加
+// ポインタレシーバ(*demoRepository)にメソッドを追加
 func (tr *cafesRepository) GetCafes() (cafes []entity.CafeInfo, err error) {
 	cafes = []entity.CafeInfo{}
 

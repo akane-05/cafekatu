@@ -4,11 +4,11 @@ import (
 	"log"
 	"net/http"
 
-	"github.com/akane-05/demo-app/back-app/controller"
-	"github.com/akane-05/demo-app/back-app/model/repository"
+	"github.com/akane-05/cafekatu/goapi/controller"
+	"github.com/akane-05/cafekatu/goapi/model/repository"
 )
 
-//DIを行う
+// DIを行う
 var dr = repository.NewCafesRepository()
 var dc = controller.NewCafesController(dr)
 var ro = controller.NewCafesRouter(dc)
