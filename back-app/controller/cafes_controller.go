@@ -12,24 +12,24 @@ import (
 	"github.com/akane-05/demo-app/back-app/model/repository"
 )
 
-//DIを用いたコントローラーの実装
-//インターフェースで実装すべきメソッドを決める
+// DIを用いたコントローラーの実装
+// インターフェースで実装すべきメソッドを決める
 type CafesController interface {
 	GetCafes(w http.ResponseWriter, r *http.Request)
 	GetCafe(w http.ResponseWriter, r *http.Request)
 }
 
-//構造体の宣言
+// 構造体の宣言
 type cafesController struct {
 	dr repository.CafesRepository
 }
 
-//demoControllerのコンストラクタ
+// demoControllerのコンストラクタ
 func NewCafesController(dr repository.CafesRepository) CafesController {
 	return &cafesController{dr}
 }
 
-//ポインタレシーバ(*demoController)にメソッドを追加
+// ポインタレシーバ(*demoController)にメソッドを追加
 func (dc *cafesController) GetCafes(w http.ResponseWriter, r *http.Request) {
 
 	log.Println("GetCafes")
@@ -51,23 +51,23 @@ func (dc *cafesController) GetCafes(w http.ResponseWriter, r *http.Request) {
 	// 	return
 	// }
 
-	//DBに接続できないので一旦コメントアウト、手書きでデータ入寮
-	//GetDemosメソッドにwhere句追加する
-	// demos, err := dc.dr.GetCefes()
-	// if err != nil {
-	// 	w.WriteHeader(500)
-	// 	return
-	// }
-
-	cafesSearchResult := []entity.CafeInfo{
-		{1, "お菓子の家", 1, "中央区", "銀座", "11時から15時まで", "2022-09-26", "2022-09-26", 3},
-		{2, "coffee shop", 1, "新宿区", "歌舞伎町", "8時から12時まで", "2022-09-26", "2022-09-26", 3},
+	// DBに接続できないので一旦コメントアウト、手書きでデータ入寮
+	// GetDemosメソッドにwhere句追加する
+	cafesSearchResult, err := dc.dr.GetCafes()
+	if err != nil {
+		w.WriteHeader(500)
+		return
 	}
 
-	log.Println("データ作成")
-	log.Println(cafesSearchResult[0].Id)
+	// cafesSearchResult := []entity.CafeInfo{
+	// 	{1, "お菓子の家", 1, "中央区", "銀座", "11時から15時まで", "2022-09-26", "2022-09-26", 3},
+	// 	{2, "coffee shop", 1, "新宿区", "歌舞伎町", "8時から12時まで", "2022-09-26", "2022-09-26", 3},
+	// }
 
-	//検索結果をDTOに取得
+	log.Println("データ作成")
+	// log.Println(cafesSearchResult[0].Id)
+
+	// 検索結果をDTOに取得
 	var cafes []dto.CafeResponse
 	for _, v := range cafesSearchResult {
 		cafes = append(cafes, dto.CafeResponse{Id: v.Id, Name: v.Name, PrefectureId: v.PrefectureId, City: v.City, Street: v.Street, Business_hours: v.BusinessHours, CreatedAt: v.CreatedAt, UpdatedAt: v.UpdatedAt, Rating: v.Rating})
@@ -89,7 +89,7 @@ func (dc *cafesController) GetCafes(w http.ResponseWriter, r *http.Request) {
 
 }
 
-//ポインタレシーバ(*demoController)にメソッドを追加
+// ポインタレシーバ(*demoController)にメソッドを追加
 func (dc *cafesController) GetCafe(w http.ResponseWriter, r *http.Request) {
 
 	log.Println("GetCafe")
