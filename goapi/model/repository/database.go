@@ -13,7 +13,7 @@ var Db *sql.DB
 func init() {
 	var err error
 	dataSourceName := fmt.Sprintf("%s:%s@tcp(%s)/%s?charset=utf8",
-		"root", "demo-password", "db:3306", "demo",
+		"root", "cafe-password", "db:3306", "cafekatu_db",
 	)
 	Db, err = sql.Open("mysql", dataSourceName)
 	if err != nil {
