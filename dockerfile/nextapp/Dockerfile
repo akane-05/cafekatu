@@ -10,7 +10,7 @@ COPY package.json ./package.json
 COPY package-lock.json ./package-lock.json
 
 COPY tsconfig.json ./tsconfig.json
-COPY next.config.json ./next.config.json
+COPY next.config.js ./next.config.js
 COPY next-env.d.ts ./next-env.d.ts
 
 COPY public/ ./public/
@@ -21,14 +21,18 @@ RUN npm ci
 
 FROM node:16-alpine as runner
 
-ENV NODE_ENV production
+#ENV NODE_ENV production
+#ENV NODE_ENV dev
 ENV NEXT_TELEMETRY_DISABLED 1
 
-COPY --from=builder /app/next.config.js next.config.js 
-COPY --from=builder /app/tsconfig.json tsconfig.json
-COPY --from=builder /app/public/ public/
-COPY --from=builder /app/src src/
-COPY --from=builder /app/node_modules/ node_modules/
+COPY --from=builder /nextapp/next.config.js next.config.js 
+COPY --from=builder /nextapp/tsconfig.json tsconfig.json
+COPY --from=builder /nextapp/public/ public/
+COPY --from=builder /nextapp/src src/
+COPY --from=builder /nextapp/node_modules/ node_modules/
+
+COPY --from=builder /nextapp/package.json package.json
+COPY --from=builder /nextapp/package-lock.json package-lock.json
 
 
 #RUN npm run build #JSファイルやCSSファイルをマージする、やる必要あるのか？

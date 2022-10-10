@@ -1,4 +1,4 @@
-import Header from './header'
+import Header from './Header'
 import { ReactElement } from 'react'
 import React from 'react'
 import styles from '../../styles/layout.module.css'
