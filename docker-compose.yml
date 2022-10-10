@@ -23,3 +23,15 @@ services:
       - "127.0.0.1:8080:8080"
     depends_on:
      - db
+  nextapp:
+    build:
+      context: ./nextapp
+      dockerfile: ../dockerfile/nextapp/Dockerfile
+    ports:
+      - "127.0.0.1:3000:3000"
+    tty: true
+    volumes:
+     - .nextapp:/app #ホスト:コンテナ
+    environment:
+     - WATCHPACK_POLLING=true
+    command: sh -c "npm run dev"
