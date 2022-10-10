@@ -4,11 +4,9 @@ services:
     image: go-api-server
     container_name: go-api-server
     build:
-      context: .
-      dockerfile:  ./dockerfile/goapi/Dockerfile
+      context: ./goapi
+      dockerfile: ../dockerfile/goapi/Dockerfile
     ports:
       - "127.0.0.1:8080:8080"
     #depends_on:
-     # - db     
-  
-
+    # - db
