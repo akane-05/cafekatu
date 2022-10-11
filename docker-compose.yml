@@ -20,8 +20,8 @@ services:
     build: 
         context: ./dockerfile/mysql
         dockerfile: ./Dockerfile
-    #volumes:
-    #  - ./db:/docker-entrypoint-initdb.d  #初期データ
+    volumes:
+      - ./dockerfile/mysql/db:/docker-entrypoint-initdb.d  #初期データ
     environment:
       MYSQL_ROOT_PASSWORD: cafe-password
       TZ: "UTC"
