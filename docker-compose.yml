@@ -23,7 +23,7 @@ services:
     volumes:
       - ./dockerfile/mysql/db:/docker-entrypoint-initdb.d  #初期データ
     environment:
-      MYSQL_ROOT_PASSWORD: cafepass
+      MYSQL_ROOT_PASSWORD: Qu849dzp
       MYSQL_DATABASE: cafekatu_db
       TZ: "UTC"
     ports:
