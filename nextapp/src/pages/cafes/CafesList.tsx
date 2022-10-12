@@ -43,7 +43,7 @@ export default function CafesList() {
 
   return (
     <CustomPaper>
-      {data.cafes.Count() == 0 ? (
+      {/* {data.cafes.Count() == 0 ? (
         <>
           検索条件に一致する店舗が存在しません
           <Button
@@ -58,7 +58,14 @@ export default function CafesList() {
         data.cafes.map((cafeInfo: CafeInfo) => {
           return <CafeCard key={cafeInfo.id} cafeInfo={cafeInfo} /> //keyを指定
         })
-      )}
+      )} */}
+
+{
+        data.cafes.map((cafeInfo: CafeInfo) => {
+          return <CafeCard key={cafeInfo.id} cafeInfo={cafeInfo} /> //keyを指定
+        })
+      }
+      
     </CustomPaper>
 
     // <CustomPaper>

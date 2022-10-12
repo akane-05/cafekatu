@@ -27,6 +27,8 @@ func NewCafesRepository() CafesRepository {
 func (tr *cafesRepository) GetCafes() (cafes []entity.CafeInfo, err error) {
 	cafes = []entity.CafeInfo{}
 
+	log.Println("リポジトリ")
+
 	//SQLを実行
 	rows, err := Db.
 		Query("SELECT id, name, prefecture_id FROM cafes ORDER BY id DESC")

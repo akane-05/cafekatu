@@ -17,7 +17,7 @@
     "ecmaFeatures": {
       "jsx": true
     },
-    "project": "./tsconfig.eslint.json"
+    "project": "./nextapp/tsconfig.eslint.json"
   },
   "plugins": ["react", "@typescript-eslint"],
   "extends": [

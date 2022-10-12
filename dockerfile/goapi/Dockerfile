@@ -17,5 +17,7 @@ FROM alpine:3.15
 COPY --from=builder /go/bin/goapi /goapi
 RUN chmod a+x /goapi
 
+RUN env
+
 EXPOSE 8080
 CMD ["/goapi"]
