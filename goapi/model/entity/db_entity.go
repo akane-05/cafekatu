@@ -1,10 +1,11 @@
 package entity
 
 import (
+	"github.com/akane-05/cafekatu/goapi/controller/dto"
 	"gorm.io/gorm"
 )
 
-type CafesEntity struct {
+type CafeEntity struct {
 	gorm.Model
 	Name          string
 	Zipcode       string
@@ -14,4 +15,15 @@ type CafesEntity struct {
 	BusinessHours string
 	Approved      int
 	Deleted       int
+}
+
+func ToEntity(cafeRequest dto.CafeRequest) CafeEntity {
+	return CafeEntity{
+		Name:          cafeRequest.Name,
+		Zipcode:       cafeRequest.Zipcode,
+		PrefectureId:  cafeRequest.PrefectureId,
+		City:          cafeRequest.City,
+		Street:        cafeRequest.Street,
+		BusinessHours: cafeRequest.BusinessHours,
+	}
 }

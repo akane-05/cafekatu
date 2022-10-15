@@ -12,7 +12,7 @@ type CafeInfo struct {
 	BusinessHours string
 	CreatedAt     string
 	UpdatedAt     string
-	Rating        int
+	Rating        float32
 }
 
 func (cafeInfo CafeInfo) ToDto() dto.CafeResponse {
@@ -26,5 +26,6 @@ func (cafeInfo CafeInfo) ToDto() dto.CafeResponse {
 		BusinessHours: cafeInfo.BusinessHours,
 		CreatedAt:     cafeInfo.CreatedAt,
 		UpdatedAt:     cafeInfo.UpdatedAt,
+		Rating:        cafeInfo.Rating,
 	}
 }

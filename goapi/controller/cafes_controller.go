@@ -9,6 +9,7 @@ import (
 	"strconv"
 
 	"github.com/akane-05/cafekatu/goapi/controller/dto"
+	"github.com/akane-05/cafekatu/goapi/model/entity"
 	"github.com/akane-05/cafekatu/goapi/model/repository"
 	"github.com/gorilla/mux"
 )
@@ -18,6 +19,7 @@ import (
 type CafesController interface {
 	GetCafes(w http.ResponseWriter, r *http.Request)
 	GetCafe(w http.ResponseWriter, r *http.Request)
+	PostCafe(w http.ResponseWriter, r *http.Request)
 }
 
 // 構造体の宣言
@@ -136,42 +138,39 @@ func (dc *cafesController) GetCafe(w http.ResponseWriter, r *http.Request) {
 // ポインタレシーバ(*demoController)にメソッドを追加
 func (dc *cafesController) PostCafe(w http.ResponseWriter, r *http.Request) {
 
-	// log.Println("PostCafe")
+	log.Println("PostCafe")
 
-	// w.Header().Set("Content-Type", "application/json")
-	// w.Header().Set("Access-Control-Allow-Origin", "*")
-	// w.Header().Set("Access-Control-Allow-Methods", "OPTIONS, POST, GET, PUT, DELETE")
-	// w.Header().Set("Access-Control-Allow-Headers", "Access-Control-Allow-Origin,Accept, Content-Type, Content-Length, Accept-Encoding, X-CSRF-Token, Authorization")
+	w.Header().Set("Content-Type", "application/json")
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+	w.Header().Set("Access-Control-Allow-Methods", "OPTIONS, POST, GET, PUT, DELETE")
+	w.Header().Set("Access-Control-Allow-Headers", "Access-Control-Allow-Origin,Accept, Content-Type, Content-Length, Accept-Encoding, X-CSRF-Token, Authorization")
 
-	// if r.Method == "OPTIONS" {
-	// 	log.Println("OPTIONS")
-	// 	w.WriteHeader(http.StatusOK)
-	// 	return
-	// }
+	if r.Method == "OPTIONS" {
+		log.Println("OPTIONS")
+		w.WriteHeader(http.StatusOK)
+		return
+	}
 
-	// var id int
-	// // パスパラメータの取得
-	// vars := mux.Vars(r)
-	// id, _ = strconv.Atoi(vars["id"])
+	body := make([]byte, r.ContentLength)
+	r.Body.Read(body)
+	var cafeRequest dto.CafeRequest
+	json.Unmarshal(body, &cafeRequest)
 
-	// //検索結果をDTOに取得
-	// // GetDemosメソッドにwhere句追加する
-	// searchResult, err := dc.dr.PostCafe(id)
-	// if err != nil {
-	// 	w.WriteHeader(500)
-	// 	return
-	// }
+	// DTOをTODOのEntityに変換
+	//cafe := entity.CafeEntity{Name: cafeRequest.Name, Zipcode: cafeRequest.Zipcode, PrefectureId: cafeRequest.PrefectureId, City: cafeRequest.City, Street: cafeRequest.Street, BusinessHours: cafeRequest.BusinessHours}
+	cafe := entity.ToEntity(cafeRequest)
 
-	// // 検索結果をDTOに取得
-	// cafeInfo := searchResult.ToDto()
+	// リポジトリの追加処理呼び出し
+	id, err := dc.dr.InsertCafe(cafe)
+	if err != nil {
+		w.WriteHeader(500)
+		return
+	}
 
-	// var buf bytes.Buffer
-	// enc := json.NewEncoder(&buf)
-	// if err := enc.Encode(&cafeInfo); err != nil {
-	// 	log.Fatal(err)
-	// }
-	// fmt.Fprint(w, buf.String())
+	// LocationにリソースのPATHを設定し、ステータスコード２０１を返却
+	w.Header().Set("Location", r.Host+r.URL.Path+strconv.Itoa(id))
+	w.WriteHeader(201)
 
-	// log.Println("フロントに返却")
+	log.Println("登録完了　フロントに返却")
 
 }
