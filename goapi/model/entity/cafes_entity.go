@@ -1,17 +1,6 @@
 package entity
 
-type CafeEntity struct {
-	Id            int
-	Name          string
-	PrefectureId  int
-	City          string
-	Street        string
-	BusinessHours string
-	Approved      int
-	Deleted       int
-	CreatedAt     string
-	UpdatedAt     string
-}
+import "github.com/akane-05/cafekatu/goapi/controller/dto"
 
 type CafeInfo struct {
 	Id            int
@@ -23,4 +12,17 @@ type CafeInfo struct {
 	CreatedAt     string
 	UpdatedAt     string
 	Rating        int
+}
+
+func (cafeInfo CafeInfo) ToDto() dto.CafeResponse {
+	return dto.CafeResponse{
+		Id:            cafeInfo.Id,
+		Name:          cafeInfo.Name,
+		PrefectureId:  cafeInfo.PrefectureId,
+		City:          cafeInfo.City,
+		Street:        cafeInfo.Street,
+		BusinessHours: cafeInfo.BusinessHours,
+		CreatedAt:     cafeInfo.CreatedAt,
+		UpdatedAt:     cafeInfo.UpdatedAt,
+	}
 }

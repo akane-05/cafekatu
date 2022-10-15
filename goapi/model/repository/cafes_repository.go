@@ -11,7 +11,8 @@ import (
 // インターフェースで実装すべきメソッドを決める
 type CafesRepository interface {
 	// GetCafes() (cafes []entity.CafeEntity, err error)
-	GetCafes() (cafes []entity.CafeInfo, err error)
+	GetCafes() (cafeInfos []entity.CafeInfo, err error)
+	GetCafe(id int) (cafeInfo entity.CafeInfo, err error)
 }
 
 // 構造体の宣言
@@ -24,31 +25,37 @@ func NewCafesRepository() CafesRepository {
 }
 
 // ポインタレシーバ(*demoRepository)にメソッドを追加
-func (tr *cafesRepository) GetCafes() (cafes []entity.CafeInfo, err error) {
-	cafes = []entity.CafeInfo{}
-
+func (tr *cafesRepository) GetCafes() (cafeInfos []entity.CafeInfo, err error) {
 	log.Println("リポジトリ")
 
-	//SQLを実行
-	rows, err := Db.
-		Query("SELECT id, name, prefecture_id FROM cafes ORDER BY id DESC")
+	//名前付き変数
+	// Db.Table("cafes").Select("cafes.id,cafes.name,cafes.prefecture_id,cafes.city,cafes.street,cafes.business_hours,cafes.created_at,cafes.updated_at,AVG(comments.rating").Joins("left join comments on cafes.id = comments.id").Group("cafes.id").Find(&cafeInfos)
+
+	Db.Table("cafes").Select("cafes.id,cafes.name,cafes.prefecture_id,cafes.city,cafes.street,cafes.business_hours,cafes.created_at,cafes.updated_at").Find(&cafeInfos)
+
 	if err != nil {
 		log.Print(err)
 		return
 	}
 
-	//検索結果にたいして処理を実行
-	for rows.Next() {
-		cafe := entity.CafeInfo{}
-		err = rows.Scan(&cafe.Id, &cafe.Name, &cafe.PrefectureId)
-		if err != nil {
-			log.Print(err)
-			return
-		}
+	//名前付き変数でreturn
+	return
+}
 
-		//[Golang]スライスに要素を追加する「append関数」
-		cafes = append(cafes, cafe)
+// ポインタレシーバ(*demoRepository)にメソッドを追加
+func (tr *cafesRepository) GetCafe(id int) (cafeInfo entity.CafeInfo, err error) {
+	log.Println("リポジトリ")
+
+	//名前付き変数
+	// Db.Table("cafes").Select("cafes.id,cafes.name,cafes.prefecture_id,cafes.city,cafes.street,cafes.business_hours,cafes.created_at,cafes.updated_at,AVG(comments.rating").Joins("left join comments on cafes.id = comments.id").Group("cafes.id").Find(&cafeInfos)
+
+	Db.Table("cafes").Where("id = ?", id).Select("cafes.id,cafes.name,cafes.prefecture_id,cafes.city,cafes.street,cafes.business_hours,cafes.created_at,cafes.updated_at").First(&cafeInfo)
+
+	if err != nil {
+		log.Print(err)
+		return
 	}
 
+	//名前付き変数でreturn
 	return
 }

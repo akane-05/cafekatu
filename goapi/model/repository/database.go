@@ -1,13 +1,16 @@
 package repository
 
 import (
-	"database/sql"
 	"fmt"
 	"log"
 	"os"
+	"time"
+
+	"gorm.io/driver/mysql"
+	"gorm.io/gorm"
 )
 
-var Db *sql.DB
+var Db *gorm.DB
 
 // initはパッケージの初期化に用いる
 // repositoryがimportされた時点で動作して、main.goよりも先に実行される
@@ -21,12 +24,25 @@ func init() {
 	protocol := os.Getenv("MYSQL_PROTOCOL")
 	database := os.Getenv("MYSQL_DATABASE")
 
+	var path string = fmt.Sprintf("%s:%s@tcp(%s)/%s?charset=utf8&parseTime=true", user, pass, protocol, database)
+	dialector := mysql.Open(path)
 	var err error
-	dataSourceName := fmt.Sprintf("%s:%s@tcp(%s)/%s?charset=utf8",
-		user, pass, protocol, database,
-	)
-	Db, err = sql.Open("mysql", dataSourceName)
-	if err != nil {
-		panic(err)
+	if Db, err = gorm.Open(dialector); err != nil {
+		connect(dialector, 100)
+	}
+	fmt.Println("db connected!!")
+}
+
+func connect(dialector gorm.Dialector, count uint) {
+	var err error
+	if Db, err = gorm.Open(dialector); err != nil {
+		if count > 1 {
+			time.Sleep(time.Second * 2)
+			count--
+			fmt.Printf("retry... count:%v\n", count)
+			connect(dialector, count)
+			return
+		}
+		panic(err.Error())
 	}
 }
