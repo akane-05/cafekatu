@@ -7,6 +7,7 @@ import (
 type CafesEntity struct {
 	gorm.Model
 	Name          string
+	Zipcode       string
 	PrefectureId  int
 	City          string
 	Street        string

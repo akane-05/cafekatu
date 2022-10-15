@@ -3,6 +3,7 @@ package dto
 type CafeResponse struct {
 	Id            int    `json:"id"`
 	Name          string `json:"name"`
+	Zipcode       string `json:"zipcode"`
 	PrefectureId  int    `json:"prefecture_id"`
 	City          string `json:"city"`
 	Street        string `json:"street"`
