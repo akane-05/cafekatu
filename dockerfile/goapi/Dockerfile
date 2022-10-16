@@ -3,9 +3,7 @@ FROM golang:1.18-alpine3.15 as builder
 ARG ROOT=/go/src/github.com/akane-05/cafekatu/goapi
 WORKDIR ${ROOT}
 
-COPY go.mod ./
-COPY go.sum ./
-COPY main.go ./
+COPY go.mod go.sum main.go ./
 COPY controller/ ./controller/
 COPY model/ ./model/
 RUN go mod download
