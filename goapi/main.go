@@ -18,9 +18,9 @@ func main() {
 	log.Println("main.go")
 	r := mux.NewRouter()
 
-	r.HandleFunc("/cafes", dc.GetCafes).Methods("GET")
-	r.HandleFunc("/cafes", dc.PostCafe).Methods("POST")
-	r.HandleFunc("/cafes/{id:[0-9]}", dc.GetCafe).Methods("GET")
+	r.HandleFunc("/cafes", dc.GetCafes).Methods("GET", "OPTIONS")
+	r.HandleFunc("/cafes", dc.PostCafe).Methods("POST", "OPTIONS")
+	r.HandleFunc("/cafes/{id:[0-9]}", dc.GetCafe).Methods("GET", "OPTIONS")
 
 	http.Handle("/", r)
 
