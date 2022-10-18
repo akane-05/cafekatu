@@ -1,29 +1,18 @@
 package entity
 
-import (
-	"github.com/akane-05/cafekatu/goapi/controller/dto"
-	"gorm.io/gorm"
-)
+import "time"
 
 type CafeEntity struct {
-	gorm.Model
-	Name          string
-	Zipcode       string
-	PrefectureId  int
-	City          string
-	Street        string
-	BusinessHours string
-	Approved      int
-	Deleted       int
-}
-
-func ToEntity(cafeRequest dto.CafeRequest) CafeEntity {
-	return CafeEntity{
-		Name:          cafeRequest.Name,
-		Zipcode:       cafeRequest.Zipcode,
-		PrefectureId:  cafeRequest.PrefectureId,
-		City:          cafeRequest.City,
-		Street:        cafeRequest.Street,
-		BusinessHours: cafeRequest.BusinessHours,
-	}
+	Id            int       `json:"id"`
+	Name          string    `json:"name"`
+	Zipcode       string    `json:"zipcode"`
+	PrefectureId  int       `json:"prefecture_id"`
+	City          string    `json:"city"`
+	Street        string    `json:"street"`
+	BusinessHours string    `json:"business_hours"`
+	Approved      int       `json:"approved"`
+	Deleted       int       `json:"deleted"`
+	CreatedAt     time.Time `json:"created_at"`
+	UpdatedAt     time.Time `json:"updated_at"`
+	DeletedAt     time.Time `json:"deleted_at"`
 }

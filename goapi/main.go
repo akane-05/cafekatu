@@ -2,11 +2,10 @@ package main
 
 import (
 	"log"
-	"net/http"
 
 	"github.com/akane-05/cafekatu/goapi/controller"
 	"github.com/akane-05/cafekatu/goapi/model/repository"
-	"github.com/gorilla/mux"
+	"github.com/gin-gonic/gin"
 )
 
 // DIを行う
@@ -16,16 +15,18 @@ var dc = controller.NewCafesController(dr)
 func main() {
 
 	log.Println("main.go")
-	r := mux.NewRouter()
 
-	r.HandleFunc("/cafes", dc.GetCafes).Methods("GET", "OPTIONS")
-	r.HandleFunc("/cafes", dc.PostCafe).Methods("POST", "OPTIONS")
-	r.HandleFunc("/cafes/{id:[0-9]}", dc.GetCafe).Methods("GET", "OPTIONS")
+	router := GetRouter()
+	router.Run(":8080")
 
-	http.Handle("/", r)
+}
 
-	if err := http.ListenAndServe(":8080", nil); err != nil {
-		log.Fatal("ListenAndServe:", err)
-	}
+func GetRouter() *gin.Engine {
+	log.Println("GetRouter")
 
+	r := gin.Default()
+	r.GET("/cafes", dc.GetCafes)
+	r.GET("/cafes/:id", dc.GetCafe)
+	r.POST("/cafes", dc.PostCafe)
+	return r
 }
