@@ -6,27 +6,26 @@ import (
 
 	"github.com/akane-05/cafekatu/goapi/controller"
 	"github.com/akane-05/cafekatu/goapi/model/repository"
+	"github.com/gorilla/mux"
 )
 
 // DIを行う
 var dr = repository.NewCafesRepository()
 var dc = controller.NewCafesController(dr)
-var ro = controller.NewCafesRouter(dc)
 
 func main() {
 
 	log.Println("main.go")
-	mux := http.NewServeMux()
+	r := mux.NewRouter()
 
-	// URLに対応する処理を登録
-	// mux.HandleFunc("/test", test)
-	mux.HandleFunc("/cafes", ro.HandleCafesRequest)
+	r.HandleFunc("/cafes", dc.GetCafes).Methods("GET", "OPTIONS")
+	r.HandleFunc("/cafes", dc.PostCafe).Methods("POST", "OPTIONS")
+	r.HandleFunc("/cafes/{id:[0-9]}", dc.GetCafe).Methods("GET", "OPTIONS")
 
-	server := http.Server{
-		Addr: ":8080",
-		// 作成したマルチプレクサを指定
-		Handler: mux,
+	http.Handle("/", r)
+
+	if err := http.ListenAndServe(":8080", nil); err != nil {
+		log.Fatal("ListenAndServe:", err)
 	}
-	server.ListenAndServe()
 
 }

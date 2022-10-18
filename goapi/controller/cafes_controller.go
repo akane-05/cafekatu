@@ -6,10 +6,12 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"strconv"
 
 	"github.com/akane-05/cafekatu/goapi/controller/dto"
 	"github.com/akane-05/cafekatu/goapi/model/entity"
 	"github.com/akane-05/cafekatu/goapi/model/repository"
+	"github.com/gorilla/mux"
 )
 
 // DIを用いたコントローラーの実装
@@ -17,6 +19,7 @@ import (
 type CafesController interface {
 	GetCafes(w http.ResponseWriter, r *http.Request)
 	GetCafe(w http.ResponseWriter, r *http.Request)
+	PostCafe(w http.ResponseWriter, r *http.Request)
 }
 
 // 構造体の宣言
@@ -34,8 +37,19 @@ func (dc *cafesController) GetCafes(w http.ResponseWriter, r *http.Request) {
 
 	log.Println("GetCafes")
 
-	// // クエリパラメータ取得
-	// query := r.URL.Query()
+	w.Header().Set("Content-Type", "application/json")
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+	w.Header().Set("Access-Control-Allow-Methods", "OPTIONS, POST, GET, PUT, DELETE")
+	w.Header().Set("Access-Control-Allow-Headers", "Access-Control-Allow-Origin,Accept, Content-Type, Content-Length, Accept-Encoding, X-CSRF-Token, Authorization")
+
+	if r.Method == "OPTIONS" {
+		log.Println("OPTIONS")
+		w.WriteHeader(http.StatusOK)
+		return
+	}
+
+	// クエリパラメータ取得
+	//query := r.URL.Query()
 
 	//&バリデーションチェック ページとかのクエリー
 	//keyがなかった場合エラーを返す、あとでメソッド追加
@@ -51,32 +65,21 @@ func (dc *cafesController) GetCafes(w http.ResponseWriter, r *http.Request) {
 	// 	return
 	// }
 
-	// DBに接続できないので一旦コメントアウト、手書きでデータ入寮
 	// GetDemosメソッドにwhere句追加する
-	cafesSearchResult, err := dc.dr.GetCafes()
+	searchResult, err := dc.dr.GetCafes()
 	if err != nil {
 		w.WriteHeader(500)
 		return
 	}
 
-	// cafesSearchResult := []entity.CafeInfo{
-	// 	{1, "お菓子の家", 1, "中央区", "銀座", "11時から15時まで", "2022-09-26", "2022-09-26", 3},
-	// 	{2, "coffee shop", 1, "新宿区", "歌舞伎町", "8時から12時まで", "2022-09-26", "2022-09-26", 3},
-	// }
-
-	log.Println("データ作成")
-	// log.Println(cafesSearchResult[0].Id)
-
 	// 検索結果をDTOに取得
 	var cafes []dto.CafeResponse
-	for _, v := range cafesSearchResult {
-		cafes = append(cafes, dto.CafeResponse{Id: v.Id, Name: v.Name, PrefectureId: v.PrefectureId, City: v.City, Street: v.Street, Business_hours: v.BusinessHours, CreatedAt: v.CreatedAt, UpdatedAt: v.UpdatedAt, Rating: v.Rating})
+	for _, v := range searchResult {
+		cafes = append(cafes, v.ToDto())
 	}
 
 	var cafesResponse dto.CafesResponse
 	cafesResponse.Cafes = cafes
-
-	log.Println(cafesResponse.Cafes[0].Id)
 
 	var buf bytes.Buffer
 	enc := json.NewEncoder(&buf)
@@ -94,28 +97,80 @@ func (dc *cafesController) GetCafe(w http.ResponseWriter, r *http.Request) {
 
 	log.Println("GetCafe")
 
-	//DBに接続できないので一旦コメントアウト、手書きでデータ入寮
-	//GetDemosメソッドにwhere句追加する
-	// demos, err := dc.dr.GetCefes()
-	// if err != nil {
-	// 	w.WriteHeader(500)
-	// 	return
-	// }
+	w.Header().Set("Content-Type", "application/json")
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+	w.Header().Set("Access-Control-Allow-Methods", "OPTIONS, POST, GET, PUT, DELETE")
+	w.Header().Set("Access-Control-Allow-Headers", "Access-Control-Allow-Origin,Accept, Content-Type, Content-Length, Accept-Encoding, X-CSRF-Token, Authorization")
 
-	cafe := entity.CafeInfo{1, "お菓子の家", 1, "中央区", "銀座", "11時から15時まで", "2022-09-26", "2022-09-26", 3}
+	if r.Method == "OPTIONS" {
+		log.Println("OPTIONS")
+		w.WriteHeader(http.StatusOK)
+		return
+	}
 
-	log.Println("データ作成")
+	var id int
+	// パスパラメータの取得
+	vars := mux.Vars(r)
+	id, _ = strconv.Atoi(vars["id"])
 
 	//検索結果をDTOに取得
-	cafeResponse := dto.CafeResponse{Id: cafe.Id, Name: cafe.Name, PrefectureId: cafe.PrefectureId, City: cafe.City, Street: cafe.Street, Business_hours: cafe.BusinessHours, CreatedAt: cafe.CreatedAt, UpdatedAt: cafe.UpdatedAt, Rating: cafe.Rating}
+	// GetDemosメソッドにwhere句追加する
+	searchResult, err := dc.dr.GetCafe(id)
+	if err != nil {
+		w.WriteHeader(500)
+		return
+	}
+
+	// 検索結果をDTOに取得
+	cafeInfo := searchResult.ToDto()
 
 	var buf bytes.Buffer
 	enc := json.NewEncoder(&buf)
-	if err := enc.Encode(&cafeResponse); err != nil {
+	if err := enc.Encode(&cafeInfo); err != nil {
 		log.Fatal(err)
 	}
 	fmt.Fprint(w, buf.String())
 
 	log.Println("フロントに返却")
+
+}
+
+// ポインタレシーバ(*demoController)にメソッドを追加
+func (dc *cafesController) PostCafe(w http.ResponseWriter, r *http.Request) {
+
+	log.Println("PostCafe")
+
+	w.Header().Set("Content-Type", "application/json")
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+	w.Header().Set("Access-Control-Allow-Methods", "OPTIONS, POST, GET, PUT, DELETE")
+	w.Header().Set("Access-Control-Allow-Headers", "Access-Control-Allow-Origin,Accept, Content-Type, Content-Length, Accept-Encoding, X-CSRF-Token, Authorization")
+
+	if r.Method == "OPTIONS" {
+		log.Println("OPTIONS")
+		w.WriteHeader(http.StatusOK)
+		return
+	}
+
+	body := make([]byte, r.ContentLength)
+	r.Body.Read(body)
+	var cafeRequest dto.CafeRequest
+	json.Unmarshal(body, &cafeRequest)
+
+	// DTOをTODOのEntityに変換
+	//cafe := entity.CafeEntity{Name: cafeRequest.Name, Zipcode: cafeRequest.Zipcode, PrefectureId: cafeRequest.PrefectureId, City: cafeRequest.City, Street: cafeRequest.Street, BusinessHours: cafeRequest.BusinessHours}
+	cafe := entity.ToEntity(cafeRequest)
+
+	// リポジトリの追加処理呼び出し
+	id, err := dc.dr.InsertCafe(cafe)
+	if err != nil {
+		w.WriteHeader(500)
+		return
+	}
+
+	// LocationにリソースのPATHを設定し、ステータスコード２０１を返却
+	w.Header().Set("Location", r.Host+r.URL.Path+strconv.Itoa(id))
+	w.WriteHeader(201)
+
+	log.Println("登録完了　フロントに返却")
 
 }
