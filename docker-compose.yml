@@ -10,7 +10,8 @@ services:
       - "127.0.0.1:3000:3000"
     tty: true
     volumes:
-     - .:/nextapp #ホスト:コンテナ
+     - ./nextapp:/nextapp #ホスト:コンテナ
+     - /nextapp/node_modules
     environment:
      - WATCHPACK_POLLING=true
     command: sh -c "npm run dev"
