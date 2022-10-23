@@ -60,12 +60,9 @@ export default function CafesList() {
         })
       )} */}
 
-{
-        data.cafes.map((cafeInfo: CafeInfo) => {
-          return <CafeCard key={cafeInfo.id} cafeInfo={cafeInfo} /> //keyを指定
-        })
-      }
-      
+      {data.data.map((cafeInfo: CafeInfo) => {
+        return <CafeCard key={cafeInfo.id} cafeInfo={cafeInfo} /> //keyを指定
+      })}
     </CustomPaper>
 
     // <CustomPaper>

@@ -4,12 +4,12 @@ import "time"
 
 type CafeEntity struct {
 	Id            int       `json:"id"`
-	Name          string    `json:"name"`
-	Zipcode       string    `json:"zipcode"`
-	PrefectureId  int       `json:"prefecture_id"`
-	City          string    `json:"city"`
-	Street        string    `json:"street"`
-	BusinessHours string    `json:"business_hours"`
+	Name          string    `json:"name"  binding:"required"`
+	Zipcode       string    `json:"zipcode"  binding:"required"`
+	PrefectureId  int       `json:"prefecture_id"  binding:"required"`
+	City          string    `json:"city"  binding:"required"`
+	Street        string    `json:"street"  binding:"required"`
+	BusinessHours string    `json:"business_hours"  binding:"required"`
 	Approved      int       `json:"approved"`
 	Deleted       int       `json:"deleted"`
 	CreatedAt     time.Time `json:"created_at"`

@@ -1,7 +1,6 @@
 package controller
 
 import (
-	"fmt"
 	"log"
 	"net/http"
 	"strconv"
@@ -32,13 +31,24 @@ func NewCafesController(dr repository.CafesRepository) CafesController {
 // ポインタレシーバ(*demoController)にメソッドを追加
 func (dc *cafesController) GetCafes(c *gin.Context) {
 
+	var query repository.CafeQuery
+
 	log.Println("GetCafes")
+	if err := c.BindQuery(&query); err != nil {
+		log.Println("クエリパラメータに不正な値が含まれています。")
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error": "クエリパラメータに不正な値が含まれています。",
+		})
+		return
+	}
 
 	// GetDemosメソッドにwhere句追加する
-	cafes, err := dc.dr.GetCafes()
+	cafes, err := dc.dr.GetCafes(&query)
 	if err != nil {
-		fmt.Println(err)
-		// c.JSON(http.StatusVariantAlsoNegotiates)
+		log.Println(err.Error())
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"error": "サーバーでエラーが発生しました。",
+		})
 		return
 	}
 
@@ -55,15 +65,24 @@ func (dc *cafesController) GetCafe(c *gin.Context) {
 
 	log.Println("GetCafe")
 
-	// var id int
 	// パスパラメータの取得、数字じゃなかったらどうするのか確認
-	id, _ := strconv.Atoi(c.Param("id"))
+	id, err := strconv.Atoi(c.Param("id"))
+	if err != nil {
+		log.Println(err)
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error": "idが不正な値です。数値を入力してください。",
+		})
+		return
+	}
 
 	//検索結果をDTOに取得
 	// GetDemosメソッドにwhere句追加する
-	cafe, err := dc.dr.GetCafe(id)
+	cafe, err := dc.dr.GetCafe(&id)
 	if err != nil {
-		fmt.Println(err)
+		log.Println(err.Error())
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"error": "サーバーでエラーが発生しました。",
+		})
 		return
 	}
 
@@ -83,12 +102,24 @@ func (dc *cafesController) PostCafe(c *gin.Context) {
 	log.Println("PostCafe")
 
 	cafe := entity.CafeEntity{}
-	c.BindJSON(&cafe)
-	if err := dc.dr.InsertCafe(cafe); err != nil {
-		fmt.Println(err)
+	if err := c.BindJSON(&cafe); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error": "リクエストに不正な値が含まれています。",
+		})
+		return
 	}
-	c.JSON(http.StatusOK, cafe)
+
+	if err := dc.dr.InsertCafe(&cafe); err != nil {
+		log.Println(err)
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"error": "サーバーでエラーが発生しました。",
+		})
+		return
+	}
 
 	log.Println("登録完了　フロントに返却")
+	c.JSON(http.StatusOK, gin.H{
+		"message": "登録処理が完了しました。管理人が確認するまでお待ちください。",
+	})
 
 }

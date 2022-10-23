@@ -30,7 +30,7 @@ func init() {
 	if Db, err = gorm.Open(dialector); err != nil {
 		connect(dialector, 100)
 	}
-	fmt.Println("db connected!!")
+	log.Println("db connected!!")
 }
 
 func connect(dialector gorm.Dialector, count uint) {
@@ -39,7 +39,7 @@ func connect(dialector gorm.Dialector, count uint) {
 		if count > 1 {
 			time.Sleep(time.Second * 2)
 			count--
-			fmt.Printf("retry... count:%v\n", count)
+			log.Printf("retry... count:%v\n", count)
 			connect(dialector, count)
 			return
 		}
