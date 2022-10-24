@@ -14,6 +14,8 @@ type CafesRepository interface {
 	GetCafes(cafeQuery *CafeQuery) (cafeInfos []CafeInfo, err error)
 	GetCafe(id *int) (cafeInfo CafeInfo, err error)
 	InsertCafe(cafe *entity.CafeEntity) (err error)
+	InsertFavorite(favo *entity.FavoriteEntity) (err error)
+	DeleteFavorite(favo *entity.FavoriteEntity) (err error)
 }
 
 // 構造体の宣言
@@ -90,6 +92,46 @@ func (tr *cafesRepository) InsertCafe(cafe *entity.CafeEntity) (err error) {
 	if err = Db.Transaction(func(tx *gorm.DB) error {
 		// データベース操作をトランザクション内で行う
 		if err = tx.Create(&cafe).Error; err != nil {
+			// エラーを返した場合はロールバックされる
+			return err
+		}
+		// nil を返すとコミットされる
+		return nil
+	}); err != nil {
+		return
+	}
+
+	log.Println("トランザクションが正常に終了しました")
+	return
+
+}
+
+func (tr *cafesRepository) InsertFavorite(favo *entity.FavoriteEntity) (err error) {
+	log.Println("リポジトリ InsertFavorite")
+
+	if err = Db.Transaction(func(tx *gorm.DB) error {
+		// データベース操作をトランザクション内で行う
+		if err = tx.Create(&favo).Error; err != nil {
+			// エラーを返した場合はロールバックされる
+			return err
+		}
+		// nil を返すとコミットされる
+		return nil
+	}); err != nil {
+		return
+	}
+
+	log.Println("トランザクションが正常に終了しました")
+	return
+
+}
+
+func (tr *cafesRepository) DeleteFavorite(favo *entity.FavoriteEntity) (err error) {
+	log.Println("リポジトリ DeleteFavorite")
+
+	if err = Db.Transaction(func(tx *gorm.DB) error {
+		// データベース操作をトランザクション内で行う
+		if err = tx.Unscoped().Delete(&favo).Error; err != nil {
 			// エラーを返した場合はロールバックされる
 			return err
 		}

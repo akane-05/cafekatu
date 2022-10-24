@@ -11,8 +11,17 @@ import (
 )
 
 // DIを行う
-var dr = repository.NewCafesRepository()
-var dc = controller.NewCafesController(dr)
+var cafesR = repository.NewCafesRepository()
+var cafesC = controller.NewCafesController(cafesR)
+
+var usersR = repository.NewUsersRepository()
+var usersC = controller.NewUsersController(usersR)
+
+var reviewsR = repository.NewReviewsRepository()
+var reviewsC = controller.NewReviewsController(reviewsR)
+
+var loginR = repository.NewLoginRepository()
+var loginC = controller.NewLoginController(loginR)
 
 func main() {
 
@@ -58,8 +67,26 @@ func GetRouter() *gin.Engine {
 		MaxAge: 24 * time.Hour,
 	}))
 
-	r.GET("/cafes", dc.GetCafes)
-	r.GET("/cafes/:id", dc.GetCafe)
-	r.POST("/cafes", dc.PostCafe)
+	r.GET("/login", loginC.Login)
+
+	r.GET("/cafes", cafesC.GetCafes)
+	r.GET("/cafes/:id", cafesC.GetCafe)
+	r.POST("/cafes", cafesC.PostCafe)
+	r.POST("/cafes/:id/favorite", cafesC.PostFavorite)
+	r.PATCH("/cafes/:id/favorite", cafesC.PostFavorite)
+
+	r.POST("/users", usersC.PostUser)
+	r.GET("/users/:id", usersC.GetUser)
+	r.PATCH("/users/:id", usersC.PatchUser)
+	r.DELETE("/users/:id", usersC.DeleteUser)
+
+	r.GET("/reviews", reviewsC.GetReviews)
+	r.POST("/reviews", reviewsC.PostReview)
+	r.DELETE("/reviews/:id", reviewsC.DeleteReview)
+
+	r.NoRoute(func(c *gin.Context) {
+		c.JSON(404, gin.H{"code": "PAGE_NOT_FOUND", "message": "Page not found"})
+	})
+
 	return r
 }
