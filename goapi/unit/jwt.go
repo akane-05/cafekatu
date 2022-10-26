@@ -4,6 +4,7 @@ import (
 	"errors"
 	"log"
 	"net/http"
+	"os"
 	"strconv"
 	"strings"
 	"time"
@@ -32,7 +33,8 @@ func CreateToken(jwtInfo *JwtInfo) (tokenString string) {
 	log.Printf("Claims: %#v\n", token.Claims)
 
 	// トークンに署名を付与
-	tokenString, _ = token.SignedString([]byte("SECRET_KEY"))
+	secret := os.Getenv("SECRET_KEY")
+	tokenString, _ = token.SignedString([]byte(secret))
 
 	return
 }
@@ -107,11 +109,13 @@ func extractBearerToken(header string) (string, error) {
 }
 
 func parseToken(jwtToken string) (*jwt.Token, error) {
+	secret := os.Getenv("SECRET_KEY")
+
 	token, err := jwt.Parse(jwtToken, func(token *jwt.Token) (interface{}, error) {
 		if _, OK := token.Method.(*jwt.SigningMethodHMAC); !OK {
 			return nil, errors.New("bad signed method received")
 		}
-		return []byte("SECRET_KEY"), nil
+		return []byte(secret), nil
 	})
 
 	if err != nil {
