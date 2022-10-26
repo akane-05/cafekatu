@@ -4,6 +4,7 @@ ARG ROOT=/go/src/github.com/akane-05/cafekatu/goapi
 WORKDIR ${ROOT}
 
 COPY go.mod go.sum main.go ./
+COPY main_test.go ./
 COPY controller/ ./controller/
 COPY model/ ./model/
 COPY unit/ ./unit/
