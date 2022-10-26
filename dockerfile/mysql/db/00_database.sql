@@ -28,7 +28,7 @@ CREATE TABLE IF NOT EXISTS users (
     id             INT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
     email          VARCHAR(255) NOT NULL,
     password_digest    VARCHAR(20) NOT NULL,
-    nickname        VARCHAR(20) NOT NULL,   
+    nickname        VARCHAR(20) NOT NULL,
     created_at      TIMESTAMP NOT NULL DEFAULT current_timestamp ON UPDATE current_timestamp,
     updated_at     TIMESTAMP NOT NULL DEFAULT current_timestamp ON UPDATE current_timestamp
 ) ENGINE = InnoDB;
@@ -104,9 +104,19 @@ INSERT INTO prefectures(prefecture) VALUES('鹿児島県');
 INSERT INTO prefectures(prefecture) VALUES('沖縄県');
 
 
-INSERT INTO cafes (name, zipcode,prefecture_id,city,street,business_hours) VALUES ('お菓子の家', '1111111',1,'中央区','銀座','11時から15時まで');
-INSERT INTO cafes (name, zipcode,prefecture_id,city,street,business_hours) VALUES ('coffee shop', '1111111',1,'新宿区','歌舞伎町','8時から12時まで');
-INSERT INTO cafes (name, zipcode,prefecture_id,city,street,business_hours) VALUES ('お菓子の家', '1111111',1,'渋谷区','渋谷','毎週土曜日定休日');
+INSERT INTO cafes (name, zipcode,prefecture_id,city,street,business_hours,approved) VALUES ('お菓子の家', '1111111',1,'中央区','銀座','11時から15時まで',1);
+INSERT INTO cafes (name, zipcode,prefecture_id,city,street,business_hours,approved) VALUES ('coffee shop', '1111111',1,'新宿区','歌舞伎町','8時から12時まで',1);
+INSERT INTO cafes (name, zipcode,prefecture_id,city,street,business_hours,approved) VALUES ('お菓子の家', '1111111',1,'渋谷区','渋谷','毎週土曜日定休日',1);
+INSERT INTO cafes (name, zipcode,prefecture_id,city,street,business_hours,approved) VALUES ('お菓子の家', '1111111',1,'中央区','銀座','11時から15時まで',1);
+INSERT INTO cafes (name, zipcode,prefecture_id,city,street,business_hours,approved) VALUES ('coffee shop', '1111111',1,'新宿区','歌舞伎町','8時から12時まで',1);
+INSERT INTO cafes (name, zipcode,prefecture_id,city,street,business_hours,approved) VALUES ('お菓子の家', '1111111',1,'渋谷区','渋谷','毎週土曜日定休日',1);
+INSERT INTO cafes (name, zipcode,prefecture_id,city,street,business_hours,approved) VALUES ('お菓子の家', '1111111',1,'中央区','銀座','11時から15時まで',1);
+INSERT INTO cafes (name, zipcode,prefecture_id,city,street,business_hours,approved) VALUES ('coffee shop', '1111111',1,'新宿区','歌舞伎町','8時から12時まで',1);
+INSERT INTO cafes (name, zipcode,prefecture_id,city,street,business_hours,approved) VALUES ('お菓子の家', '1111111',1,'渋谷区','渋谷','毎週土曜日定休日',1);
+INSERT INTO cafes (name, zipcode,prefecture_id,city,street,business_hours,approved) VALUES ('お菓子の家', '1111111',1,'中央区','銀座','11時から15時まで',1);
+INSERT INTO cafes (name, zipcode,prefecture_id,city,street,business_hours,approved) VALUES ('coffee shop', '1111111',1,'新宿区','歌舞伎町','8時から12時まで',1);
+INSERT INTO cafes (name, zipcode,prefecture_id,city,street,business_hours,approved) VALUES ('お菓子の家', '1111111',1,'渋谷区','渋谷','毎週土曜日定休日',1);
+
 
 INSERT INTO users (email, password_digest,nickname) VALUES ('sample1@email.com', 'djeiv53','ユーザー1');
 INSERT INTO users (email, password_digest,nickname) VALUES ('sample2@email.com', 'djeiv53','ユーザー2');

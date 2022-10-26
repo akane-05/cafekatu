@@ -1,25 +1,23 @@
 package controller
 
 import (
-	"bytes"
-	"encoding/json"
-	"fmt"
 	"log"
 	"net/http"
 	"strconv"
 
-	"github.com/akane-05/cafekatu/goapi/controller/dto"
 	"github.com/akane-05/cafekatu/goapi/model/entity"
 	"github.com/akane-05/cafekatu/goapi/model/repository"
-	"github.com/gorilla/mux"
+	"github.com/gin-gonic/gin"
 )
 
 // DIを用いたコントローラーの実装
 // インターフェースで実装すべきメソッドを決める
 type CafesController interface {
-	GetCafes(w http.ResponseWriter, r *http.Request)
-	GetCafe(w http.ResponseWriter, r *http.Request)
-	PostCafe(w http.ResponseWriter, r *http.Request)
+	GetCafes(c *gin.Context)
+	GetCafe(c *gin.Context)
+	PostCafe(c *gin.Context)
+	PostFavorite(c *gin.Context)
+	DeleteFavorite(c *gin.Context)
 }
 
 // 構造体の宣言
@@ -33,144 +31,182 @@ func NewCafesController(dr repository.CafesRepository) CafesController {
 }
 
 // ポインタレシーバ(*demoController)にメソッドを追加
-func (dc *cafesController) GetCafes(w http.ResponseWriter, r *http.Request) {
+func (dc *cafesController) GetCafes(c *gin.Context) {
+
+	var query repository.CafeQuery
 
 	log.Println("GetCafes")
-
-	w.Header().Set("Content-Type", "application/json")
-	w.Header().Set("Access-Control-Allow-Origin", "*")
-	w.Header().Set("Access-Control-Allow-Methods", "OPTIONS, POST, GET, PUT, DELETE")
-	w.Header().Set("Access-Control-Allow-Headers", "Access-Control-Allow-Origin,Accept, Content-Type, Content-Length, Accept-Encoding, X-CSRF-Token, Authorization")
-
-	if r.Method == "OPTIONS" {
-		log.Println("OPTIONS")
-		w.WriteHeader(http.StatusOK)
+	if err := c.BindQuery(&query); err != nil {
+		log.Println("クエリパラメータに不正な値が含まれています。")
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error": "クエリパラメータに不正な値が含まれています。",
+		})
 		return
 	}
-
-	// クエリパラメータ取得
-	//query := r.URL.Query()
-
-	//&バリデーションチェック ページとかのクエリー
-	//keyがなかった場合エラーを返す、あとでメソッド追加
-	// if len(key) == 0 {
-	// 	w.WriteHeader(http.StatusBadRequest)
-	// 	w.Write(createRespqnsJson(&apiRequestResponse{Code: 2002, Message: "key paramater not found."}))
-	// 	return
-	// }
-
-	// id, _ := strconv.Atoi(r.URL.Query().Get("id"))
-	// if id != nil {
-	// 	w.WriteHeader(500)
-	// 	return
-	// }
 
 	// GetDemosメソッドにwhere句追加する
-	searchResult, err := dc.dr.GetCafes()
+	cafes, err := dc.dr.GetCafes(&query)
 	if err != nil {
-		w.WriteHeader(500)
+		log.Println(err.Error())
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"error": "サーバーでエラーが発生しました。",
+		})
 		return
 	}
 
-	// 検索結果をDTOに取得
-	var cafes []dto.CafeResponse
-	for _, v := range searchResult {
-		cafes = append(cafes, v.ToDto())
-	}
-
-	var cafesResponse dto.CafesResponse
-	cafesResponse.Cafes = cafes
-
-	var buf bytes.Buffer
-	enc := json.NewEncoder(&buf)
-	if err := enc.Encode(&cafesResponse); err != nil {
-		log.Fatal(err)
-	}
-	fmt.Fprint(w, buf.String())
-
 	log.Println("フロントに返却")
+	c.JSON(http.StatusOK, gin.H{
+		"message": "ok",
+		"data":    cafes,
+	})
 
 }
 
 // ポインタレシーバ(*demoController)にメソッドを追加
-func (dc *cafesController) GetCafe(w http.ResponseWriter, r *http.Request) {
+func (dc *cafesController) GetCafe(c *gin.Context) {
 
 	log.Println("GetCafe")
 
-	w.Header().Set("Content-Type", "application/json")
-	w.Header().Set("Access-Control-Allow-Origin", "*")
-	w.Header().Set("Access-Control-Allow-Methods", "OPTIONS, POST, GET, PUT, DELETE")
-	w.Header().Set("Access-Control-Allow-Headers", "Access-Control-Allow-Origin,Accept, Content-Type, Content-Length, Accept-Encoding, X-CSRF-Token, Authorization")
-
-	if r.Method == "OPTIONS" {
-		log.Println("OPTIONS")
-		w.WriteHeader(http.StatusOK)
-		return
-	}
-
-	var id int
-	// パスパラメータの取得
-	vars := mux.Vars(r)
-	id, _ = strconv.Atoi(vars["id"])
-
-	//検索結果をDTOに取得
-	// GetDemosメソッドにwhere句追加する
-	searchResult, err := dc.dr.GetCafe(id)
+	// パスパラメータの取得、数字じゃなかったらどうするのか確認
+	id, err := strconv.Atoi(c.Param("id"))
 	if err != nil {
-		w.WriteHeader(500)
+		log.Println(err)
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error": "idが不正な値です。数値を入力してください。",
+		})
 		return
 	}
 
-	// 検索結果をDTOに取得
-	cafeInfo := searchResult.ToDto()
-
-	var buf bytes.Buffer
-	enc := json.NewEncoder(&buf)
-	if err := enc.Encode(&cafeInfo); err != nil {
-		log.Fatal(err)
+	// GetDemosメソッドにwhere句追加する
+	cafe, err := dc.dr.GetCafe(&id)
+	if err != nil {
+		log.Println(err.Error())
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"error": "サーバーでエラーが発生しました。",
+		})
+		return
 	}
-	fmt.Fprint(w, buf.String())
+
+	log.Println("フロントに返却")
+	c.JSON(http.StatusOK, gin.H{
+		"message": "ok",
+		"data":    cafe,
+	})
 
 	log.Println("フロントに返却")
 
 }
 
 // ポインタレシーバ(*demoController)にメソッドを追加
-func (dc *cafesController) PostCafe(w http.ResponseWriter, r *http.Request) {
+func (dc *cafesController) PostCafe(c *gin.Context) {
 
 	log.Println("PostCafe")
 
-	w.Header().Set("Content-Type", "application/json")
-	w.Header().Set("Access-Control-Allow-Origin", "*")
-	w.Header().Set("Access-Control-Allow-Methods", "OPTIONS, POST, GET, PUT, DELETE")
-	w.Header().Set("Access-Control-Allow-Headers", "Access-Control-Allow-Origin,Accept, Content-Type, Content-Length, Accept-Encoding, X-CSRF-Token, Authorization")
-
-	if r.Method == "OPTIONS" {
-		log.Println("OPTIONS")
-		w.WriteHeader(http.StatusOK)
+	cafe := entity.CafeEntity{}
+	if err := c.BindJSON(&cafe); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error": "リクエストに不正な値が含まれています。",
+		})
 		return
 	}
 
-	body := make([]byte, r.ContentLength)
-	r.Body.Read(body)
-	var cafeRequest dto.CafeRequest
-	json.Unmarshal(body, &cafeRequest)
-
-	// DTOをTODOのEntityに変換
-	//cafe := entity.CafeEntity{Name: cafeRequest.Name, Zipcode: cafeRequest.Zipcode, PrefectureId: cafeRequest.PrefectureId, City: cafeRequest.City, Street: cafeRequest.Street, BusinessHours: cafeRequest.BusinessHours}
-	cafe := entity.ToEntity(cafeRequest)
-
-	// リポジトリの追加処理呼び出し
-	id, err := dc.dr.InsertCafe(cafe)
-	if err != nil {
-		w.WriteHeader(500)
+	if err := dc.dr.InsertCafe(&cafe); err != nil {
+		log.Println(err)
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"error": "サーバーでエラーが発生しました。",
+		})
 		return
 	}
-
-	// LocationにリソースのPATHを設定し、ステータスコード２０１を返却
-	w.Header().Set("Location", r.Host+r.URL.Path+strconv.Itoa(id))
-	w.WriteHeader(201)
 
 	log.Println("登録完了　フロントに返却")
+	c.JSON(http.StatusOK, gin.H{
+		"message": "登録処理が完了しました。管理人が確認するまでお待ちください。",
+	})
+
+}
+
+// ポインタレシーバ(*demoController)にメソッドを追加
+func (dc *cafesController) PostFavorite(c *gin.Context) {
+
+	log.Println("PostFavorite")
+
+	cafeId, err := strconv.Atoi(c.Param("id"))
+	if err != nil {
+		log.Println(err)
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error": "idが不正な値です。数値を入力してください。",
+		})
+		return
+	}
+
+	//クッキーから値取り出し
+	userId, err := c.Cookie("user")
+	if err != nil {
+		log.Println(err)
+		c.JSON(http.StatusUnauthorized, gin.H{
+			"error": "ログイン情報を取得できませんでした。再度ログインしてください。",
+		})
+		return
+	}
+
+	var favo entity.FavoriteEntity
+	favo.User_id, _ = strconv.Atoi(userId)
+	favo.Cafe_id = cafeId
+
+	if err := dc.dr.InsertFavorite(&favo); err != nil {
+		log.Println(err)
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"error": "サーバーでエラーが発生しました。",
+		})
+		return
+	}
+
+	log.Println("登録完了　フロントに返却")
+	c.JSON(http.StatusOK, gin.H{
+		"message": "お気に入りに登録しました。",
+	})
+
+}
+
+// ポインタレシーバ(*demoController)にメソッドを追加
+func (dc *cafesController) DeleteFavorite(c *gin.Context) {
+
+	log.Println("DeleteFavorite")
+
+	cafeId, err := strconv.Atoi(c.Param("id"))
+	if err != nil {
+		log.Println(err)
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error": "idが不正な値です。数値を入力してください。",
+		})
+		return
+	}
+
+	//クッキーから値取り出し
+	userId, err := c.Cookie("user")
+	if err != nil {
+		log.Println(err)
+		c.JSON(http.StatusUnauthorized, gin.H{
+			"error": "ログイン情報を取得できませんでした。再度ログインしてください。",
+		})
+		return
+	}
+
+	var favo entity.FavoriteEntity
+	favo.User_id, _ = strconv.Atoi(userId)
+	favo.Cafe_id = cafeId
+
+	if err := dc.dr.DeleteFavorite(&favo); err != nil {
+		log.Println(err)
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"error": "サーバーでエラーが発生しました。",
+		})
+		return
+	}
+
+	log.Println("登録完了　フロントに返却")
+	c.JSON(http.StatusOK, gin.H{
+		"message": "お気に入りから削除しました。",
+	})
 
 }
