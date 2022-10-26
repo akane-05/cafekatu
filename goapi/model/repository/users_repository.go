@@ -12,8 +12,7 @@ import (
 // インターフェースで実装すべきメソッドを決める
 type UsersRepository interface {
 	GetUser(id *int) (user entity.UserEntity, err error)
-	InsertUser(user *entity.UserEntity) (err error)
-	UpdateUser(user *entity.UserEntity) (err error)
+	UpdateUser(patchUserInfo PatchUserInfo) (err error)
 	DeleteUser(user *entity.UserEntity) (err error)
 }
 
@@ -26,44 +25,30 @@ func NewUsersRepository() UsersRepository {
 	return &usersRepository{}
 }
 
+type PatchUserInfo struct {
+	Id       int    `json:"id"`
+	Email    string `json:"email"`
+	Password string `json:"password"`
+	Nickname string `json:"nickname"`
+}
+
 // ポインタレシーバ(*demoRepository)にメソッドを追加
 func (tr *usersRepository) GetUser(id *int) (user entity.UserEntity, err error) {
 	log.Println("リポジトリ GetUser")
 
-	if err = Db.Debug().Table("users").Where("id = ?", id).First(&user).Error; err != nil {
+	if err = Db.Debug().Table("users").Where("email = ?", id).First(&user).Error; err != nil {
 		return
 	}
 	//名前付き変数でreturn
 	return
 }
 
-// ポインタレシーバ(*demoRepository)にメソッドを追加
-func (tr *usersRepository) InsertUser(user *entity.UserEntity) (err error) {
-	log.Println("リポジトリ InsertCafe")
-
-	// if err = Db.Transaction(func(tx *gorm.DB) error {
-	// 	// データベース操作をトランザクション内で行う
-	// 	if err = tx.Create(&cafe).Error; err != nil {
-	// 		// エラーを返した場合はロールバックされる
-	// 		return err
-	// 	}
-	// 	// nil を返すとコミットされる
-	// 	return nil
-	// }); err != nil {
-	// 	return
-	// }
-
-	// log.Println("トランザクションが正常に終了しました")
-	return
-
-}
-
-func (tr *usersRepository) UpdateUser(user *entity.UserEntity) (err error) {
+func (tr *usersRepository) UpdateUser(patchUserInfo PatchUserInfo) (err error) {
 	log.Println("リポジトリ UpdateUser")
 
 	// if err = Db.Transaction(func(tx *gorm.DB) error {
 	// 	// データベース操作をトランザクション内で行う
-	// 	if err = tx.Create(&favo).Error; err != nil {
+	// 	if err = tx.Table("user").Where("id = ?", patchUserInfo.Id).Update("name", "hello").Error; err != nil {
 	// 		// エラーを返した場合はロールバックされる
 	// 		return err
 	// 	}
@@ -73,7 +58,7 @@ func (tr *usersRepository) UpdateUser(user *entity.UserEntity) (err error) {
 	// 	return
 	// }
 
-	// log.Println("トランザクションが正常に終了しました")
+	log.Println("トランザクションが正常に終了しました")
 	return
 
 }

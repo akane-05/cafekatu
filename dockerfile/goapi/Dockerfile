@@ -6,6 +6,7 @@ WORKDIR ${ROOT}
 COPY go.mod go.sum main.go ./
 COPY controller/ ./controller/
 COPY model/ ./model/
+COPY unit/ ./unit/
 RUN go mod download
 RUN CGO_ENABLED=0 GOOS=linux go install -v \
     -ldflags="-w -s" \

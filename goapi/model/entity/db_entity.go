@@ -18,7 +18,7 @@ type CafeEntity struct {
 }
 
 type UserEntity struct {
-	Id             int       `json:"id"`
+	Id             int       `json:"id" gorm:"column:id"`
 	Email          string    `json:"email" binding:"required"`
 	PasswordDigest string    `json:"password_digest" `
 	Nickname       string    `json:"nickname" binding:"required"`

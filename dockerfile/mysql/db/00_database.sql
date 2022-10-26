@@ -26,7 +26,7 @@ CREATE TABLE IF NOT EXISTS cafes (
 
 CREATE TABLE IF NOT EXISTS users (
     id             INT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
-    email          VARCHAR(255) NOT NULL,
+    email          VARCHAR(255) UNIQUE NOT NULL,
     password_digest    VARCHAR(20) NOT NULL,
     nickname        VARCHAR(20) NOT NULL,
     created_at      TIMESTAMP NOT NULL DEFAULT current_timestamp ON UPDATE current_timestamp,
