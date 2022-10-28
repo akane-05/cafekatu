@@ -12,12 +12,13 @@ import {
   Dialog,
   DialogActions,
   DialogTitle,
+  FormHelperText,
 } from '@mui/material'
 import theme from '@/styles/theme'
 import { ThemeProvider } from '@mui/material/styles'
 import Visibility from '@mui/icons-material/Visibility'
 import VisibilityOff from '@mui/icons-material/VisibilityOff'
-import React, { useState } from 'react'
+import React, { useState, useRef } from 'react'
 import { styled } from '@mui/system'
 
 interface State {
@@ -28,7 +29,19 @@ interface State {
   showPassword: boolean
 }
 
+interface Error {
+  nickname: boolean
+  email: boolean
+  password: boolean
+  passwordConfirm: boolean
+}
+
 export default function RegisterForm() {
+  const CustomButton = styled(Button)(() => ({
+    maxWidth: '120px',
+    minWidth: '120px',
+  }))
+
   const [values, setValues] = React.useState<State>({
     email: '',
     password: '',
@@ -37,17 +50,23 @@ export default function RegisterForm() {
     showPassword: false,
   })
 
-  const CustomButton = styled(Button)(() => ({
-    maxWidth: '120px',
-    // maxHeight: '30px',
-    minWidth: '120px',
-    // minHeight: '30px',
-  }))
+  const [errors, setErrors] = React.useState<Error>({
+    nickname: false,
+    email: false,
+    password: false,
+    passwordConfirm: false,
+  })
 
-  const handleChange =
-    (prop: keyof State) => (event: React.ChangeEvent<HTMLInputElement>) => {
-      setValues({ ...values, [prop]: event.target.value })
-    }
+  const [open, setOpen] = React.useState(false)
+
+  const nicknameRef = useRef<HTMLInputElement>(null)
+  const emailRef = useRef<HTMLInputElement>(null)
+  const passwordRef = useRef<HTMLInputElement>(null)
+
+  const nicknameValidPattern = '^.{2,20}$'
+  const emailVaildPattern =
+    '^[a-zA-Z0-9_+-]+(.[a-zA-Z0-9_+-]+)*@([a-zA-Z0-9][a-zA-Z0-9-]*[a-zA-Z0-9]*.)+[a-zA-Z]{2,}$'
+  const passwordVaildPattern = '^([a-zA-Z0-9]{8})$'
 
   const handleClickShowPassword = () => {
     setValues({
@@ -62,15 +81,42 @@ export default function RegisterForm() {
     event.preventDefault()
   }
 
-  const [open, setOpen] = React.useState(false)
-
-  const handleClickOpen = () => {
-    setOpen(true)
+  const handleDialog = (e: boolean) => {
+    setOpen(e)
   }
 
-  const handleClose = () => {
-    setOpen(false)
+  const handleLink = (path: string) => {
+    Router.push(path)
   }
+
+  const handleChange =
+    (prop: keyof State) => (event: React.ChangeEvent<HTMLInputElement>) => {
+      let ref = null
+      if (prop == 'password') {
+        ref = passwordRef.current
+        setErrors({
+          ...errors,
+          password: !ref?.validity.valid,
+          passwordConfirm: event.target.value != values.passwordConfirm,
+        })
+      } else if (prop == 'passwordConfirm') {
+        setErrors({
+          ...errors,
+          passwordConfirm: values.password != event.target.value,
+        })
+      } else {
+        switch (prop) {
+          case 'email':
+            ref = emailRef.current
+            break
+          case 'nickname':
+            ref = nicknameRef.current
+            break
+        }
+        setErrors({ ...errors, [prop]: !ref?.validity.valid })
+      }
+      setValues({ ...values, [prop]: event.target.value })
+    }
 
   return (
     <ThemeProvider theme={theme}>
@@ -90,8 +136,17 @@ export default function RegisterForm() {
               value={values.nickname}
               onChange={handleChange('nickname')}
               label="nickname"
+              required={true}
+              error={errors.nickname}
+              inputProps={{ pattern: nicknameValidPattern }}
+              inputRef={nicknameRef}
             />
           </FormControl>
+          {errors.nickname && (
+            <FormHelperText error id="nickname-error">
+              2文字以上20文字以下で入力してください。
+            </FormHelperText>
+          )}
         </Grid>
 
         <Grid item xs={12}>
@@ -103,7 +158,16 @@ export default function RegisterForm() {
               value={values.email}
               onChange={handleChange('email')}
               label="email"
+              required={true}
+              error={errors.email}
+              inputProps={{ pattern: emailVaildPattern }}
+              inputRef={emailRef}
             />
+            {errors.email && (
+              <FormHelperText error id="email-error">
+                メールアドレスを入力してください。
+              </FormHelperText>
+            )}
           </FormControl>
         </Grid>
 
@@ -127,8 +191,17 @@ export default function RegisterForm() {
                   </IconButton>
                 </InputAdornment>
               }
-              label="Password"
+              label="password"
+              required={true}
+              error={errors.password}
+              inputProps={{ pattern: passwordVaildPattern }}
+              inputRef={passwordRef}
             />
+            {errors.password && (
+              <FormHelperText error id="password-error">
+                半角英数字8桁で入力してください。
+              </FormHelperText>
+            )}
           </FormControl>
         </Grid>
 
@@ -152,22 +225,26 @@ export default function RegisterForm() {
                   </IconButton>
                 </InputAdornment>
               }
-              label="Password"
+              label="passwordConfirm"
+              required={true}
+              error={errors.passwordConfirm}
             />
+            {errors.passwordConfirm && (
+              <FormHelperText error id="passwordConfirm-error">
+                パスワードが一致しません。
+              </FormHelperText>
+            )}
           </FormControl>
         </Grid>
 
         <Grid item xs={12}>
-          <CustomButton variant="contained" onClick={handleClickOpen}>
+          <CustomButton variant="contained" onClick={() => handleDialog(true)}>
             登録
           </CustomButton>
         </Grid>
 
         <Grid item xs={12}>
-          <CustomButton
-            variant="contained"
-            // onClick={() => handleLink('./search/searchResult')}
-          >
+          <CustomButton variant="contained" onClick={() => handleLink('../')}>
             Top
           </CustomButton>
         </Grid>
@@ -175,7 +252,7 @@ export default function RegisterForm() {
 
       <Dialog
         open={open}
-        onClose={handleClose}
+        onClick={() => handleDialog(false)}
         fullWidth={true}
         maxWidth="xs"
         aria-labelledby="alert-dialog-title"
@@ -189,8 +266,8 @@ export default function RegisterForm() {
           </DialogContentText>
         </DialogContent> */}
         <DialogActions>
-          <Button onClick={handleClose}>いいえ</Button>
-          <Button onClick={handleClose} autoFocus>
+          <Button onClick={() => handleDialog(false)}>いいえ</Button>
+          <Button onClick={() => handleDialog(false)} autoFocus>
             はい
           </Button>
         </DialogActions>

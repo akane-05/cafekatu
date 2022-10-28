@@ -12,10 +12,11 @@ import {
   IconButton,
   OutlinedInput,
   Hidden,
+  FormHelperText,
 } from '@mui/material'
-import React, { useState } from 'react'
-import Comment from '@/components/elements/comment'
-import CustomPaper from '@/components/layouts/customPaper'
+import React, { useState, useRef } from 'react'
+import Comment from '@/components/elements/Comment'
+import CustomPaper from '@/components/layouts/CustomPaper'
 import Visibility from '@mui/icons-material/Visibility'
 import VisibilityOff from '@mui/icons-material/VisibilityOff'
 
@@ -23,23 +24,62 @@ interface Props {
   num: number
 }
 
+interface Current {
+  nickname: string
+  email: string
+}
+
 interface State {
   isEdit: boolean
   showPassword: boolean
-
+  nickname: string
+  email: string
   password: string
   newPassword: string
   newPasswordConfirm: string
 }
 
-export default function CafeDetail(props: Props) {
+interface Error {
+  nickname: boolean
+  email: boolean
+  password: boolean
+  newPassword: boolean
+  newPasswordConfirm: boolean
+}
+
+export default function Mypage(props: Props) {
+  const current: Current = {
+    nickname: '変更前のnick',
+    email: '変更前のemail',
+  }
+
   const [values, setValues] = React.useState<State>({
     isEdit: false,
     showPassword: false,
+    nickname: '',
+    email: '',
     password: '',
     newPassword: '',
     newPasswordConfirm: '',
   })
+
+  const [errors, setErrors] = React.useState<Error>({
+    nickname: false,
+    email: false,
+    password: false,
+    newPassword: false,
+    newPasswordConfirm: false,
+  })
+
+  const nicknameRef = useRef<HTMLInputElement>(null)
+  const emailRef = useRef<HTMLInputElement>(null)
+  const passwordRef = useRef<HTMLInputElement>(null)
+  const newPasswordRef = useRef<HTMLInputElement>(null)
+
+  const nicknameValidPattern = '^.{2,20}$'
+  const emailVaildPattern =
+    '^[a-zA-Z0-9_+-]+(.[a-zA-Z0-9_+-]+)*@([a-zA-Z0-9][a-zA-Z0-9-]*[a-zA-Z0-9]*.)+[a-zA-Z]{2,}$'
+  const passwordVaildPattern = '^([a-zA-Z0-9]{8})$'
 
   const handleIsEdit = () => {
     setValues({
@@ -51,11 +91,6 @@ export default function CafeDetail(props: Props) {
   const handleWithdrawal = () => {}
 
   const handleIsUpdate = () => {}
-
-  const handleChange =
-    (prop: keyof State) => (event: React.ChangeEvent<HTMLInputElement>) => {
-      setValues({ ...values, [prop]: event.target.value })
-    }
 
   const handleClickShowPassword = () => {
     setValues({
@@ -69,6 +104,38 @@ export default function CafeDetail(props: Props) {
   ) => {
     event.preventDefault()
   }
+
+  const handleChange =
+    (prop: keyof State) => (event: React.ChangeEvent<HTMLInputElement>) => {
+      let ref = null
+      if (prop == 'newPassword') {
+        ref = newPasswordRef.current
+        setErrors({
+          ...errors,
+          newPassword: !ref?.validity.valid,
+          newPasswordConfirm: event.target.value != values.newPasswordConfirm,
+        })
+      } else if (prop == 'newPasswordConfirm') {
+        setErrors({
+          ...errors,
+          newPasswordConfirm: values.newPassword != event.target.value,
+        })
+      } else {
+        switch (prop) {
+          case 'email':
+            ref = emailRef.current
+            break
+          case 'nickname':
+            ref = nicknameRef.current
+            break
+          case 'password':
+            ref = passwordRef.current
+            break
+        }
+        setErrors({ ...errors, [prop]: !ref?.validity.valid })
+      }
+      setValues({ ...values, [prop]: event.target.value })
+    }
 
   return (
     <>
@@ -155,14 +222,54 @@ export default function CafeDetail(props: Props) {
               alignItems="flex-start"
             >
               <Grid item xs={12}>
-                <TextField
+                <FormControl sx={{ m: 1, width: '25ch' }} variant="outlined">
+                  <InputLabel htmlFor="nickname">ニックネーム</InputLabel>
+                  <OutlinedInput
+                    id="nickname"
+                    type="text"
+                    defaultValue={current.nickname}
+                    value={values.nickname}
+                    onChange={handleChange('nickname')}
+                    label="nickname"
+                    error={errors.nickname}
+                    inputProps={{ pattern: nicknameValidPattern }}
+                    inputRef={nicknameRef}
+                  />
+                </FormControl>
+                {errors.nickname && (
+                  <FormHelperText error id="nickname-error">
+                    2文字以上20文字以下で入力してください。
+                  </FormHelperText>
+                )}
+                {/*
+                 <TextField
                   id="nickName"
                   label="nickName"
                   defaultValue="ニックネーム"
-                />
+                /> */}
               </Grid>
               <Grid item xs={12}>
-                <TextField id="email" label="email" defaultValue="email" />
+                <FormControl sx={{ m: 1, width: '25ch' }} variant="outlined">
+                  <InputLabel htmlFor="email">email</InputLabel>
+                  <OutlinedInput
+                    id="email"
+                    type="text"
+                    defaultValue={current.email}
+                    value={values.email}
+                    onChange={handleChange('email')}
+                    label="email"
+                    error={errors.email}
+                    inputProps={{ pattern: emailVaildPattern }}
+                    inputRef={emailRef}
+                  />
+                  {errors.email && (
+                    <FormHelperText error id="email-error">
+                      メールアドレスを入力してください。
+                    </FormHelperText>
+                  )}
+                </FormControl>
+
+                {/* <TextField id="email" label="email" defaultValue="email" /> */}
               </Grid>
 
               <Grid item xs={12}>
@@ -190,6 +297,10 @@ export default function CafeDetail(props: Props) {
                       </InputAdornment>
                     }
                     label="現在のPassword"
+                    required={true}
+                    error={errors.password}
+                    inputProps={{ pattern: passwordVaildPattern }}
+                    inputRef={passwordRef}
                   />
                 </FormControl>
               </Grid>
@@ -219,7 +330,15 @@ export default function CafeDetail(props: Props) {
                       </InputAdornment>
                     }
                     label="新しいPassword"
+                    error={errors.newPassword}
+                    inputProps={{ pattern: passwordVaildPattern }}
+                    inputRef={newPasswordRef}
                   />
+                  {errors.newPassword && (
+                    <FormHelperText error id="newPassword-error">
+                      半角英数字8桁で入力してください。
+                    </FormHelperText>
+                  )}
                 </FormControl>
               </Grid>
 
@@ -250,7 +369,14 @@ export default function CafeDetail(props: Props) {
                       </InputAdornment>
                     }
                     label="Password確認"
+                    required={values.newPassword != '' ? true : false}
+                    error={errors.newPasswordConfirm}
                   />
+                  {errors.newPasswordConfirm && (
+                    <FormHelperText error id="newPasswordConfirm-error">
+                      パスワードが一致しません。
+                    </FormHelperText>
+                  )}
                 </FormControl>
               </Grid>
 
