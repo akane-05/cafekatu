@@ -104,11 +104,11 @@ INSERT INTO prefectures(prefecture) VALUES('鹿児島県');
 INSERT INTO prefectures(prefecture) VALUES('沖縄県');
 
 
-INSERT INTO cafes (name, zipcode,prefecture_id,city,street,business_hours,approved) VALUES ('お菓子の家', '1111111',1,'中央区','銀座','11時から15時まで',1);
-INSERT INTO cafes (name, zipcode,prefecture_id,city,street,business_hours,approved) VALUES ('coffee shop', '1111111',1,'新宿区','歌舞伎町','8時から12時まで',1);
-INSERT INTO cafes (name, zipcode,prefecture_id,city,street,business_hours,approved) VALUES ('お菓子の家', '1111111',1,'渋谷区','渋谷','毎週土曜日定休日',1);
-INSERT INTO cafes (name, zipcode,prefecture_id,city,street,business_hours,approved) VALUES ('お菓子の家', '1111111',1,'中央区','銀座','11時から15時まで',1);
-INSERT INTO cafes (name, zipcode,prefecture_id,city,street,business_hours,approved) VALUES ('coffee shop', '1111111',1,'新宿区','歌舞伎町','8時から12時まで',1);
+INSERT INTO cafes (name, zipcode,prefecture_id,city,street,business_hours,approved) VALUES ('お菓子の家', '0600042',1,'中央区','銀座','11時から15時まで',1);
+INSERT INTO cafes (name, zipcode,prefecture_id,city,street,business_hours,approved) VALUES ('coffee shop', '0300846',2,'青森市','青葉','8時から12時まで',1);
+INSERT INTO cafes (name, zipcode,prefecture_id,city,street,business_hours,approved) VALUES ('喫茶東京', '1040044',13,'中央区','明石市','毎週土曜日定休日',1);
+INSERT INTO cafes (name, zipcode,prefecture_id,city,street,business_hours,approved) VALUES ('海の家', '9000002',47,'那覇市','曙','13時から',1);
+INSERT INTO cafes (name, zipcode,prefecture_id,city,street,business_hours,approved) VALUES ('morning', '4520813',38,'名古屋市','西区','年中無休',1);
 INSERT INTO cafes (name, zipcode,prefecture_id,city,street,business_hours,approved) VALUES ('お菓子の家', '1111111',1,'渋谷区','渋谷','毎週土曜日定休日',1);
 INSERT INTO cafes (name, zipcode,prefecture_id,city,street,business_hours,approved) VALUES ('お菓子の家', '1111111',1,'中央区','銀座','11時から15時まで',1);
 INSERT INTO cafes (name, zipcode,prefecture_id,city,street,business_hours,approved) VALUES ('coffee shop', '1111111',1,'新宿区','歌舞伎町','8時から12時まで',1);

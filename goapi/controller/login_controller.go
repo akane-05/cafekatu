@@ -4,6 +4,7 @@ import (
 	"errors"
 	"log"
 	"net/http"
+	"time"
 
 	"github.com/akane-05/cafekatu/goapi/model/entity"
 	"github.com/akane-05/cafekatu/goapi/model/repository"
@@ -76,7 +77,7 @@ func (dc *loginController) Login(c *gin.Context) {
 	}
 
 	//以下jwt認証
-	jwtInfo := unit.JwtInfo{user.Id, user.Email}
+	jwtInfo := unit.JwtInfo{Id: user.Id, Email: user.Email, ExTime: time.Now().Add(time.Hour)}
 
 	tokenString := unit.CreateToken(&jwtInfo)
 	log.Println("tokenString:", tokenString)
@@ -86,10 +87,9 @@ func (dc *loginController) Login(c *gin.Context) {
 		"message": "ログインしました。",
 	})
 
-	return
 	log.Println("フロントに返却")
-
 	return
+
 }
 
 func (dc *loginController) Register(c *gin.Context) {
@@ -138,7 +138,7 @@ func (dc *loginController) Register(c *gin.Context) {
 	log.Println("DBに登録完了")
 
 	//以下jwt認証
-	jwtInfo := unit.JwtInfo{Id: id, Email: postUser.Email}
+	jwtInfo := unit.JwtInfo{Id: id, Email: postUser.Email, ExTime: time.Now().Add(time.Hour)}
 	tokenString := unit.CreateToken(&jwtInfo)
 	log.Println("tokenString:", tokenString)
 

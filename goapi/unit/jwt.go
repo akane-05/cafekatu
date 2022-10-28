@@ -14,8 +14,9 @@ import (
 )
 
 type JwtInfo struct {
-	Id    int
-	Email string
+	Id     int
+	Email  string
+	ExTime time.Time
 }
 
 // トークンを作成
@@ -24,7 +25,8 @@ func CreateToken(jwtInfo *JwtInfo) (tokenString string) {
 	claims := jwt.MapClaims{
 		"id":    jwtInfo.Id,
 		"email": jwtInfo.Email,
-		"exp":   time.Now().Add(time.Hour).Unix(),
+		// "exp":   time.Now().Add(time.Hour).Unix(),
+		"exp": jwtInfo.ExTime.Unix(),
 	}
 
 	// ヘッダーとペイロードの生成
@@ -89,7 +91,7 @@ func GetJwtToken(c *gin.Context) (JwtInfo, error) {
 	}
 
 	idNum, _ := strconv.Atoi(c.Param(id))
-	jwtInfo = JwtInfo{idNum, email}
+	jwtInfo = JwtInfo{Id: idNum, Email: email}
 
 	return jwtInfo, nil
 

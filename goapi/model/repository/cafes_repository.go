@@ -2,6 +2,7 @@ package repository
 
 import (
 	"log"
+	"time"
 
 	"github.com/akane-05/cafekatu/goapi/model/entity"
 	_ "github.com/go-sql-driver/mysql"
@@ -28,16 +29,17 @@ func NewCafesRepository() CafesRepository {
 }
 
 type CafeInfo struct {
-	Id            int     `json:"id"`
-	Name          string  `json:"name"`
-	Zipcode       string  `json:"zipcode"`
-	PrefectureId  int     `json:"prefecture_id"`
-	City          string  `json:"city"`
-	Street        string  `json:"street"`
-	BusinessHours string  `json:"business_hours"`
-	CreatedAt     string  `json:"created_at"`
-	UpdatedAt     string  `json:"updated_at"`
-	Rating        float32 `json:"rating"`
+	Id            int       `json:"id"`
+	Name          string    `json:"name"`
+	Zipcode       string    `json:"zipcode"`
+	PrefectureId  int       `json:"prefecture_id"`
+	Prefecture    string    `json:"prefecture"`
+	City          string    `json:"city"`
+	Street        string    `json:"street"`
+	BusinessHours string    `json:"business_hours"`
+	CreatedAt     time.Time `json:"created_at"`
+	UpdatedAt     time.Time `json:"updated_at"`
+	Rating        float32   `json:"rating"`
 }
 
 type CafeQuery struct {
@@ -51,11 +53,11 @@ func (tr *cafesRepository) GetCafes(cafeQuery *CafeQuery) (cafeInfos []CafeInfo,
 	log.Println("リポジトリ")
 
 	query := `
-	cafes.id,cafes.name,cafes.zipcode,cafes.prefecture_id,cafes.city,cafes.street,cafes.business_hours,
+	cafes.id,cafes.name,cafes.zipcode,cafes.prefecture_id,prefectures.prefecture,cafes.city,cafes.street,cafes.business_hours,
 	cafes.created_at,cafes.updated_at,
 	AVG(reviews.rating) as rating
 	`
-	join := `left join reviews on cafes.id = reviews.cafe_id`
+	join := `join on prefectures on cafes.prefecture_id = prefectures.id left join reviews on cafes.id = reviews.cafe_id`
 
 	//名前付き変数
 	if err = Db.Debug().Table("cafes").Where("cafes.approved = 1").Limit(cafeQuery.PerPage).Offset(cafeQuery.PerPage * (cafeQuery.Page - 1)).Select(query).Joins(join).Group("cafes.id").Find(&cafeInfos).Error; err != nil {
@@ -71,11 +73,12 @@ func (tr *cafesRepository) GetCafe(id *int) (cafeInfo CafeInfo, err error) {
 	log.Println("リポジトリ")
 
 	query := `
-	cafes.id,cafes.name,cafes.zipcode,cafes.prefecture_id,cafes.city,cafes.street,cafes.business_hours,
+	cafes.id,cafes.name,cafes.zipcode,cafes.prefecture_id,prefectures.prefecture,cafes.city,cafes.street,cafes.business_hours,
 	cafes.created_at,cafes.updated_at,AVG(reviews.rating) as rating
 	`
 
-	join := `left join reviews on cafes.id = reviews.cafe_id`
+	// join := `left join reviews on cafes.id = reviews.cafe_id`
+	join := `join on prefectures on cafes.prefecture_id = prefectures.id left join reviews on cafes.id = reviews.cafe_id`
 
 	if err = Db.Debug().Table("cafes").Where("cafes.id = ? and cafes.approved = 1", id).Select(query).Joins(join).Group("cafes.id").First(&cafeInfo).Error; err != nil {
 		return
