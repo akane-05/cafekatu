@@ -13,7 +13,7 @@ RUN CGO_ENABLED=0 GOOS=linux go install -v \
     -ldflags="-w -s" \
     ${ROOT}
 
-FROM alpine:3.15
+FROM golang:1.18-alpine3.15
 COPY --from=builder /go/bin/goapi /goapi
 RUN chmod a+x /goapi
 
