@@ -6,6 +6,7 @@ import (
 
 	"github.com/akane-05/cafekatu/goapi/controller"
 	"github.com/akane-05/cafekatu/goapi/model/repository"
+	"github.com/akane-05/cafekatu/goapi/unit"
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 )
@@ -68,21 +69,40 @@ func GetRouter() *gin.Engine {
 	}))
 
 	r.GET("/login", loginC.Login)
+	r.POST("/register", loginC.Register)
 
-	r.GET("/cafes", cafesC.GetCafes)
-	r.GET("/cafes/:id", cafesC.GetCafe)
-	r.POST("/cafes", cafesC.PostCafe)
-	r.POST("/cafes/:id/favorite", cafesC.PostFavorite)
-	r.PATCH("/cafes/:id/favorite", cafesC.PostFavorite)
+	group := r.Group("/")
+	group.Use(unit.CheckJwtToken)
+	{
+		group.GET("/cafes", cafesC.GetCafes)
+		group.GET("/cafes/:id", cafesC.GetCafe)
+		group.POST("/cafes", cafesC.PostCafe)
+		group.POST("/cafes/:id/favorite", cafesC.PostFavorite)
+		group.PATCH("/cafes/:id/favorite", cafesC.PostFavorite)
 
-	r.POST("/users", usersC.PostUser)
-	r.GET("/users/:id", usersC.GetUser)
-	r.PATCH("/users/:id", usersC.PatchUser)
-	r.DELETE("/users/:id", usersC.DeleteUser)
+		group.GET("/users/:id", usersC.GetUser)
+		group.PATCH("/users/:id", usersC.PatchUser)
+		group.DELETE("/users/:id", usersC.DeleteUser)
 
-	r.GET("/reviews", reviewsC.GetReviews)
-	r.POST("/reviews", reviewsC.PostReview)
-	r.DELETE("/reviews/:id", reviewsC.DeleteReview)
+		group.GET("/reviews", reviewsC.GetReviews)
+		group.POST("/reviews", reviewsC.PostReview)
+		group.DELETE("/reviews/:id", reviewsC.DeleteReview)
+
+	}
+
+	// r.GET("/cafes", cafesC.GetCafes)
+	// r.GET("/cafes/:id", cafesC.GetCafe)
+	// r.POST("/cafes", cafesC.PostCafe)
+	// r.POST("/cafes/:id/favorite", cafesC.PostFavorite)
+	// r.DELETE("/cafes/:id/favorite", cafesC.DeleteFavorite)
+
+	// r.GET("/users/:id", usersC.GetUser)
+	// r.PATCH("/users/:id", usersC.PatchUser)
+	// r.DELETE("/users/:id", usersC.DeleteUser)
+
+	// r.GET("/reviews", reviewsC.GetReviews)
+	// r.POST("/reviews", reviewsC.PostReview)
+	// r.DELETE("/reviews/:id", reviewsC.DeleteReview)
 
 	r.NoRoute(func(c *gin.Context) {
 		c.JSON(404, gin.H{"code": "PAGE_NOT_FOUND", "message": "Page not found"})

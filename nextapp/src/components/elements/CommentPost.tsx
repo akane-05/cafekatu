@@ -12,7 +12,7 @@ import {
   Typography,
   CardActions,
 } from '@mui/material'
-import React from 'react'
+import React, { useRef } from 'react'
 import FavoriteIcon from '@mui/icons-material/Favorite'
 import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder'
 
@@ -20,10 +20,46 @@ interface Props {
   num: number
 }
 
+interface State {
+  rating: number
+  comment: string
+}
+
+interface Error {
+  rating: boolean
+  comment: boolean
+}
+
 export default function CommentPost(props: Props) {
+  const [values, setValues] = React.useState<State>({
+    rating: 0,
+    comment: '',
+  })
+
+  const [errors, setErrors] = React.useState<Error>({
+    rating: false,
+    comment: false,
+  })
+
   // const handleLink = (path: string) => {
   //   Router.push(path)
   // }
+
+  const commentVaildPattern = '^.{1,250}$'
+  const commentRef = useRef<HTMLInputElement>(null)
+
+  const handleChange =
+    (prop: keyof State) => (event: React.ChangeEvent<HTMLInputElement>) => {
+      let ref = null
+      switch (prop) {
+        case 'comment':
+          ref = commentRef.current
+          break
+      }
+      setErrors({ ...errors, [prop]: !ref?.validity.valid })
+
+      setValues({ ...values, [prop]: event.target.value })
+    }
 
   return (
     <Card sx={{ mt: 1, mb: 1 }}>
@@ -73,6 +109,17 @@ export default function CommentPost(props: Props) {
           rows={4}
           defaultValue="コメント"
           sx={{ mb: 1 }}
+          onChange={handleChange('comment')}
+          required={true}
+          error={errors.comment}
+          inputProps={{
+            required: true,
+            pattern: commentVaildPattern,
+          }}
+          inputRef={commentRef}
+          helperText={
+            errors.comment && '必須項目です。250字以内で入力してください。'
+          }
         />
 
         <Grid

@@ -9,13 +9,15 @@ import {
   OutlinedInput,
   InputAdornment,
   IconButton,
+  FormHelperText,
 } from '@mui/material'
 import theme from '../styles/theme'
 import { ThemeProvider } from '@mui/material/styles'
 import Visibility from '@mui/icons-material/Visibility'
 import VisibilityOff from '@mui/icons-material/VisibilityOff'
-import React, { useState } from 'react'
+import React, { useState, useRef } from 'react'
 import { styled } from '@mui/system'
+import { truncate } from 'fs'
 
 interface State {
   email: string
@@ -23,24 +25,34 @@ interface State {
   showPassword: boolean
 }
 
+interface Error {
+  email: boolean
+  password: boolean
+}
+
 function Home() {
+  const CustomButton = styled(Button)(() => ({
+    maxWidth: '120px',
+    minWidth: '120px',
+  }))
+
   const [values, setValues] = React.useState<State>({
     email: '',
     password: '',
     showPassword: false,
   })
 
-  const CustomButton = styled(Button)(() => ({
-    maxWidth: '120px',
-    // maxHeight: '30px',
-    minWidth: '120px',
-    // minHeight: '30px',
-  }))
+  const [errors, setErrors] = React.useState<Error>({
+    email: false,
+    password: false,
+  })
 
-  const handleChange =
-    (prop: keyof State) => (event: React.ChangeEvent<HTMLInputElement>) => {
-      setValues({ ...values, [prop]: event.target.value })
-    }
+  const emailRef = useRef<HTMLInputElement>(null)
+  const passwordRef = useRef<HTMLInputElement>(null)
+
+  const emailVaildPattern =
+    '^[a-zA-Z0-9_+-]+(.[a-zA-Z0-9_+-]+)*@([a-zA-Z0-9][a-zA-Z0-9-]*[a-zA-Z0-9]*.)+[a-zA-Z]{2,}$'
+  const passwordVaildPattern = '^([a-zA-Z0-9]{8})$'
 
   const handleClickShowPassword = () => {
     setValues({
@@ -54,6 +66,27 @@ function Home() {
   ) => {
     event.preventDefault()
   }
+
+  const handleLink = (path: string) => {
+    Router.push(path)
+  }
+
+  const login = () => {
+    // Router.push(path)
+  }
+
+  const handleChange =
+    (prop: keyof State) => (event: React.ChangeEvent<HTMLInputElement>) => {
+      let ref = null
+      if (prop == 'email') {
+        ref = emailRef.current
+      } else if (prop == 'password') {
+        ref = passwordRef.current
+      }
+      setErrors({ ...errors, [prop]: !ref?.validity.valid })
+
+      setValues({ ...values, [prop]: event.target.value })
+    }
 
   return (
     <ThemeProvider theme={theme}>
@@ -75,11 +108,20 @@ function Home() {
             <InputLabel htmlFor="email">email</InputLabel>
             <OutlinedInput
               id="email"
-              type="text"
+              type="email"
               value={values.email}
               onChange={handleChange('email')}
               label="email"
+              required={true}
+              error={errors.email}
+              inputProps={{ pattern: emailVaildPattern }}
+              inputRef={emailRef}
             />
+            {errors.email && (
+              <FormHelperText error id="email-error">
+                メールアドレスを入力してください。
+              </FormHelperText>
+            )}
           </FormControl>
         </Grid>
 
@@ -103,16 +145,22 @@ function Home() {
                   </IconButton>
                 </InputAdornment>
               }
-              label="Password"
+              label="password"
+              required={true}
+              error={errors.password}
+              inputProps={{ pattern: passwordVaildPattern }}
+              inputRef={passwordRef}
             />
+            {errors.password && (
+              <FormHelperText error id="password-error">
+                半角英数字8桁で入力してください。
+              </FormHelperText>
+            )}
           </FormControl>
         </Grid>
 
         <Grid item xs={12}>
-          <CustomButton
-            variant="contained"
-            // onClick={() => handleLink('./search/searchResult')}
-          >
+          <CustomButton variant="contained" onClick={() => login()}>
             ログイン
           </CustomButton>
         </Grid>
@@ -120,7 +168,7 @@ function Home() {
         <Grid item xs={12}>
           <CustomButton
             variant="contained"
-            // onClick={() => handleLink('./search/searchResult')}
+            onClick={() => handleLink('./users/registerForm')}
           >
             新規会員登録
           </CustomButton>

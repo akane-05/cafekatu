@@ -7,6 +7,7 @@ import (
 
 	"github.com/akane-05/cafekatu/goapi/model/entity"
 	"github.com/akane-05/cafekatu/goapi/model/repository"
+	"github.com/akane-05/cafekatu/goapi/unit"
 	"github.com/gin-gonic/gin"
 )
 
@@ -139,8 +140,8 @@ func (dc *cafesController) PostFavorite(c *gin.Context) {
 		return
 	}
 
-	//クッキーから値取り出し
-	userId, err := c.Cookie("user")
+	//jwtから値取り出し
+	jwtInfo, err := unit.GetJwtToken(c)
 	if err != nil {
 		log.Println(err)
 		c.JSON(http.StatusUnauthorized, gin.H{
@@ -148,10 +149,7 @@ func (dc *cafesController) PostFavorite(c *gin.Context) {
 		})
 		return
 	}
-
-	var favo entity.FavoriteEntity
-	favo.User_id, _ = strconv.Atoi(userId)
-	favo.Cafe_id = cafeId
+	favo := entity.FavoriteEntity{User_id: jwtInfo.Id, Cafe_id: cafeId}
 
 	if err := dc.dr.InsertFavorite(&favo); err != nil {
 		log.Println(err)
@@ -182,8 +180,8 @@ func (dc *cafesController) DeleteFavorite(c *gin.Context) {
 		return
 	}
 
-	//クッキーから値取り出し
-	userId, err := c.Cookie("user")
+	//jwtから値取り出し
+	jwtInfo, err := unit.GetJwtToken(c)
 	if err != nil {
 		log.Println(err)
 		c.JSON(http.StatusUnauthorized, gin.H{
@@ -192,9 +190,7 @@ func (dc *cafesController) DeleteFavorite(c *gin.Context) {
 		return
 	}
 
-	var favo entity.FavoriteEntity
-	favo.User_id, _ = strconv.Atoi(userId)
-	favo.Cafe_id = cafeId
+	favo := entity.FavoriteEntity{User_id: jwtInfo.Id, Cafe_id: cafeId}
 
 	if err := dc.dr.DeleteFavorite(&favo); err != nil {
 		log.Println(err)

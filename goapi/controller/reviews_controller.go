@@ -7,6 +7,7 @@ import (
 
 	"github.com/akane-05/cafekatu/goapi/model/entity"
 	"github.com/akane-05/cafekatu/goapi/model/repository"
+	"github.com/akane-05/cafekatu/goapi/unit"
 	"github.com/gin-gonic/gin"
 )
 
@@ -28,13 +29,6 @@ func NewReviewsController(dr repository.ReviewsRepository) ReviewsController {
 	return &reviewsController{dr}
 }
 
-type ReviewQuery struct {
-	PerPage int `form:"per_page" binding:"required"`
-	Page    int `form:"page" binding:"required"`
-	Cafe_id int `form:"cafe_id"`
-	User_id int `form:"user_id"`
-}
-
 func (dc *reviewsController) GetReviews(c *gin.Context) {
 
 	var query repository.ReviewQuery
@@ -50,17 +44,22 @@ func (dc *reviewsController) GetReviews(c *gin.Context) {
 
 	var reviews []entity.ReviewEntity
 	var err error
-	if query.User_id != 0 {
-		reviews, err = dc.dr.GetUserReviews(&query)
-	} else if query.Cafe_id != 0 {
+	if query.Cafe_id != 0 {
 		reviews, err = dc.dr.GetCafeReviews(&query)
 	} else {
-		log.Println("クエリパラメータの値が不足しています。")
-		c.JSON(http.StatusBadRequest, gin.H{
-			"error": "クエリパラメータの値が不足しています。",
-		})
-	}
+		//jwtから値取り出し
+		jwtInfo, e := unit.GetJwtToken(c)
+		if e != nil {
+			log.Println(err)
+			c.JSON(http.StatusUnauthorized, gin.H{
+				"error": "ログイン情報を取得できませんでした。再度ログインしてください。",
+			})
+			return
+		}
 
+		query.User_id = jwtInfo.Id
+		reviews, err = dc.dr.GetCafeReviews(&query)
+	}
 	if err != nil {
 		log.Println(err.Error())
 		c.JSON(http.StatusInternalServerError, gin.H{
@@ -91,8 +90,8 @@ func (dc *reviewsController) PostReview(c *gin.Context) {
 		return
 	}
 
-	//クッキーから値取り出し
-	userId, err := c.Cookie("user")
+	//jwtから値取り出し
+	jwtInfo, err := unit.GetJwtToken(c)
 	if err != nil {
 		log.Println(err)
 		c.JSON(http.StatusUnauthorized, gin.H{
@@ -101,7 +100,7 @@ func (dc *reviewsController) PostReview(c *gin.Context) {
 		return
 	}
 
-	review.User_id, _ = strconv.Atoi(userId)
+	review.User_id = jwtInfo.Id
 
 	if err := dc.dr.InsertReview(&review); err != nil {
 		log.Println(err)
@@ -115,8 +114,6 @@ func (dc *reviewsController) PostReview(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{
 		"message": "レビューを投稿しました。",
 	})
-
-	return
 
 }
 
@@ -135,8 +132,7 @@ func (dc *reviewsController) DeleteReview(c *gin.Context) {
 		return
 	}
 
-	var review entity.ReviewEntity
-	review.Id = id
+	review := entity.ReviewEntity{Id: id}
 
 	if err := dc.dr.DeleteReview(&review); err != nil {
 		log.Println(err)

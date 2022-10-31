@@ -3,10 +3,10 @@ package controller
 import (
 	"log"
 	"net/http"
-	"strconv"
 
 	"github.com/akane-05/cafekatu/goapi/model/entity"
 	"github.com/akane-05/cafekatu/goapi/model/repository"
+	"github.com/akane-05/cafekatu/goapi/unit"
 	"github.com/gin-gonic/gin"
 )
 
@@ -14,7 +14,6 @@ import (
 // インターフェースで実装すべきメソッドを決める
 type UsersController interface {
 	GetUser(c *gin.Context)
-	PostUser(c *gin.Context)
 	PatchUser(c *gin.Context)
 	DeleteUser(c *gin.Context)
 }
@@ -30,7 +29,8 @@ func NewUsersController(dr repository.UsersRepository) UsersController {
 }
 
 func (dc *usersController) GetUser(c *gin.Context) {
-	userId, err := c.Cookie("user")
+
+	jwtInfo, err := unit.GetJwtToken(c)
 	if err != nil {
 		log.Println(err)
 		c.JSON(http.StatusUnauthorized, gin.H{
@@ -39,10 +39,7 @@ func (dc *usersController) GetUser(c *gin.Context) {
 		return
 	}
 
-	id, err := strconv.Atoi(c.Param(userId))
-
-	// GetDemosメソッドにwhere句追加する
-	user, err := dc.dr.GetUser(&id)
+	user, err := dc.dr.GetUser(&jwtInfo.Id)
 	if err != nil {
 		log.Println(err.Error())
 		c.JSON(http.StatusInternalServerError, gin.H{
@@ -60,78 +57,9 @@ func (dc *usersController) GetUser(c *gin.Context) {
 	log.Println("フロントに返却")
 
 }
-func (dc *usersController) PostUser(c *gin.Context) {
-
-	log.Println("PostUser")
-
-	// user := entity.UserEntity{}
-	// if err := c.BindJSON(&user); err != nil {
-	// 	c.JSON(http.StatusBadRequest, gin.H{
-	// 		"error": "リクエストに不正な値が含まれています。",
-	// 	})
-	// 	return
-	// }
-
-	// if err := dc.dr.InsertUser(&user); err != nil {
-	// 	log.Println(err)
-	// 	c.JSON(http.StatusInternalServerError, gin.H{
-	// 		"error": "サーバーでエラーが発生しました。",
-	// 	})
-	// 	return
-	// }
-
-	// log.Println("登録完了　フロントに返却")
-	// c.JSON(http.StatusOK, gin.H{
-	// 	"message": "ユーザー登録が完了しました。",
-	// })
-
-	//登録したidをセットする
-	user := "id"
-	c.SetCookie("user", user, 3600, "/", "localhost", true, true)
-
-	return
-
-}
 
 func (dc *usersController) PatchUser(c *gin.Context) {
-	// user := entity.UserEntity{}
-	// if err := c.BindJSON(&user); err != nil {
-	// 	c.JSON(http.StatusBadRequest, gin.H{
-	// 		"error": "リクエストに不正な値が含まれています。",
-	// 	})
-	// 	return
-	// }
-
-	// userId, err := c.Cookie("user")
-	// if err != nil {
-	// 	log.Println(err)
-	// 	c.JSON(http.StatusUnauthorized, gin.H{
-	// 		"error": "ログイン情報を取得できませんでした。再度ログインしてください。",
-	// 	})
-	// 	return
-	// }
-
-	// user.Id, _ = strconv.Atoi(c.Param(userId))
-	// if err := dc.dr.UpdateUser(&user); err != nil {
-	// 	log.Println(err)
-	// 	c.JSON(http.StatusInternalServerError, gin.H{
-	// 		"error": "サーバーでエラーが発生しました。",
-	// 	})
-	// 	return
-	// }
-
-	// log.Println("更新完了　フロントに返却")
-	// c.JSON(http.StatusOK, gin.H{
-	// 	"message": "ユーザー情報を更新しました。",
-	// })
-
-}
-
-func (dc *usersController) DeleteUser(c *gin.Context) {
-
-	log.Println("DeleteUser")
-	//クッキーから値取り出し
-	userId, err := c.Cookie("user")
+	jwtInfo, err := unit.GetJwtToken(c)
 	if err != nil {
 		log.Println(err)
 		c.JSON(http.StatusUnauthorized, gin.H{
@@ -140,9 +68,43 @@ func (dc *usersController) DeleteUser(c *gin.Context) {
 		return
 	}
 
-	var user entity.UserEntity
-	user.Id, _ = strconv.Atoi(userId)
+	patchUserInfo := repository.PatchUserInfo{}
+	if err := c.BindJSON(&patchUserInfo); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error": "リクエストに不正な値が含まれています。",
+		})
+		return
+	}
+	patchUserInfo.Id = jwtInfo.Id
 
+	// if err := dc.dr.UpdateUser(&patchUserInfo); err != nil {
+	// 	log.Println(err)
+	// 	c.JSON(http.StatusInternalServerError, gin.H{
+	// 		"error": "サーバーでエラーが発生しました。",
+	// 	})
+	// 	return
+	// }
+
+	log.Println("更新完了　フロントに返却")
+	c.JSON(http.StatusOK, gin.H{
+		"message": "ユーザー情報を更新しました。",
+	})
+
+}
+
+func (dc *usersController) DeleteUser(c *gin.Context) {
+
+	log.Println("DeleteUser")
+	jwtInfo, err := unit.GetJwtToken(c)
+	if err != nil {
+		log.Println(err)
+		c.JSON(http.StatusUnauthorized, gin.H{
+			"error": "ログイン情報を取得できませんでした。再度ログインしてください。",
+		})
+		return
+	}
+
+	user := entity.UserEntity{Id: jwtInfo.Id}
 	if err := dc.dr.DeleteUser(&user); err != nil {
 		log.Println(err)
 		c.JSON(http.StatusInternalServerError, gin.H{
@@ -151,8 +113,8 @@ func (dc *usersController) DeleteUser(c *gin.Context) {
 		return
 	}
 
-	log.Println("登録完了　フロントに返却")
+	log.Println("削除完了　フロントに返却")
 	c.JSON(http.StatusOK, gin.H{
-		"message": "お気に入りから削除しました。",
+		"message": "ユーザーを削除しました。",
 	})
 }
