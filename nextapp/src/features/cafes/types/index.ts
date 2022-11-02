@@ -22,3 +22,9 @@ export type CafeInfo = {
   updated_at: string
   rating: number
 }
+
+export type CafesQuery = {
+  per_page: string
+  page: string
+  search_words: string
+}

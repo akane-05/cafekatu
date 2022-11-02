@@ -90,6 +90,8 @@ func GetRouter() *gin.Engine {
 
 	}
 
+	r.GET("/testcafes", cafesC.GetCafes)
+
 	// r.GET("/cafes", cafesC.GetCafes)
 	// r.GET("/cafes/:id", cafesC.GetCafe)
 	// r.POST("/cafes", cafesC.PostCafe)
