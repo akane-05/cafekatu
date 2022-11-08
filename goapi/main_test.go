@@ -18,7 +18,8 @@ import (
 )
 
 func CreateTestTaken() (tokenString string) {
-	var testTIme = time.Date(2022, 11, 1, 9, 0, 0, 0, time.Local)
+	// var testTIme = time.Date(2022, 11, 1, 9, 0, 0, 0, time.Local)
+	var testTIme = time.Now()
 	var jwtInfo = unit.JwtInfo{Id: 1, Email: "test@cafe.co.jp", ExTime: testTIme}
 
 	claims := jwt.MapClaims{
@@ -36,12 +37,14 @@ func CreateTestTaken() (tokenString string) {
 	secret := os.Getenv("SECRET_KEY")
 	tokenString, _ = token.SignedString([]byte(secret))
 
+	log.Printf("tokenString: %#v\n", tokenString)
 	return
 }
 
 type cafesResponse struct {
-	Message string
-	Data    []repository.CafeInfo
+	Error   string                `json:"error"`
+	Message string                `json:"message"`
+	Data    []repository.CafeInfo `json:"data"`
 }
 
 type cafeResponse struct {
@@ -68,12 +71,23 @@ func TestGetCafes(t *testing.T) {
 	r := GetRouter()
 
 	w := httptest.NewRecorder()
-	req, _ := http.NewRequest("GET", "/cafes/?PerPage=5&Page=1", nil)
+	req, _ := http.NewRequest("GET", "/cafes?per_page=5&page=1", nil)
+	t.Log(tokenString)
 	req.Header.Add("Authorization", tokenString)
 	r.ServeHTTP(w, req)
 
+	t.Log(w.Body.String())
+	t.Log("レスを変換1")
 	var cafesResponse cafesResponse
-	json.Unmarshal([]byte(w.Body.String()), &cafesResponse)
+	// if err := json.Unmarshal([]byte(w.Body.Bytes()), &cafesResponse); err != nil {
+	// 	log.Fatal(err)
+	// }
+
+	//t.Log(cafesResponse.Error)
+
+	if err := json.Unmarshal(w.Body.Bytes(), &cafesResponse); err != nil {
+		log.Fatal(err)
+	}
 
 	// assert
 	assert.Equal(t, http.StatusOK, w.Code)

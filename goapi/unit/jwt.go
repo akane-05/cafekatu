@@ -6,7 +6,6 @@ import (
 	"net/http"
 	"os"
 	"strconv"
-	"strings"
 	"time"
 
 	"github.com/dgrijalva/jwt-go"
@@ -55,7 +54,7 @@ func CheckJwtToken(c *gin.Context) {
 	token, err := parseToken(jwtToken)
 	if err != nil {
 		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{
-			"message": errors.New("bad jwt token"),
+			"message": err.Error(),
 		})
 		return
 	}
@@ -63,7 +62,7 @@ func CheckJwtToken(c *gin.Context) {
 	_, OK := token.Claims.(jwt.MapClaims)
 	if !OK {
 		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{
-			"message": errors.New("unable to parse claims"),
+			"message": err.Error(),
 		})
 		return
 	}
@@ -102,26 +101,19 @@ func extractBearerToken(header string) (string, error) {
 		return "", errors.New("bad header value given")
 	}
 
-	jwtToken := strings.Split(header, " ")
-	if len(jwtToken) != 2 {
-		return "", errors.New("incorrectly formatted authorization header")
-	}
-
-	return jwtToken[1], nil
+	jwtToken := header
+	return jwtToken, nil
 }
 
 func parseToken(jwtToken string) (*jwt.Token, error) {
 	secret := os.Getenv("SECRET_KEY")
 
+	// jwtの検証
 	token, err := jwt.Parse(jwtToken, func(token *jwt.Token) (interface{}, error) {
-		if _, OK := token.Method.(*jwt.SigningMethodHMAC); !OK {
-			return nil, errors.New("bad signed method received")
-		}
-		return []byte(secret), nil
+		return []byte(secret), nil // CreateTokenにて指定した文字列を使います
 	})
-
 	if err != nil {
-		return nil, errors.New("bad jwt token")
+		return token, err
 	}
 
 	return token, nil

@@ -1,5 +1,5 @@
-CREATE DATABASE IF NOT EXISTS cafekatu_db;
-use cafekatu_db;
+CREATE DATABASE IF NOT EXISTS test_db;
+use test_db;
 
 CREATE TABLE IF NOT EXISTS prefectures (
     id             INT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,

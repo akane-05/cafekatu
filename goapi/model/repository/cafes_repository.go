@@ -57,10 +57,10 @@ func (tr *cafesRepository) GetCafes(cafeQuery *CafeQuery) (cafeInfos []CafeInfo,
 	cafes.created_at,cafes.updated_at,
 	AVG(reviews.rating) as rating
 	`
-	join := `join on prefectures on cafes.prefecture_id = prefectures.id left join reviews on cafes.id = reviews.cafe_id`
+	join := `join prefectures on cafes.prefecture_id = prefectures.id left join reviews on cafes.id = reviews.cafe_id`
 
 	//名前付き変数
-	if err = Db.Debug().Table("cafes").Where("cafes.approved = 1").Limit(cafeQuery.PerPage).Offset(cafeQuery.PerPage * (cafeQuery.Page - 1)).Select(query).Joins(join).Group("cafes.id").Find(&cafeInfos).Error; err != nil {
+	if err = Db.Debug().Table("cafes").Order("cafes.id").Where("cafes.approved = 1").Limit(cafeQuery.PerPage).Offset(cafeQuery.PerPage * (cafeQuery.Page - 1)).Select(query).Joins(join).Group("cafes.id").Find(&cafeInfos).Error; err != nil {
 		return
 	}
 

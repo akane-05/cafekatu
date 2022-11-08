@@ -83,7 +83,8 @@ func (dc *cafesController) GetCafe(c *gin.Context) {
 	if err != nil {
 		log.Println(err.Error())
 		c.JSON(http.StatusInternalServerError, gin.H{
-			"error": "サーバーでエラーが発生しました。",
+			// "error": "サーバーでエラーが発生しました。 " + err.Error()
+			"error": err.Error(),
 		})
 		return
 	}
