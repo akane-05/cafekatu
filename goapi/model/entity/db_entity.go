@@ -2,7 +2,7 @@ package entity
 
 import "time"
 
-type CafeEntity struct {
+type Cafes struct {
 	Id            int       `json:"id"`
 	Name          string    `json:"name"  binding:"required"`
 	Zipcode       string    `json:"zipcode"  binding:"required"`
@@ -14,10 +14,9 @@ type CafeEntity struct {
 	Deleted       int       `json:"deleted"`
 	CreatedAt     time.Time `json:"created_at"`
 	UpdatedAt     time.Time `json:"updated_at"`
-	DeletedAt     time.Time `json:"deleted_at"`
 }
 
-type UserEntity struct {
+type Users struct {
 	Id             int       `json:"id" gorm:"column:id"`
 	Email          string    `json:"email" binding:"required"`
 	PasswordDigest string    `json:"password_digest" `
@@ -26,7 +25,7 @@ type UserEntity struct {
 	UpdatedAt      time.Time `json:"updated_at"`
 }
 
-type ReviewEntity struct {
+type Reviews struct {
 	Id        int       `json:"id"`
 	User_id   int       `json:"user_id"`
 	Cafe_id   int       `json:"cafe_id" binding:"required"`
@@ -36,14 +35,14 @@ type ReviewEntity struct {
 	UpdatedAt time.Time `json:"updated_at"`
 }
 
-type FavoriteEntity struct {
+type Favorites struct {
 	User_id   int       `json:"user_id"`
 	Cafe_id   int       `json:"cafe_id"`
 	CreatedAt time.Time `json:"created_at"`
 	UpdatedAt time.Time `json:"updated_at"`
 }
 
-type PrefectureEntity struct {
+type Prefectures struct {
 	Id         int       `json:"id"`
 	Prefecture string    `json:"prefecture"`
 	CreatedAt  time.Time `json:"created_at"`

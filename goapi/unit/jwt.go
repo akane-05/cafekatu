@@ -5,7 +5,6 @@ import (
 	"log"
 	"net/http"
 	"os"
-	"strconv"
 	"time"
 
 	"github.com/dgrijalva/jwt-go"
@@ -27,6 +26,7 @@ func CreateToken(jwtInfo *JwtInfo) (tokenString string) {
 		// "exp":   time.Now().Add(time.Hour).Unix(),
 		"exp": jwtInfo.ExTime.Unix(),
 	}
+	log.Println(claims)
 
 	// ヘッダーとペイロードの生成
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
@@ -74,23 +74,23 @@ func GetJwtToken(c *gin.Context) (JwtInfo, error) {
 	var jwtInfo JwtInfo
 
 	jwtToken, _ := extractBearerToken(c.GetHeader("Authorization"))
-
 	token, _ := parseToken(jwtToken)
 
 	claims, _ := token.Claims.(jwt.MapClaims)
 
 	email, OK := claims["email"].(string)
 	if !OK {
-		return jwtInfo, errors.New("トークンの取得に失敗しました。")
+		return jwtInfo, errors.New("トークンの取得に失敗しました。 email")
 	}
 
-	id, OK := claims["id"].(string)
+	idF, OK := claims["id"].(float64)
+	log.Println(idF)
 	if !OK {
-		return jwtInfo, errors.New("トークンの取得に失敗しました。")
+		return jwtInfo, errors.New("トークンの取得に失敗しました。 id")
 	}
 
-	idNum, _ := strconv.Atoi(c.Param(id))
-	jwtInfo = JwtInfo{Id: idNum, Email: email}
+	id := int(idF)
+	jwtInfo = JwtInfo{Id: id, Email: email}
 
 	return jwtInfo, nil
 

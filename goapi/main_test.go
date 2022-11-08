@@ -48,12 +48,12 @@ type cafesResponse struct {
 }
 
 type cafeResponse struct {
-	Message string
-	Data    repository.CafeInfo
+	Message string              `json:"message"`
+	Data    repository.CafeInfo `json:"data"`
 }
 
 type response struct {
-	Message string
+	Message string `json:"message"`
 }
 
 // テストをしたい入力値と期待値の一覧を作成
@@ -77,13 +77,7 @@ func TestGetCafes(t *testing.T) {
 	r.ServeHTTP(w, req)
 
 	t.Log(w.Body.String())
-	t.Log("レスを変換1")
 	var cafesResponse cafesResponse
-	// if err := json.Unmarshal([]byte(w.Body.Bytes()), &cafesResponse); err != nil {
-	// 	log.Fatal(err)
-	// }
-
-	//t.Log(cafesResponse.Error)
 
 	if err := json.Unmarshal(w.Body.Bytes(), &cafesResponse); err != nil {
 		log.Fatal(err)
@@ -103,9 +97,9 @@ func TestGetCafes(t *testing.T) {
 		assert.Equal(t, cafeInfo.City, exInfo.City)
 		assert.Equal(t, cafeInfo.Street, exInfo.Street)
 		assert.Equal(t, cafeInfo.BusinessHours, exInfo.BusinessHours)
+		assert.Equal(t, cafeInfo.Rating, exInfo.Rating)
 		assert.Equal(t, cafeInfo.CreatedAt, exInfo.CreatedAt)
 		assert.Equal(t, cafeInfo.UpdatedAt, exInfo.UpdatedAt)
-		assert.Equal(t, cafeInfo.Rating, exInfo.Rating)
 	}
 }
 
@@ -115,12 +109,14 @@ func TestGetCafe(t *testing.T) {
 	r := GetRouter()
 
 	w := httptest.NewRecorder()
-	req, _ := http.NewRequest("GET", "/cafe/1", nil)
+	req, _ := http.NewRequest("GET", "/cafes/1", nil)
 	req.Header.Add("Authorization", tokenString)
 	r.ServeHTTP(w, req)
 
 	var cafeResponse cafeResponse
-	json.Unmarshal([]byte(w.Body.String()), &cafeResponse)
+	if err := json.Unmarshal(w.Body.Bytes(), &cafeResponse); err != nil {
+		log.Fatal(err)
+	}
 
 	// assert
 	assert.Equal(t, http.StatusOK, w.Code)
@@ -136,16 +132,17 @@ func TestGetCafe(t *testing.T) {
 	assert.Equal(t, cafeInfo.City, exInfo.City)
 	assert.Equal(t, cafeInfo.Street, exInfo.Street)
 	assert.Equal(t, cafeInfo.BusinessHours, exInfo.BusinessHours)
+	assert.Equal(t, cafeInfo.Rating, exInfo.Rating)
 	assert.Equal(t, cafeInfo.CreatedAt, exInfo.CreatedAt)
 	assert.Equal(t, cafeInfo.UpdatedAt, exInfo.UpdatedAt)
-	assert.Equal(t, cafeInfo.Rating, exInfo.Rating)
+
 }
 
 func TestPostCafe(t *testing.T) {
 	tokenString := CreateTestTaken()
 	r := GetRouter()
 	w := httptest.NewRecorder()
-	cafe := entity.CafeEntity{
+	cafe := entity.Cafes{
 		Name:          "testCafe",
 		Zipcode:       "1111111",
 		PrefectureId:  1,
@@ -160,7 +157,9 @@ func TestPostCafe(t *testing.T) {
 	r.ServeHTTP(w, req)
 
 	var response response
-	json.Unmarshal([]byte(w.Body.String()), &response)
+	if err := json.Unmarshal(w.Body.Bytes(), &response); err != nil {
+		log.Fatal(err)
+	}
 
 	// assert
 	assert.Equal(t, http.StatusOK, w.Code)
@@ -172,13 +171,15 @@ func TestPostFavorite(t *testing.T) {
 	tokenString := CreateTestTaken()
 	r := GetRouter()
 	w := httptest.NewRecorder()
-	req, _ := http.NewRequest("POST", "/cafes/1/favorite", nil)
+	req, _ := http.NewRequest("POST", "/cafes/2/favorite", nil)
 	req.Header.Add("Authorization", tokenString)
 
 	r.ServeHTTP(w, req)
 
 	var response response
-	json.Unmarshal([]byte(w.Body.String()), &response)
+	if err := json.Unmarshal(w.Body.Bytes(), &response); err != nil {
+		log.Fatal(err)
+	}
 
 	// assert
 	assert.Equal(t, http.StatusOK, w.Code)
@@ -190,13 +191,15 @@ func TestDeleteFavorite(t *testing.T) {
 	tokenString := CreateTestTaken()
 	r := GetRouter()
 	w := httptest.NewRecorder()
-	req, _ := http.NewRequest("DELETE", "/cafes/1/favorite", nil)
+	req, _ := http.NewRequest("DELETE", "/cafes/8/favorite", nil)
 	req.Header.Add("Authorization", tokenString)
 
 	r.ServeHTTP(w, req)
 
 	var response response
-	json.Unmarshal([]byte(w.Body.String()), &response)
+	if err := json.Unmarshal(w.Body.Bytes(), &response); err != nil {
+		log.Fatal(err)
+	}
 
 	// assert
 	assert.Equal(t, http.StatusOK, w.Code)

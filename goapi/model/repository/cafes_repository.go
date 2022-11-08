@@ -14,9 +14,9 @@ import (
 type CafesRepository interface {
 	GetCafes(cafeQuery *CafeQuery) (cafeInfos []CafeInfo, err error)
 	GetCafe(id *int) (cafeInfo CafeInfo, err error)
-	InsertCafe(cafe *entity.CafeEntity) (err error)
-	InsertFavorite(favo *entity.FavoriteEntity) (err error)
-	DeleteFavorite(favo *entity.FavoriteEntity) (err error)
+	InsertCafe(cafe *entity.Cafes) (err error)
+	InsertFavorite(favo *entity.Favorites) (err error)
+	DeleteFavorite(favo *entity.Favorites) (err error)
 }
 
 // 構造体の宣言
@@ -77,8 +77,7 @@ func (tr *cafesRepository) GetCafe(id *int) (cafeInfo CafeInfo, err error) {
 	cafes.created_at,cafes.updated_at,AVG(reviews.rating) as rating
 	`
 
-	// join := `left join reviews on cafes.id = reviews.cafe_id`
-	join := `join on prefectures on cafes.prefecture_id = prefectures.id left join reviews on cafes.id = reviews.cafe_id`
+	join := `join prefectures on cafes.prefecture_id = prefectures.id left join reviews on cafes.id = reviews.cafe_id`
 
 	if err = Db.Debug().Table("cafes").Where("cafes.id = ? and cafes.approved = 1", id).Select(query).Joins(join).Group("cafes.id").First(&cafeInfo).Error; err != nil {
 		return
@@ -89,7 +88,7 @@ func (tr *cafesRepository) GetCafe(id *int) (cafeInfo CafeInfo, err error) {
 }
 
 // ポインタレシーバ(*demoRepository)にメソッドを追加
-func (tr *cafesRepository) InsertCafe(cafe *entity.CafeEntity) (err error) {
+func (tr *cafesRepository) InsertCafe(cafe *entity.Cafes) (err error) {
 	log.Println("リポジトリ InsertCafe")
 
 	if err = Db.Transaction(func(tx *gorm.DB) error {
@@ -109,7 +108,7 @@ func (tr *cafesRepository) InsertCafe(cafe *entity.CafeEntity) (err error) {
 
 }
 
-func (tr *cafesRepository) InsertFavorite(favo *entity.FavoriteEntity) (err error) {
+func (tr *cafesRepository) InsertFavorite(favo *entity.Favorites) (err error) {
 	log.Println("リポジトリ InsertFavorite")
 
 	if err = Db.Transaction(func(tx *gorm.DB) error {
@@ -129,12 +128,12 @@ func (tr *cafesRepository) InsertFavorite(favo *entity.FavoriteEntity) (err erro
 
 }
 
-func (tr *cafesRepository) DeleteFavorite(favo *entity.FavoriteEntity) (err error) {
+func (tr *cafesRepository) DeleteFavorite(favo *entity.Favorites) (err error) {
 	log.Println("リポジトリ DeleteFavorite")
 
 	if err = Db.Transaction(func(tx *gorm.DB) error {
 		// データベース操作をトランザクション内で行う
-		if err = tx.Unscoped().Delete(&favo).Error; err != nil {
+		if err = tx.Unscoped().Where("user_id = ? and cafe_id = ? ", favo.User_id, favo.Cafe_id).Delete(&favo).Error; err != nil {
 			// エラーを返した場合はロールバックされる
 			return err
 		}

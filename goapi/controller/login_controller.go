@@ -121,7 +121,7 @@ func (dc *loginController) Register(c *gin.Context) {
 	}
 
 	//user登録
-	var postUser entity.UserEntity
+	var postUser entity.Users
 	postUser.Email = registerInfo.Email
 	postUser.PasswordDigest, _ = unit.PasswordEncrypt(registerInfo.Password)
 	postUser.Nickname = registerInfo.Nickname
