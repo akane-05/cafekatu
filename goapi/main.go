@@ -44,7 +44,7 @@ func GetRouter() *gin.Engine {
 		AllowOrigins: []string{
 			"http://localhost:3000",
 		},
-		// アクセスを許可したいHTTPメソッド(以下の例だとPUTやDELETEはアクセスできません)
+		// アクセスを許可したいHTTPメソッド
 		AllowMethods: []string{
 			"POST",
 			"GET",
@@ -54,7 +54,7 @@ func GetRouter() *gin.Engine {
 		},
 		// 許可したいHTTPリクエストヘッダ
 		AllowHeaders: []string{
-			"Access-Control-Allow-Credentials",
+			//"Access-Control-Allow-Credentials",
 			"Access-Control-Allow-Headers",
 			"Content-Type",
 			"Content-Length",
@@ -63,7 +63,7 @@ func GetRouter() *gin.Engine {
 			"Access-Control-Allow-Origin",
 		},
 		// cookieなどの情報を必要とするかどうか
-		AllowCredentials: true,
+		//AllowCredentials: true,
 		// preflightリクエストの結果をキャッシュする時間
 		MaxAge: 24 * time.Hour,
 	}))
@@ -78,7 +78,7 @@ func GetRouter() *gin.Engine {
 		group.GET("/cafes/:id", cafesC.GetCafe)
 		group.POST("/cafes", cafesC.PostCafe)
 		group.POST("/cafes/:id/favorite", cafesC.PostFavorite)
-		group.PATCH("/cafes/:id/favorite", cafesC.PostFavorite)
+		group.DELETE("/cafes/:id/favorite", cafesC.DeleteFavorite)
 
 		group.GET("/users/:id", usersC.GetUser)
 		group.PATCH("/users/:id", usersC.PatchUser)
@@ -89,21 +89,6 @@ func GetRouter() *gin.Engine {
 		group.DELETE("/reviews/:id", reviewsC.DeleteReview)
 
 	}
-
-	// r.GET("/cafes", cafesC.GetCafes)
-	// r.GET("/cafes/:id", cafesC.GetCafe)
-	// r.POST("/cafes", cafesC.PostCafe)
-	// r.POST("/cafes/:id/favorite", cafesC.PostFavorite)
-	// r.DELETE("/cafes/:id/favorite", cafesC.DeleteFavorite)
-
-	// r.GET("/users/:id", usersC.GetUser)
-	// r.PATCH("/users/:id", usersC.PatchUser)
-	// r.DELETE("/users/:id", usersC.DeleteUser)
-
-	// r.GET("/reviews", reviewsC.GetReviews)
-	// r.POST("/reviews", reviewsC.PostReview)
-	// r.DELETE("/reviews/:id", reviewsC.DeleteReview)
-
 	r.NoRoute(func(c *gin.Context) {
 		c.JSON(404, gin.H{"code": "PAGE_NOT_FOUND", "message": "Page not found"})
 	})

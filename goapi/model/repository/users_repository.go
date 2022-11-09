@@ -11,9 +11,9 @@ import (
 // DIを用いたリポジトリの実装
 // インターフェースで実装すべきメソッドを決める
 type UsersRepository interface {
-	GetUser(id *int) (user entity.UserEntity, err error)
+	GetUser(id *int) (user entity.Users, err error)
 	UpdateUser(patchUserInfo PatchUserInfo) (err error)
-	DeleteUser(user *entity.UserEntity) (err error)
+	DeleteUser(user *entity.Users) (err error)
 }
 
 // 構造体の宣言
@@ -33,7 +33,7 @@ type PatchUserInfo struct {
 }
 
 // ポインタレシーバ(*demoRepository)にメソッドを追加
-func (tr *usersRepository) GetUser(id *int) (user entity.UserEntity, err error) {
+func (tr *usersRepository) GetUser(id *int) (user entity.Users, err error) {
 	log.Println("リポジトリ GetUser")
 
 	if err = Db.Debug().Table("users").Where("email = ?", id).First(&user).Error; err != nil {
@@ -63,7 +63,7 @@ func (tr *usersRepository) UpdateUser(patchUserInfo PatchUserInfo) (err error) {
 
 }
 
-func (tr *usersRepository) DeleteUser(user *entity.UserEntity) (err error) {
+func (tr *usersRepository) DeleteUser(user *entity.Users) (err error) {
 	log.Println("リポジトリ DeleteUser")
 
 	if err = Db.Transaction(func(tx *gorm.DB) error {

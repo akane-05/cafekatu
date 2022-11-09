@@ -42,7 +42,7 @@ func (dc *reviewsController) GetReviews(c *gin.Context) {
 		return
 	}
 
-	var reviews []entity.ReviewEntity
+	var reviews []entity.Reviews
 	var err error
 	if query.Cafe_id != 0 {
 		reviews, err = dc.dr.GetCafeReviews(&query)
@@ -82,7 +82,7 @@ func (dc *reviewsController) PostReview(c *gin.Context) {
 
 	log.Println("PostReview")
 
-	review := entity.ReviewEntity{}
+	review := entity.Reviews{}
 	if err := c.BindJSON(&review); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"error": "リクエストに不正な値が含まれています。",
@@ -132,7 +132,7 @@ func (dc *reviewsController) DeleteReview(c *gin.Context) {
 		return
 	}
 
-	review := entity.ReviewEntity{Id: id}
+	review := entity.Reviews{Id: id}
 
 	if err := dc.dr.DeleteReview(&review); err != nil {
 		log.Println(err)

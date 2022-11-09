@@ -104,7 +104,7 @@ func (dc *usersController) DeleteUser(c *gin.Context) {
 		return
 	}
 
-	user := entity.UserEntity{Id: jwtInfo.Id}
+	user := entity.Users{Id: jwtInfo.Id}
 	if err := dc.dr.DeleteUser(&user); err != nil {
 		log.Println(err)
 		c.JSON(http.StatusInternalServerError, gin.H{

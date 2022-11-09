@@ -83,7 +83,8 @@ func (dc *cafesController) GetCafe(c *gin.Context) {
 	if err != nil {
 		log.Println(err.Error())
 		c.JSON(http.StatusInternalServerError, gin.H{
-			"error": "サーバーでエラーが発生しました。",
+			// "error": "サーバーでエラーが発生しました。 " + err.Error()
+			"error": err.Error(),
 		})
 		return
 	}
@@ -103,7 +104,7 @@ func (dc *cafesController) PostCafe(c *gin.Context) {
 
 	log.Println("PostCafe")
 
-	cafe := entity.CafeEntity{}
+	cafe := entity.Cafes{}
 	if err := c.BindJSON(&cafe); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"error": "リクエストに不正な値が含まれています。",
@@ -149,7 +150,7 @@ func (dc *cafesController) PostFavorite(c *gin.Context) {
 		})
 		return
 	}
-	favo := entity.FavoriteEntity{User_id: jwtInfo.Id, Cafe_id: cafeId}
+	favo := entity.Favorites{User_id: jwtInfo.Id, Cafe_id: cafeId}
 
 	if err := dc.dr.InsertFavorite(&favo); err != nil {
 		log.Println(err)
@@ -190,7 +191,7 @@ func (dc *cafesController) DeleteFavorite(c *gin.Context) {
 		return
 	}
 
-	favo := entity.FavoriteEntity{User_id: jwtInfo.Id, Cafe_id: cafeId}
+	favo := entity.Favorites{User_id: jwtInfo.Id, Cafe_id: cafeId}
 
 	if err := dc.dr.DeleteFavorite(&favo); err != nil {
 		log.Println(err)

@@ -4,6 +4,7 @@ import (
 	"errors"
 	"log"
 	"net/http"
+	"time"
 
 	"github.com/akane-05/cafekatu/goapi/model/entity"
 	"github.com/akane-05/cafekatu/goapi/model/repository"
@@ -76,7 +77,7 @@ func (dc *loginController) Login(c *gin.Context) {
 	}
 
 	//以下jwt認証
-	jwtInfo := unit.JwtInfo{user.Id, user.Email}
+	jwtInfo := unit.JwtInfo{Id: user.Id, Email: user.Email, ExTime: time.Now().Add(time.Hour)}
 
 	tokenString := unit.CreateToken(&jwtInfo)
 	log.Println("tokenString:", tokenString)
@@ -86,10 +87,9 @@ func (dc *loginController) Login(c *gin.Context) {
 		"message": "ログインしました。",
 	})
 
-	return
 	log.Println("フロントに返却")
-
 	return
+
 }
 
 func (dc *loginController) Register(c *gin.Context) {
@@ -104,15 +104,16 @@ func (dc *loginController) Register(c *gin.Context) {
 	}
 
 	//emailが登録済みのものか検証
-	rerult, err := dc.dr.CheckEmail(&registerInfo.Email)
-	if rerult != true {
-		if errors.Is(err, gorm.ErrRecordNotFound) {
-			log.Printf("登録済みのemailアドレスが入力されました。%s", registerInfo.Email)
-			c.JSON(http.StatusUnauthorized, gin.H{
-				"error": "登録済みのemailアドレスです。別のアドレスで登録してください。",
-			})
-			return
-		}
+	exist, err := dc.dr.CheckEmail(&registerInfo.Email)
+	if exist {
+		log.Printf("登録済みのemailアドレスが入力されました。%s", registerInfo.Email)
+		c.JSON(http.StatusUnauthorized, gin.H{
+			"error": "登録済みのemailアドレスです。別のアドレスで登録してください。",
+		})
+		return
+	}
+
+	if err != nil {
 		log.Println(err.Error())
 		c.JSON(http.StatusInternalServerError, gin.H{
 			"error": "サーバーでエラーが発生しました。",
@@ -121,7 +122,7 @@ func (dc *loginController) Register(c *gin.Context) {
 	}
 
 	//user登録
-	var postUser entity.UserEntity
+	var postUser entity.Users
 	postUser.Email = registerInfo.Email
 	postUser.PasswordDigest, _ = unit.PasswordEncrypt(registerInfo.Password)
 	postUser.Nickname = registerInfo.Nickname
@@ -138,7 +139,7 @@ func (dc *loginController) Register(c *gin.Context) {
 	log.Println("DBに登録完了")
 
 	//以下jwt認証
-	jwtInfo := unit.JwtInfo{Id: id, Email: postUser.Email}
+	jwtInfo := unit.JwtInfo{Id: id, Email: postUser.Email, ExTime: time.Now().Add(time.Hour)}
 	tokenString := unit.CreateToken(&jwtInfo)
 	log.Println("tokenString:", tokenString)
 
