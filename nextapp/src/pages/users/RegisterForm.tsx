@@ -20,6 +20,8 @@ import Visibility from '@mui/icons-material/Visibility'
 import VisibilityOff from '@mui/icons-material/VisibilityOff'
 import React, { useState, useRef } from 'react'
 import { styled } from '@mui/system'
+import { RegisterInfo } from '@/features/register/types'
+import { registerUser } from '@/features/register/api/registerUser'
 
 interface State {
   email: string
@@ -34,6 +36,7 @@ interface Error {
   email: boolean
   password: boolean
   passwordConfirm: boolean
+  [key: string]: boolean
 }
 
 export default function RegisterForm() {
@@ -117,6 +120,22 @@ export default function RegisterForm() {
       }
       setValues({ ...values, [prop]: event.target.value })
     }
+
+  const register = () => {
+    for (const key of Object.keys(errors)) {
+      if (errors[key]) {
+        const mes = 'test'
+      }
+
+      const registerInfo: RegisterInfo = {
+        email: values.email,
+        password: values.password,
+        nickname: values.nickname,
+      }
+
+      const message = registerUser(registerInfo)
+    }
+  }
 
   return (
     <ThemeProvider theme={theme}>
