@@ -12,11 +12,6 @@ COPY model/ ./model/
 COPY unit/ ./unit/
 RUN go mod download
 
-# RUN CGO_ENABLED=0 GOOS=linux go install -v \
-#     -ldflags="-w -s" \
-#     ${ROOT}
-
 EXPOSE 8081
 
 CMD ["go", "run", "main.go"]
-# CMD ["/goapi"]

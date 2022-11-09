@@ -27,7 +27,7 @@ CREATE TABLE IF NOT EXISTS cafes (
 CREATE TABLE IF NOT EXISTS users (
     id             INT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
     email          VARCHAR(255) UNIQUE NOT NULL,
-    password_digest    VARCHAR(20) NOT NULL,
+    password_digest    VARCHAR(255) NOT NULL,
     nickname        VARCHAR(20) NOT NULL,
     created_at      TIMESTAMP NOT NULL DEFAULT current_timestamp ON UPDATE current_timestamp,
     updated_at     TIMESTAMP NOT NULL DEFAULT current_timestamp ON UPDATE current_timestamp
@@ -118,9 +118,9 @@ INSERT INTO cafes (name, zipcode,prefecture_id,city,street,business_hours,approv
 INSERT INTO cafes (name, zipcode,prefecture_id,city,street,business_hours,approved) VALUES ('お菓子の家', '1111111',1,'渋谷区','渋谷','毎週土曜日定休日',1);
 
 
-INSERT INTO users (email, password_digest,nickname) VALUES ('sample1@email.com', 'djeiv53','ユーザー1');
-INSERT INTO users (email, password_digest,nickname) VALUES ('sample2@email.com', 'djeiv53','ユーザー2');
-INSERT INTO users (email, password_digest,nickname) VALUES ('sample3@email.com', 'djeiv53','ユーザー3');
+INSERT INTO users (email, password_digest,nickname) VALUES ('user1@email.com', '$2a$10$lFv9r5L8re196/AjvRoN3uVNAKN7H23KbyOBMmpFCBlmGBy46glse','ユーザー1');
+INSERT INTO users (email, password_digest,nickname) VALUES ('user2@email.com', '$2a$10$lFv9r5L8re196/AjvRoN3uVNAKN7H23KbyOBMmpFCBlmGBy46glse','ユーザー2');
+INSERT INTO users (email, password_digest,nickname) VALUES ('user3@email.com', '$2a$10$lFv9r5L8re196/AjvRoN3uVNAKN7H23KbyOBMmpFCBlmGBy46glse','ユーザー3');
 
 INSERT INTO reviews (user_id, cafe_id,comment,rating) VALUES ('1', '1','ケーキが美味しかった',2);
 INSERT INTO reviews (user_id, cafe_id,comment,rating) VALUES ('2', '2','コーヒーが好き',3);

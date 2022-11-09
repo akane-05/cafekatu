@@ -38,20 +38,25 @@ func (tr *loginRepository) GetUser(email *string) (user entity.Users, err error)
 }
 
 // ポインタレシーバ(*demoRepository)にメソッドを追加
-func (tr *loginRepository) CheckEmail(email *string) (result bool, err error) {
+func (tr *loginRepository) CheckEmail(email *string) (exist bool, err error) {
 	log.Println("リポジトリ CheckEmail")
 
-	result = false
-
+	exist = false
 	var user entity.Users
-	if err = Db.Debug().Where("email = ?", email).First(&user).Error; err != nil {
-		if errors.Is(err, gorm.ErrRecordNotFound) {
-			result = true
-			return
-		}
+	err = Db.Debug().Where("email = ?", email).First(&user).Error
+
+	if errors.Is(err, gorm.ErrRecordNotFound) {
+		exist = false
+		err = nil
 		return
 	}
+	if err != nil {
+		exist = false
+		return
+	}
+
 	//名前付き変数でreturn
+	exist = true
 	return
 }
 

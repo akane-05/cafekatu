@@ -23,10 +23,9 @@ func CreateToken(jwtInfo *JwtInfo) (tokenString string) {
 	claims := jwt.MapClaims{
 		"id":    jwtInfo.Id,
 		"email": jwtInfo.Email,
-		// "exp":   time.Now().Add(time.Hour).Unix(),
-		"exp": jwtInfo.ExTime.Unix(),
+		"exp":   jwtInfo.ExTime.Unix(),
 	}
-	log.Println(claims)
+	log.Printf("claims: %#v\n", claims)
 
 	// ヘッダーとペイロードの生成
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
@@ -43,7 +42,7 @@ func CreateToken(jwtInfo *JwtInfo) (tokenString string) {
 // Parse は jwt トークンから元になった認証情報を取り出す。
 func CheckJwtToken(c *gin.Context) {
 
-	jwtToken, err := extractBearerToken(c.GetHeader("Authorization"))
+	jwtToken, err := ExtractBearerToken(c.GetHeader("Authorization"))
 	if err != nil {
 		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{
 			"message": err.Error(),
@@ -51,7 +50,7 @@ func CheckJwtToken(c *gin.Context) {
 		return
 	}
 
-	token, err := parseToken(jwtToken)
+	token, err := ParseToken(jwtToken)
 	if err != nil {
 		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{
 			"message": err.Error(),
@@ -73,8 +72,8 @@ func CheckJwtToken(c *gin.Context) {
 func GetJwtToken(c *gin.Context) (JwtInfo, error) {
 	var jwtInfo JwtInfo
 
-	jwtToken, _ := extractBearerToken(c.GetHeader("Authorization"))
-	token, _ := parseToken(jwtToken)
+	jwtToken, _ := ExtractBearerToken(c.GetHeader("Authorization"))
+	token, _ := ParseToken(jwtToken)
 
 	claims, _ := token.Claims.(jwt.MapClaims)
 
@@ -96,7 +95,7 @@ func GetJwtToken(c *gin.Context) (JwtInfo, error) {
 
 }
 
-func extractBearerToken(header string) (string, error) {
+func ExtractBearerToken(header string) (string, error) {
 	if header == "" {
 		return "", errors.New("bad header value given")
 	}
@@ -105,7 +104,7 @@ func extractBearerToken(header string) (string, error) {
 	return jwtToken, nil
 }
 
-func parseToken(jwtToken string) (*jwt.Token, error) {
+func ParseToken(jwtToken string) (*jwt.Token, error) {
 	secret := os.Getenv("SECRET_KEY")
 
 	// jwtの検証

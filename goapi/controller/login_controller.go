@@ -104,15 +104,16 @@ func (dc *loginController) Register(c *gin.Context) {
 	}
 
 	//emailが登録済みのものか検証
-	rerult, err := dc.dr.CheckEmail(&registerInfo.Email)
-	if rerult != true {
-		if errors.Is(err, gorm.ErrRecordNotFound) {
-			log.Printf("登録済みのemailアドレスが入力されました。%s", registerInfo.Email)
-			c.JSON(http.StatusUnauthorized, gin.H{
-				"error": "登録済みのemailアドレスです。別のアドレスで登録してください。",
-			})
-			return
-		}
+	exist, err := dc.dr.CheckEmail(&registerInfo.Email)
+	if exist {
+		log.Printf("登録済みのemailアドレスが入力されました。%s", registerInfo.Email)
+		c.JSON(http.StatusUnauthorized, gin.H{
+			"error": "登録済みのemailアドレスです。別のアドレスで登録してください。",
+		})
+		return
+	}
+
+	if err != nil {
 		log.Println(err.Error())
 		c.JSON(http.StatusInternalServerError, gin.H{
 			"error": "サーバーでエラーが発生しました。",

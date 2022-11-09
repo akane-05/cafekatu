@@ -3,6 +3,7 @@ package main
 import (
 	"bytes"
 	"encoding/json"
+	"errors"
 	"log"
 	"net/http"
 	"net/http/httptest"
@@ -10,6 +11,7 @@ import (
 	"testing"
 	"time"
 
+	"github.com/akane-05/cafekatu/goapi/controller"
 	"github.com/akane-05/cafekatu/goapi/model/entity"
 	"github.com/akane-05/cafekatu/goapi/model/repository"
 	"github.com/akane-05/cafekatu/goapi/unit"
@@ -41,6 +43,30 @@ func CreateTestTaken() (tokenString string) {
 	return
 }
 
+func CheckTestJwtToken(tokenString string) (email string, id int, err error) {
+	jwtToken, err := unit.ExtractBearerToken(tokenString)
+	if err != nil {
+		log.Fatal(err)
+	}
+	token, err := unit.ParseToken(jwtToken)
+	if err != nil {
+		return "", 0, err
+	}
+
+	claims, _ := token.Claims.(jwt.MapClaims)
+	email, OK := claims["email"].(string)
+	if !OK {
+		return "", 0, errors.New("emailを取得できませんでした")
+	}
+	idF, OK := claims["id"].(float64)
+	if !OK {
+		return "", 0, errors.New("idを取得できませんでした")
+	}
+	id = int(idF)
+
+	return email, id, nil
+}
+
 type cafesResponse struct {
 	Error   string                `json:"error"`
 	Message string                `json:"message"`
@@ -54,6 +80,11 @@ type cafeResponse struct {
 
 type response struct {
 	Message string `json:"message"`
+}
+
+type registerResponse struct {
+	Message string `json:"message"`
+	Token   string `json:"token"`
 }
 
 // テストをしたい入力値と期待値の一覧を作成
@@ -204,5 +235,72 @@ func TestDeleteFavorite(t *testing.T) {
 	// assert
 	assert.Equal(t, http.StatusOK, w.Code)
 	assert.Equal(t, response.Message, "お気に入りから削除しました。")
+
+}
+
+func TestRegister(t *testing.T) {
+	r := GetRouter()
+	w := httptest.NewRecorder()
+
+	registerInfo := controller.RegisterInfo{
+		Email:    "register@email.com",
+		Password: "password",
+		Nickname: "登録ニックネーム",
+	}
+
+	jsonValue, _ := json.Marshal(registerInfo)
+	req, _ := http.NewRequest("POST", "/register", bytes.NewBuffer(jsonValue))
+
+	r.ServeHTTP(w, req)
+
+	var response registerResponse
+	if err := json.Unmarshal(w.Body.Bytes(), &response); err != nil {
+		log.Fatal(err.Error())
+	}
+
+	// assert
+	assert.Equal(t, http.StatusOK, w.Code)
+	assert.Equal(t, response.Message, "ユーザー登録が完了しました。")
+
+	//jwt
+	email, id, err := CheckTestJwtToken(response.Token)
+	if err != nil {
+		log.Fatal(err.Error())
+	}
+	assert.Equal(t, email, "register@email.com")
+	assert.Equal(t, id, 4)
+
+}
+
+func TestLogin(t *testing.T) {
+	r := GetRouter()
+	w := httptest.NewRecorder()
+
+	loginInfo := controller.LoginInfo{
+		Email:    "user1@email.com",
+		Password: "password",
+	}
+
+	jsonValue, _ := json.Marshal(loginInfo)
+	req, _ := http.NewRequest("GET", "/login", bytes.NewBuffer(jsonValue))
+
+	r.ServeHTTP(w, req)
+
+	var response registerResponse
+	if err := json.Unmarshal(w.Body.Bytes(), &response); err != nil {
+		log.Fatal(err.Error())
+	}
+
+	// assert
+	assert.Equal(t, http.StatusOK, w.Code)
+	assert.Equal(t, response.Message, "ログインしました。")
+
+	//jwt
+	email, id, err := CheckTestJwtToken(response.Token)
+	if err != nil {
+		log.Fatal(err.Error())
+	}
+	assert.Equal(t, email, "user1@email.com")
+	assert.Equal(t, id, 1)
 
 }

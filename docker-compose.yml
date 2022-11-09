@@ -1,45 +1,45 @@
 version: '3'
 services:
-  # nextapp:
-  #   image: nextapp
-  #   container_name: nextapp
-  #   build:
-  #     context: ./nextapp
-  #     dockerfile: ../dockerfile/nextapp/Dockerfile
-  #   ports:
-  #     - "127.0.0.1:3000:3000"
-  #   tty: true
-  #   volumes:
-  #    - ./nextapp:/nextapp #ホスト:コンテナ
-  #    - /nextapp/node_modules
-  #   environment:
-  #    - WATCHPACK_POLLING=true
-  #   command: sh -c "npm run dev"
-  # cafekatu_db:
-  #   image: cafekatu_db
-  #   container_name: cafekatu_db
-  #   build:
-  #       context: ./dockerfile/mysql
-  #       dockerfile: ./Dockerfile
-  #   volumes:
-  #     - ./dockerfile/mysql/db:/docker-entrypoint-initdb.d  #初期データ
-  #   environment:
-  #     MYSQL_ROOT_PASSWORD: Qu849dzp
-  #     MYSQL_DATABASE: cafekatu_db
-  #     TZ: "UTC"
-  #   ports:
-  #     - "127.0.0.1:3307:3306"
-  # go-api-server:
-  #   image: go-api-server
-  #   container_name: go-api-server
-  #   build:
-  #     context: ./goapi
-  #     dockerfile: ../dockerfile/goapi/Dockerfile
-  #   env_file: ./goapi/env/dev.env
-  #   ports:
-  #     - "127.0.0.1:8080:8080"
-  #   depends_on:
-  #    - cafekatu_db
+  nextapp:
+    image: nextapp
+    container_name: nextapp
+    build:
+      context: ./nextapp
+      dockerfile: ../dockerfile/nextapp/Dockerfile
+    ports:
+      - "127.0.0.1:3000:3000"
+    tty: true
+    volumes:
+     - ./nextapp:/nextapp #ホスト:コンテナ
+     - /nextapp/node_modules
+    environment:
+     - WATCHPACK_POLLING=true
+    command: sh -c "npm run dev"
+  cafekatu_db:
+    image: cafekatu_db
+    container_name: cafekatu_db
+    build:
+        context: ./dockerfile/mysql
+        dockerfile: ./Dockerfile
+    volumes:
+      - ./dockerfile/mysql/db:/docker-entrypoint-initdb.d  #初期データ
+    environment:
+      MYSQL_ROOT_PASSWORD: Qu849dzp
+      MYSQL_DATABASE: cafekatu_db
+      TZ: "UTC"
+    ports:
+      - "127.0.0.1:3307:3306"
+  go-api-server:
+    image: go-api-server
+    container_name: go-api-server
+    build:
+      context: ./goapi
+      dockerfile: ../dockerfile/goapi/Dockerfile
+    env_file: ./goapi/env/dev.env
+    ports:
+      - "127.0.0.1:8080:8080"
+    depends_on:
+     - cafekatu_db
   test_db:
     image: test_db
     container_name: test_db
