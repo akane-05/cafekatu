@@ -7,7 +7,9 @@ const validPattern = {
 };
 
 const requests = {
-
+base:'http://localhost:8080',
+register:`/register`,
+test:`http://localhost:8080/testcafes?`
 
 };
 

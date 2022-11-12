@@ -1,5 +1,6 @@
-import axios from "axios";
 import { RegisterInfo,ReturnInfo } from '@/features/register/types'
+import  APIClient from '@/lib/axios'
+import {requests} from '@/const/Consts'
 
 export async function registerUser (info :RegisterInfo) :Promise<ReturnInfo> {
   const returnInfo : ReturnInfo = {
@@ -7,7 +8,7 @@ export async function registerUser (info :RegisterInfo) :Promise<ReturnInfo> {
     result: false,
   }
 
-    return axios.post(`http://localhost:8080/register`, {
+    return APIClient.post(requests.register, {
       info,
       })
       .then((res) => {
