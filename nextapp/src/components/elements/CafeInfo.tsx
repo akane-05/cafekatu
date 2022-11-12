@@ -20,11 +20,11 @@ import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder'
 
 import { CafeInfo } from '@/features/cafes/types'
 
-interface Props {
+type Props = {
   cafeInfo: CafeInfo
 }
 
-interface State {
+type State = {
   isFavorite: boolean
 }
 

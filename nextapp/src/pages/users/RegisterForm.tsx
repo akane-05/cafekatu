@@ -8,7 +8,6 @@ import {
   OutlinedInput,
   InputAdornment,
   IconButton,
-  Paper,
   Dialog,
   DialogActions,
   DialogTitle,
@@ -22,8 +21,11 @@ import React, { useState, useRef } from 'react'
 import { styled } from '@mui/system'
 import { RegisterInfo } from '@/features/register/types'
 import { registerUser } from '@/features/register/api/registerUser'
+import { DialogOptions, useDialogContext } from '@/context/MessageDialog'
+import CustomButton from '@/components/elements/CustomButton'
+import { validPattern } from '@/const/Consts'
 
-interface State {
+type State = {
   email: string
   password: string
   passwordConfirm: string
@@ -31,7 +33,7 @@ interface State {
   showPassword: boolean
 }
 
-interface Error {
+type Error = {
   nickname: boolean
   email: boolean
   password: boolean
@@ -40,10 +42,8 @@ interface Error {
 }
 
 export default function RegisterForm() {
-  const CustomButton = styled(Button)(() => ({
-    maxWidth: '120px',
-    minWidth: '120px',
-  }))
+  const dialog = useDialogContext()
+  let dialogOptions: DialogOptions
 
   const [values, setValues] = React.useState<State>({
     email: '',
@@ -61,15 +61,9 @@ export default function RegisterForm() {
   })
 
   const [open, setOpen] = React.useState(false)
-
   const nicknameRef = useRef<HTMLInputElement>(null)
   const emailRef = useRef<HTMLInputElement>(null)
   const passwordRef = useRef<HTMLInputElement>(null)
-
-  const nicknameValidPattern = '^.{2,20}$'
-  const emailVaildPattern =
-    '^[a-zA-Z0-9_+-]+(.[a-zA-Z0-9_+-]+)*@([a-zA-Z0-9][a-zA-Z0-9-]*[a-zA-Z0-9]*.)+[a-zA-Z]{2,}$'
-  const passwordVaildPattern = '^([a-zA-Z0-9]{8})$'
 
   const handleClickShowPassword = () => {
     setValues({
@@ -121,19 +115,41 @@ export default function RegisterForm() {
       setValues({ ...values, [prop]: event.target.value })
     }
 
-  const register = () => {
+  const register = async () => {
     for (const key of Object.keys(errors)) {
       if (errors[key]) {
-        const mes = 'test'
+        dialogOptions = {
+          title: 'エラー',
+          message: 'エラーを修正してください',
+          open: true,
+        }
+        dialog.handleSetDialogOptions(dialogOptions)
       }
+    }
 
-      const registerInfo: RegisterInfo = {
-        email: values.email,
-        password: values.password,
-        nickname: values.nickname,
+    const registerInfo: RegisterInfo = {
+      email: values.email,
+      password: values.password,
+      nickname: values.nickname,
+    }
+
+    const returnInfo = await registerUser(registerInfo)
+    if (returnInfo.result) {
+      //成功のダイアログ考える
+      // console.log('フロント 成功')
+      // dialogOptions = {
+      //   title: '成功',
+      //   message: 'エラーを修正してください',
+      //   open: true,
+      // }
+      // dialog.handleSetDialogOptions(dialogOptions)
+    } else {
+      dialogOptions = {
+        title: 'エラー',
+        message: returnInfo.mes,
+        open: true,
       }
-
-      const message = registerUser(registerInfo)
+      dialog.handleSetDialogOptions(dialogOptions)
     }
   }
 
@@ -157,7 +173,7 @@ export default function RegisterForm() {
               label="nickname"
               required={true}
               error={errors.nickname}
-              inputProps={{ pattern: nicknameValidPattern }}
+              inputProps={{ pattern: validPattern.nickname }}
               inputRef={nicknameRef}
             />
           </FormControl>
@@ -179,7 +195,7 @@ export default function RegisterForm() {
               label="email"
               required={true}
               error={errors.email}
-              inputProps={{ pattern: emailVaildPattern }}
+              inputProps={{ pattern: validPattern.email }}
               inputRef={emailRef}
             />
             {errors.email && (
@@ -213,7 +229,7 @@ export default function RegisterForm() {
               label="password"
               required={true}
               error={errors.password}
-              inputProps={{ pattern: passwordVaildPattern }}
+              inputProps={{ pattern: validPattern.password }}
               inputRef={passwordRef}
             />
             {errors.password && (
@@ -278,15 +294,9 @@ export default function RegisterForm() {
         aria-describedby="alert-dialog-description"
       >
         <DialogTitle id="alert-dialog-title">{'登録しますか？'}</DialogTitle>
-        {/* <DialogContent>
-          <DialogContentText id="alert-dialog-description">
-            Let Google help apps determine location. This means sending
-            anonymous location data to Google, even when no apps are running.
-          </DialogContentText>
-        </DialogContent> */}
         <DialogActions>
           <Button onClick={() => handleDialog(false)}>いいえ</Button>
-          <Button onClick={() => handleDialog(false)} autoFocus>
+          <Button onClick={() => register()} autoFocus>
             はい
           </Button>
         </DialogActions>

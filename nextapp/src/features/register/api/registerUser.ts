@@ -1,16 +1,26 @@
 import axios from "axios";
-import { RegisterInfo } from '@/features/register/types'
+import { RegisterInfo,ReturnInfo } from '@/features/register/types'
 
-export function registerUser (info :RegisterInfo) {
+export async function registerUser (info :RegisterInfo) :Promise<ReturnInfo> {
+  const returnInfo : ReturnInfo = {
+    mes: "",
+    result: false,
+  }
 
-    axios.post(`http://localhost:8080/register`, {
+    return axios.post(`http://localhost:8080/register`, {
       info,
       })
       .then((res) => {
-       return res.data.message
+        returnInfo.mes = res.data.message
+        returnInfo.result = true
+       return returnInfo
       })
       .catch((error) => {
-        console.log(error);
-        return error.data.error
+        console.log("エラー");
+        // return error.response.data.error
+        console.log(error.response.data.error);
+        returnInfo.mes = error.response.data.error
+        returnInfo.result = false
+        return returnInfo
       });
-    };
+    }

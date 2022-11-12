@@ -20,16 +20,16 @@ import CustomPaper from '@/components/layouts/CustomPaper'
 import Visibility from '@mui/icons-material/Visibility'
 import VisibilityOff from '@mui/icons-material/VisibilityOff'
 
-interface Props {
+type Props = {
   num: number
 }
 
-interface Current {
+type Current = {
   nickname: string
   email: string
 }
 
-interface State {
+type State = {
   isEdit: boolean
   showPassword: boolean
   nickname: string
@@ -39,7 +39,7 @@ interface State {
   newPasswordConfirm: string
 }
 
-interface Error {
+type Error = {
   nickname: boolean
   email: boolean
   password: boolean

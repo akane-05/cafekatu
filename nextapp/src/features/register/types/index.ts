@@ -3,3 +3,8 @@ export type RegisterInfo = {
     password: string
     nickname: string
   }
+
+  export type ReturnInfo = {
+    mes: string
+    result: boolean
+  }

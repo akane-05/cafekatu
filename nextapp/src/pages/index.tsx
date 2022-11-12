@@ -18,24 +18,20 @@ import VisibilityOff from '@mui/icons-material/VisibilityOff'
 import React, { useState, useRef } from 'react'
 import { styled } from '@mui/system'
 import { truncate } from 'fs'
+import CustomButton from '@/components/elements/CustomButton'
 
-interface State {
+type State = {
   email: string
   password: string
   showPassword: boolean
 }
 
-interface Error {
+type Error = {
   email: boolean
   password: boolean
 }
 
 function Home() {
-  const CustomButton = styled(Button)(() => ({
-    maxWidth: '120px',
-    minWidth: '120px',
-  }))
-
   const [values, setValues] = React.useState<State>({
     email: '',
     password: '',
