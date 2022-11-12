@@ -77,18 +77,17 @@ export default function RegisterForm() {
     event.preventDefault()
   }
 
-  const handleDialog = (e: boolean) => {
-    // setOpen(e)
-    dialogOptions = {
-      title: '確認',
-      message: '登録しますか？',
-      open: true,
-    }
-    dialog.handleSetDialogOptions(dialogOptions)
-
-    if (dialog.confirm) {
-      console.log('できた')
-    }
+  const handleDialog = async () => {
+    await dialog
+      .confirm({
+        title: '確認',
+        message: '登録しますか？',
+        open: true,
+        choice: true,
+      })
+      .then(() => {
+        register()
+      })
   }
 
   const handleLink = (path: string) => {
@@ -133,27 +132,28 @@ export default function RegisterForm() {
           message: 'エラーを修正してください',
           open: true,
         }
-        dialog.handleSetDialogOptions(dialogOptions)
+
+        await dialog.confirm(dialogOptions)
       }
     }
 
     const returnInfo = await registerUser(values)
     if (returnInfo.status == 200) {
-      //成功のダイアログ考える
-      // console.log('フロント 成功')
-      // dialogOptions = {
-      //   title: '成功',
-      //   message: 'エラーを修正してください',
-      //   open: true,
-      // }
-      // dialog.handleSetDialogOptions(dialogOptions)
+      await dialog
+        .confirm({
+          title: '成功',
+          message: returnInfo.message,
+          open: true,
+        })
+        .then(() => {
+          //画面遷移
+        })
     } else {
-      dialogOptions = {
-        title: 'エラー',
+      await dialog.confirm({
+        title: 'エラーコード:' + returnInfo.status,
         message: returnInfo.error,
         open: true,
-      }
-      dialog.handleSetDialogOptions(dialogOptions)
+      })
     }
   }
 
@@ -277,7 +277,7 @@ export default function RegisterForm() {
         </Grid>
 
         <Grid item xs={12}>
-          <CustomButton variant="contained" onClick={() => handleDialog(true)}>
+          <CustomButton variant="contained" onClick={() => handleDialog()}>
             登録
           </CustomButton>
         </Grid>
@@ -288,23 +288,6 @@ export default function RegisterForm() {
           </CustomButton>
         </Grid>
       </Grid>
-
-      {/* <Dialog
-        open={open}
-        onClick={() => handleDialog(false)}
-        fullWidth={true}
-        maxWidth="xs"
-        aria-labelledby="alert-dialog-title"
-        aria-describedby="alert-dialog-description"
-      >
-        <DialogTitle id="alert-dialog-title">{'登録しますか？'}</DialogTitle>
-        <DialogActions>
-          <Button onClick={() => handleDialog(false)}>いいえ</Button>
-          <Button onClick={() => register()} autoFocus>
-            はい
-          </Button>
-        </DialogActions>
-      </Dialog> */}
     </ThemeProvider>
   )
 }

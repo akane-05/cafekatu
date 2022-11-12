@@ -1,5 +1,3 @@
-// import { NextPage } from 'next'
-// import Router from 'next/router'
 import {
   Button,
   Dialog,
@@ -15,6 +13,7 @@ export type DialogOptions = {
   title: string
   message: string
   open: boolean
+  choice?: boolean
 }
 
 // 確認ダイアログのオプション、タイトル、メッセージ、ボタンのラベルなどを指定
@@ -22,35 +21,54 @@ const DEFAULT_OPTIONS: DialogOptions = {
   title: '',
   message: '',
   open: false,
+  choice: false,
 }
 
 const DialogContext = createContext(
   {} as {
-    handleSetDialogOptions: (dialogOptions: DialogOptions) => void
-    confirm: boolean
+    confirm: (options: DialogOptions) => Promise<void>
   },
 )
 
+const buildOptions = (options: DialogOptions): DialogOptions => {
+  return {
+    ...DEFAULT_OPTIONS,
+    ...options,
+  }
+}
+
 export function MessageDialog({ children }: { children: React.ReactNode }) {
   const [options, setOptions] = useState<DialogOptions>({ ...DEFAULT_OPTIONS })
-  const [confirm, setConfirm] = useState<boolean>(false)
 
-  const handleSetDialogOptions = (dialogOptions: DialogOptions) =>
-    setOptions(dialogOptions)
+  const [resolveReject, setResolveReject] = useState<any>([])
+  const [resolve, reject] = resolveReject
 
-  const handleClose = (e: boolean) => {
-    setOptions({ ...options, open: e })
+  const confirm = (options: DialogOptions): Promise<void> => {
+    return new Promise((resolve, reject) => {
+      setOptions(buildOptions(options))
+      setResolveReject([resolve, reject])
+    })
   }
 
-  const handleConfirm = (e: boolean) => {
-    setConfirm(e)
+  const handleClose = () => {
+    setOptions({ ...options, open: false })
+  }
+
+  // const handleCancel = () => {
+  //   // reject()
+  //   handleClose()
+  // }
+
+  const handleConfirm = () => {
+    resolve()
+    handleClose()
   }
 
   return (
     <>
       <Dialog
         open={options.open}
-        onClick={() => handleClose(false)}
+        onClick={() => handleClose()}
         fullWidth={true}
         maxWidth="xs"
         aria-labelledby="alert-dialog-title"
@@ -63,16 +81,22 @@ export function MessageDialog({ children }: { children: React.ReactNode }) {
           </DialogContentText>
         </DialogContent>
         <DialogActions>
-          <Button onClick={() => handleClose(false)}>閉じる</Button>
-          <Button onClick={() => handleConfirm(true)}>ok</Button>
+          {options.choice ? (
+            <>
+              <Button onClick={() => handleClose()}>いいえ</Button>
+              <Button onClick={() => handleConfirm()}>はい</Button>
+            </>
+          ) : (
+            <>
+              <Button onClick={() => handleConfirm()}>閉じる</Button>
+            </>
+          )}
         </DialogActions>
       </Dialog>
 
       <DialogContext.Provider
         value={{
-          handleSetDialogOptions,
           confirm,
-          // handleOpen,
         }}
       >
         {children}
