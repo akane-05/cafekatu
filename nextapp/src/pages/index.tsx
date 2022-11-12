@@ -19,6 +19,7 @@ import React, { useState, useRef } from 'react'
 import { styled } from '@mui/system'
 import { truncate } from 'fs'
 import CustomButton from '@/components/elements/CustomButton'
+import { validPattern } from '@/const/Consts'
 
 type State = {
   email: string
@@ -45,10 +46,6 @@ function Home() {
 
   const emailRef = useRef<HTMLInputElement>(null)
   const passwordRef = useRef<HTMLInputElement>(null)
-
-  const emailVaildPattern =
-    '^[a-zA-Z0-9_+-]+(.[a-zA-Z0-9_+-]+)*@([a-zA-Z0-9][a-zA-Z0-9-]*[a-zA-Z0-9]*.)+[a-zA-Z]{2,}$'
-  const passwordVaildPattern = '^([a-zA-Z0-9]{8})$'
 
   const handleClickShowPassword = () => {
     setValues({
@@ -110,7 +107,7 @@ function Home() {
               label="email"
               required={true}
               error={errors.email}
-              inputProps={{ pattern: emailVaildPattern }}
+              inputProps={{ pattern: validPattern.email }}
               inputRef={emailRef}
             />
             {errors.email && (
@@ -144,7 +141,7 @@ function Home() {
               label="password"
               required={true}
               error={errors.password}
-              inputProps={{ pattern: passwordVaildPattern }}
+              inputProps={{ pattern: validPattern.password }}
               inputRef={passwordRef}
             />
             {errors.password && (

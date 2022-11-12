@@ -19,6 +19,7 @@ import Comment from '@/components/elements/Comment'
 import CustomPaper from '@/components/layouts/CustomPaper'
 import Visibility from '@mui/icons-material/Visibility'
 import VisibilityOff from '@mui/icons-material/VisibilityOff'
+import { validPattern } from '@/const/Consts'
 
 type Props = {
   num: number
@@ -75,11 +76,6 @@ export default function Mypage(props: Props) {
   const emailRef = useRef<HTMLInputElement>(null)
   const passwordRef = useRef<HTMLInputElement>(null)
   const newPasswordRef = useRef<HTMLInputElement>(null)
-
-  const nicknameValidPattern = '^.{2,20}$'
-  const emailVaildPattern =
-    '^[a-zA-Z0-9_+-]+(.[a-zA-Z0-9_+-]+)*@([a-zA-Z0-9][a-zA-Z0-9-]*[a-zA-Z0-9]*.)+[a-zA-Z]{2,}$'
-  const passwordVaildPattern = '^([a-zA-Z0-9]{8})$'
 
   const handleIsEdit = () => {
     setValues({
@@ -232,7 +228,7 @@ export default function Mypage(props: Props) {
                     onChange={handleChange('nickname')}
                     label="nickname"
                     error={errors.nickname}
-                    inputProps={{ pattern: nicknameValidPattern }}
+                    inputProps={{ pattern: validPattern.nickname }}
                     inputRef={nicknameRef}
                   />
                 </FormControl>
@@ -259,7 +255,7 @@ export default function Mypage(props: Props) {
                     onChange={handleChange('email')}
                     label="email"
                     error={errors.email}
-                    inputProps={{ pattern: emailVaildPattern }}
+                    inputProps={{ pattern: validPattern.email }}
                     inputRef={emailRef}
                   />
                   {errors.email && (
@@ -299,7 +295,7 @@ export default function Mypage(props: Props) {
                     label="現在のPassword"
                     required={true}
                     error={errors.password}
-                    inputProps={{ pattern: passwordVaildPattern }}
+                    inputProps={{ pattern: validPattern.password }}
                     inputRef={passwordRef}
                   />
                 </FormControl>
@@ -331,7 +327,7 @@ export default function Mypage(props: Props) {
                     }
                     label="新しいPassword"
                     error={errors.newPassword}
-                    inputProps={{ pattern: passwordVaildPattern }}
+                    inputProps={{ pattern: validPattern.password }}
                     inputRef={newPasswordRef}
                   />
                   {errors.newPassword && (
