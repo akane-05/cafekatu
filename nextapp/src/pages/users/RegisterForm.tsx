@@ -25,13 +25,12 @@ import { DialogOptions, useDialogContext } from '@/context/MessageDialog'
 import CustomButton from '@/components/elements/CustomButton'
 import { validPattern } from '@/const/Consts'
 
-type State = {
-  email: string
-  password: string
+type ComfirmValue = {
   passwordConfirm: string
-  nickname: string
   showPassword: boolean
 }
+
+type InputValue = RegisterInfo & ComfirmValue
 
 type Error = {
   nickname: boolean
@@ -45,7 +44,7 @@ export default function RegisterForm() {
   const dialog = useDialogContext()
   let dialogOptions: DialogOptions
 
-  const [values, setValues] = React.useState<State>({
+  const [values, setValues] = React.useState<InputValue>({
     email: '',
     password: '',
     passwordConfirm: '',
@@ -79,7 +78,17 @@ export default function RegisterForm() {
   }
 
   const handleDialog = (e: boolean) => {
-    setOpen(e)
+    // setOpen(e)
+    dialogOptions = {
+      title: '確認',
+      message: '登録しますか？',
+      open: true,
+    }
+    dialog.handleSetDialogOptions(dialogOptions)
+
+    if (dialog.confirm) {
+      console.log('できた')
+    }
   }
 
   const handleLink = (path: string) => {
@@ -87,7 +96,8 @@ export default function RegisterForm() {
   }
 
   const handleChange =
-    (prop: keyof State) => (event: React.ChangeEvent<HTMLInputElement>) => {
+    (prop: keyof InputValue) =>
+    (event: React.ChangeEvent<HTMLInputElement>) => {
       let ref = null
       if (prop == 'password') {
         ref = passwordRef.current
@@ -127,14 +137,8 @@ export default function RegisterForm() {
       }
     }
 
-    const registerInfo: RegisterInfo = {
-      email: values.email,
-      password: values.password,
-      nickname: values.nickname,
-    }
-
-    const returnInfo = await registerUser(registerInfo)
-    if (returnInfo.result) {
+    const returnInfo = await registerUser(values)
+    if (returnInfo.status == 200) {
       //成功のダイアログ考える
       // console.log('フロント 成功')
       // dialogOptions = {
@@ -146,7 +150,7 @@ export default function RegisterForm() {
     } else {
       dialogOptions = {
         title: 'エラー',
-        message: returnInfo.mes,
+        message: returnInfo.error,
         open: true,
       }
       dialog.handleSetDialogOptions(dialogOptions)
@@ -285,7 +289,7 @@ export default function RegisterForm() {
         </Grid>
       </Grid>
 
-      <Dialog
+      {/* <Dialog
         open={open}
         onClick={() => handleDialog(false)}
         fullWidth={true}
@@ -300,7 +304,7 @@ export default function RegisterForm() {
             はい
           </Button>
         </DialogActions>
-      </Dialog>
+      </Dialog> */}
     </ThemeProvider>
   )
 }

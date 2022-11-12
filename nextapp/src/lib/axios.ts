@@ -1,7 +1,7 @@
 import axios from 'axios'
 import {requests} from '@/const/Consts'
 
-const APIClient = axios.create({
+const apiClient = axios.create({
   baseURL: requests.base,
   responseType: 'json',
   headers: {
@@ -10,4 +10,4 @@ const APIClient = axios.create({
   },
 })
 
-export default APIClient
+export default apiClient

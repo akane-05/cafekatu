@@ -4,7 +4,9 @@ export type RegisterInfo = {
     nickname: string
   }
 
-  export type ReturnInfo = {
-    mes: string
-    result: boolean
+export type ReturnInfo = {
+  status:number
+  message:string
+  token:string
+  error: string
   }

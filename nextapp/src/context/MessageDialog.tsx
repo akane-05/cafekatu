@@ -27,17 +27,23 @@ const DEFAULT_OPTIONS: DialogOptions = {
 const DialogContext = createContext(
   {} as {
     handleSetDialogOptions: (dialogOptions: DialogOptions) => void
+    confirm: boolean
   },
 )
 
 export function MessageDialog({ children }: { children: React.ReactNode }) {
   const [options, setOptions] = useState<DialogOptions>({ ...DEFAULT_OPTIONS })
+  const [confirm, setConfirm] = useState<boolean>(false)
 
   const handleSetDialogOptions = (dialogOptions: DialogOptions) =>
     setOptions(dialogOptions)
 
   const handleClose = (e: boolean) => {
     setOptions({ ...options, open: e })
+  }
+
+  const handleConfirm = (e: boolean) => {
+    setConfirm(e)
   }
 
   return (
@@ -58,12 +64,14 @@ export function MessageDialog({ children }: { children: React.ReactNode }) {
         </DialogContent>
         <DialogActions>
           <Button onClick={() => handleClose(false)}>閉じる</Button>
+          <Button onClick={() => handleConfirm(true)}>ok</Button>
         </DialogActions>
       </Dialog>
 
       <DialogContext.Provider
         value={{
           handleSetDialogOptions,
+          confirm,
           // handleOpen,
         }}
       >

@@ -1,6 +1,6 @@
 
 import { CafeInfo } from '@/features/cafes/types'
-import  APIClient  from '@/lib/axios'
+import  apiClient  from '@/lib/axios'
 import { AxiosRequestConfig, AxiosResponse } from 'axios'
 
 import { CafesQuery } from '@/features/cafes/types';
