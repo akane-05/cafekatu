@@ -2,15 +2,11 @@ import { NextPage } from 'next'
 import Router from 'next/router'
 import {
   Grid,
-  Button,
   FormControl,
   InputLabel,
   OutlinedInput,
   InputAdornment,
   IconButton,
-  Dialog,
-  DialogActions,
-  DialogTitle,
   FormHelperText,
 } from '@mui/material'
 import theme from '@/styles/theme'
@@ -21,9 +17,12 @@ import React, { useState, useRef } from 'react'
 import { styled } from '@mui/system'
 import { RegisterInfo } from '@/features/register/types'
 import { registerUser } from '@/features/register/api/registerUser'
-import { DialogOptions, useDialogContext } from '@/context/MessageDialog'
+//import { DialogOptions, useDialogContext } from '@/context/MessageDialog'
+import * as Dialog from '@/context/MessageDialog'
+
 import CustomButton from '@/components/elements/CustomButton'
 import { validPattern } from '@/const/Consts'
+import { resolve } from 'node:path/win32'
 
 type ComfirmValue = {
   passwordConfirm: string
@@ -41,8 +40,7 @@ type Error = {
 }
 
 export default function RegisterForm() {
-  const dialog = useDialogContext()
-  let dialogOptions: DialogOptions
+  const dialog = Dialog.useDialogContext()
 
   const [values, setValues] = React.useState<InputValue>({
     email: '',
@@ -59,7 +57,6 @@ export default function RegisterForm() {
     passwordConfirm: false,
   })
 
-  const [open, setOpen] = React.useState(false)
   const nicknameRef = useRef<HTMLInputElement>(null)
   const emailRef = useRef<HTMLInputElement>(null)
   const passwordRef = useRef<HTMLInputElement>(null)
@@ -78,16 +75,9 @@ export default function RegisterForm() {
   }
 
   const handleDialog = async () => {
-    await dialog
-      .confirm({
-        title: '確認',
-        message: '登録しますか？',
-        open: true,
-        choice: true,
-      })
-      .then(() => {
-        register()
-      })
+    await dialog.confirm(Dialog.confirmDialog('登録しますか？')).then(() => {
+      register()
+    })
   }
 
   const handleLink = (path: string) => {
@@ -125,35 +115,28 @@ export default function RegisterForm() {
     }
 
   const register = async () => {
+    let error = false
     for (const key of Object.keys(errors)) {
       if (errors[key]) {
-        dialogOptions = {
-          title: 'エラー',
-          message: 'エラーを修正してください',
-          open: true,
-        }
-
-        await dialog.confirm(dialogOptions)
+        error = true
       }
     }
 
-    const returnInfo = await registerUser(values)
-    if (returnInfo.status == 200) {
-      await dialog
-        .confirm({
-          title: '成功',
-          message: returnInfo.message,
-          open: true,
-        })
-        .then(() => {
-          //画面遷移
-        })
+    if (!error) {
+      const returnInfo = await registerUser(values)
+      if (returnInfo.status == 200) {
+        await dialog
+          .confirm(Dialog.apiOKDialog(returnInfo.message))
+          .then(() => {
+            console.log('画面遷移')
+          })
+      } else {
+        await dialog.confirm(
+          Dialog.apiErrorDialog(returnInfo.status, returnInfo.error),
+        )
+      }
     } else {
-      await dialog.confirm({
-        title: 'エラーコード:' + returnInfo.status,
-        message: returnInfo.error,
-        open: true,
-      })
+      await dialog.confirm(Dialog.errorDialog())
     }
   }
 

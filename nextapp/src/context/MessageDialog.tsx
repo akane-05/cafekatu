@@ -24,17 +24,54 @@ const DEFAULT_OPTIONS: DialogOptions = {
   choice: false,
 }
 
+export const apiErrorDialog = (
+  status: number,
+  message: string,
+): DialogOptions => {
+  const dialogOptions: DialogOptions = {
+    title: 'エラーコード:' + status,
+    message: message,
+    open: true,
+  }
+  return dialogOptions
+}
+
+export const errorDialog = (): DialogOptions => {
+  const dialogOptions: DialogOptions = {
+    title: 'エラー',
+    message: 'エラーを修正してください',
+    open: true,
+  }
+  return dialogOptions
+}
+
+export const apiOKDialog = (message: string): DialogOptions => {
+  const dialogOptions: DialogOptions = {
+    title: '成功',
+    message: message,
+    open: true,
+  }
+  return dialogOptions
+}
+
+export const confirmDialog = (message: string): DialogOptions => {
+  const dialogOptions: DialogOptions = {
+    title: '確認',
+    message: message,
+    open: true,
+    choice: true,
+  }
+  return dialogOptions
+}
+
 const DialogContext = createContext(
   {} as {
     confirm: (options: DialogOptions) => Promise<void>
   },
 )
 
-const buildOptions = (options: DialogOptions): DialogOptions => {
-  return {
-    ...DEFAULT_OPTIONS,
-    ...options,
-  }
+export function useDialogContext() {
+  return useContext(DialogContext)
 }
 
 export function MessageDialog({ children }: { children: React.ReactNode }) {
@@ -42,6 +79,13 @@ export function MessageDialog({ children }: { children: React.ReactNode }) {
 
   const [resolveReject, setResolveReject] = useState<any>([])
   const [resolve, reject] = resolveReject
+
+  const buildOptions = (options: DialogOptions): DialogOptions => {
+    return {
+      ...DEFAULT_OPTIONS,
+      ...options,
+    }
+  }
 
   const confirm = (options: DialogOptions): Promise<void> => {
     return new Promise((resolve, reject) => {
@@ -103,8 +147,4 @@ export function MessageDialog({ children }: { children: React.ReactNode }) {
       </DialogContext.Provider>
     </>
   )
-}
-
-export function useDialogContext() {
-  return useContext(DialogContext)
 }
