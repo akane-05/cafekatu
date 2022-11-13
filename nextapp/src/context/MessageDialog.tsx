@@ -112,7 +112,7 @@ export function MessageDialog({ children }: { children: React.ReactNode }) {
     <>
       <Dialog
         open={options.open}
-        //onClick={() => handleClose()}
+        onClick={() => handleClose()}
         fullWidth={true}
         maxWidth="xs"
         aria-labelledby="alert-dialog-title"
