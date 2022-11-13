@@ -16,16 +16,16 @@ import React, { useRef } from 'react'
 import FavoriteIcon from '@mui/icons-material/Favorite'
 import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder'
 
-interface Props {
+type Props = {
   num: number
 }
 
-interface State {
+type State = {
   rating: number
   comment: string
 }
 
-interface Error {
+type Error = {
   rating: boolean
   comment: boolean
 }

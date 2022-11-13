@@ -2,16 +2,11 @@ import { NextPage } from 'next'
 import Router from 'next/router'
 import {
   Grid,
-  Button,
   FormControl,
   InputLabel,
   OutlinedInput,
   InputAdornment,
   IconButton,
-  Paper,
-  Dialog,
-  DialogActions,
-  DialogTitle,
   FormHelperText,
 } from '@mui/material'
 import theme from '@/styles/theme'
@@ -20,29 +15,34 @@ import Visibility from '@mui/icons-material/Visibility'
 import VisibilityOff from '@mui/icons-material/VisibilityOff'
 import React, { useState, useRef } from 'react'
 import { styled } from '@mui/system'
+import { RegisterInfo } from '@/features/register/types'
+import { registerUser } from '@/features/register/api/registerUser'
+//import { DialogOptions, useDialogContext } from '@/context/MessageDialog'
+import * as Dialog from '@/context/MessageDialog'
 
-interface State {
-  email: string
-  password: string
+import CustomButton from '@/components/elements/CustomButton'
+import { validPattern, path } from '@/const/Consts'
+import { resolve } from 'node:path/win32'
+
+type ComfirmValue = {
   passwordConfirm: string
-  nickname: string
   showPassword: boolean
 }
 
-interface Error {
+type InputValue = RegisterInfo & ComfirmValue
+
+type Error = {
   nickname: boolean
   email: boolean
   password: boolean
   passwordConfirm: boolean
+  [key: string]: boolean
 }
 
 export default function RegisterForm() {
-  const CustomButton = styled(Button)(() => ({
-    maxWidth: '120px',
-    minWidth: '120px',
-  }))
+  const dialog = Dialog.useDialogContext()
 
-  const [values, setValues] = React.useState<State>({
+  const [values, setValues] = React.useState<InputValue>({
     email: '',
     password: '',
     passwordConfirm: '',
@@ -57,16 +57,9 @@ export default function RegisterForm() {
     passwordConfirm: false,
   })
 
-  const [open, setOpen] = React.useState(false)
-
   const nicknameRef = useRef<HTMLInputElement>(null)
   const emailRef = useRef<HTMLInputElement>(null)
   const passwordRef = useRef<HTMLInputElement>(null)
-
-  const nicknameValidPattern = '^.{2,20}$'
-  const emailVaildPattern =
-    '^[a-zA-Z0-9_+-]+(.[a-zA-Z0-9_+-]+)*@([a-zA-Z0-9][a-zA-Z0-9-]*[a-zA-Z0-9]*.)+[a-zA-Z]{2,}$'
-  const passwordVaildPattern = '^([a-zA-Z0-9]{8})$'
 
   const handleClickShowPassword = () => {
     setValues({
@@ -81,8 +74,10 @@ export default function RegisterForm() {
     event.preventDefault()
   }
 
-  const handleDialog = (e: boolean) => {
-    setOpen(e)
+  const handleDialog = async () => {
+    await dialog.confirm(Dialog.confirmDialog('登録しますか？')).then(() => {
+      register()
+    })
   }
 
   const handleLink = (path: string) => {
@@ -90,7 +85,8 @@ export default function RegisterForm() {
   }
 
   const handleChange =
-    (prop: keyof State) => (event: React.ChangeEvent<HTMLInputElement>) => {
+    (prop: keyof InputValue) =>
+    (event: React.ChangeEvent<HTMLInputElement>) => {
       let ref = null
       if (prop == 'password') {
         ref = passwordRef.current
@@ -118,6 +114,32 @@ export default function RegisterForm() {
       setValues({ ...values, [prop]: event.target.value })
     }
 
+  const register = async () => {
+    let error = false
+    for (const key of Object.keys(errors)) {
+      if (errors[key]) {
+        error = true
+      }
+    }
+
+    if (!error) {
+      const returnInfo = await registerUser(values)
+      if (returnInfo.status == 200) {
+        await dialog
+          .confirm(Dialog.apiOKDialog(returnInfo.message))
+          .then(() => {
+            handleLink(path.cafesList)
+          })
+      } else {
+        await dialog.confirm(
+          Dialog.apiErrorDialog(returnInfo.status, returnInfo.error),
+        )
+      }
+    } else {
+      await dialog.confirm(Dialog.errorDialog('エラーを修正してください。'))
+    }
+  }
+
   return (
     <ThemeProvider theme={theme}>
       <Grid
@@ -138,7 +160,7 @@ export default function RegisterForm() {
               label="nickname"
               required={true}
               error={errors.nickname}
-              inputProps={{ pattern: nicknameValidPattern }}
+              inputProps={{ pattern: validPattern.nickname }}
               inputRef={nicknameRef}
             />
           </FormControl>
@@ -160,7 +182,7 @@ export default function RegisterForm() {
               label="email"
               required={true}
               error={errors.email}
-              inputProps={{ pattern: emailVaildPattern }}
+              inputProps={{ pattern: validPattern.email }}
               inputRef={emailRef}
             />
             {errors.email && (
@@ -194,7 +216,7 @@ export default function RegisterForm() {
               label="password"
               required={true}
               error={errors.password}
-              inputProps={{ pattern: passwordVaildPattern }}
+              inputProps={{ pattern: validPattern.password }}
               inputRef={passwordRef}
             />
             {errors.password && (
@@ -238,7 +260,7 @@ export default function RegisterForm() {
         </Grid>
 
         <Grid item xs={12}>
-          <CustomButton variant="contained" onClick={() => handleDialog(true)}>
+          <CustomButton variant="contained" onClick={() => handleDialog()}>
             登録
           </CustomButton>
         </Grid>
@@ -249,29 +271,6 @@ export default function RegisterForm() {
           </CustomButton>
         </Grid>
       </Grid>
-
-      <Dialog
-        open={open}
-        onClick={() => handleDialog(false)}
-        fullWidth={true}
-        maxWidth="xs"
-        aria-labelledby="alert-dialog-title"
-        aria-describedby="alert-dialog-description"
-      >
-        <DialogTitle id="alert-dialog-title">{'登録しますか？'}</DialogTitle>
-        {/* <DialogContent>
-          <DialogContentText id="alert-dialog-description">
-            Let Google help apps determine location. This means sending
-            anonymous location data to Google, even when no apps are running.
-          </DialogContentText>
-        </DialogContent> */}
-        <DialogActions>
-          <Button onClick={() => handleDialog(false)}>いいえ</Button>
-          <Button onClick={() => handleDialog(false)} autoFocus>
-            はい
-          </Button>
-        </DialogActions>
-      </Dialog>
     </ThemeProvider>
   )
 }

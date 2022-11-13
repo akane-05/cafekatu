@@ -16,11 +16,11 @@ import theme from '@/styles/theme'
 import { ThemeProvider } from '@mui/material/styles'
 import CustomPaper from '@/components/layouts/CustomPaper'
 
-interface Props {
+type Props = {
   num: number
 }
 
-interface State {
+type State = {
   name: string
   postCode: string
   prefectureId: number
@@ -29,7 +29,7 @@ interface State {
   businessHours: string
 }
 
-interface Error {
+type Error = {
   name: boolean
   postCode: boolean
   prefectureId: boolean

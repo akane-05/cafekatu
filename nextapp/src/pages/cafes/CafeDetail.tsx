@@ -10,7 +10,7 @@ import CustomPaper from '@/components/layouts/CustomPaper'
 import { useCafe } from '@/features/cafes/api/getCafes'
 import { useRouter } from 'next/router'
 
-interface State {
+type State = {
   isCommentPost: boolean
 }
 

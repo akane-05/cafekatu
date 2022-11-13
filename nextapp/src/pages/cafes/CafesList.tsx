@@ -4,36 +4,56 @@ import { Paper, Grid, Button } from '@mui/material'
 import React from 'react'
 import CafeCard from '@/components/elements/CafeCard'
 import CustomPaper from '@/components/layouts/CustomPaper'
-
-import { useCafes } from '@/features/cafes/api/getCafes'
+import Router from 'next/router'
 import { CafeInfo } from '@/features/cafes/types'
 import { useRouter } from 'next/router'
+import { useState, useEffect } from 'react'
+//import { getCafes } from '@/features/cafes/api/getCafes'
+import { useCafes } from '@/features/cafes/api/getCafes'
+import * as Dialog from '@/context/MessageDialog'
+import { path } from '@/const/Consts'
+import { ContactMailOutlined } from '@mui/icons-material'
 
-export default function CafesList() {
-  const { data, isLoading, isError, error } = useCafes()
-  const router = useRouter() //useRouterフックを定義して
+// import { info } from 'console'
 
-  const handleTopPage = (path: string) => {
-    router.push({
-      pathname: path,
-    })
+export default function CafesList(search: string) {
+  const { returnInfo, isLoading, isError } = useCafes()
+
+  // const [cafes, setCafes] = useState<CafeInfo[]>([])
+  // const dialog = Dialog.useDialogContext()
+
+  // //初回レンダリングのみ実行
+  // useEffect(() => {
+  //   ;(async () => {
+  //     const returnInfo = await getCafes()
+  //     if (returnInfo.status == 200) {
+  //       setCafes(returnInfo.data)
+  //     } else {
+  //       await dialog
+  //         .confirm(Dialog.apiErrorDialog(returnInfo.status, returnInfo.error))
+  //         .then(() => {
+  //           handleLink(path.top)
+  //         })
+  //     }
+  //   })()
+  // }, [])
+
+  const handleLink = (path: string) => {
+    Router.push(path)
   }
-  // console.log(cafesQuery)
-  // const { data, isLoading } = useCafes()
 
   if (isLoading) {
     return <span>読み込み中...</span>
   }
 
   if (isError) {
-    // return <span>Error: {error.message}</span>
     return (
       <>
         <span>エラーが発生しました</span>
         <Button
           variant="contained"
           color="primary"
-          onClick={() => handleTopPage('/')}
+          onClick={() => handleLink('/')}
         >
           Top画面に戻る
         </Button>
@@ -43,33 +63,9 @@ export default function CafesList() {
 
   return (
     <CustomPaper>
-      {/* {data.cafes.Count() == 0 ? (
-        <>
-          検索条件に一致する店舗が存在しません
-          <Button
-            variant="contained"
-            color="primary"
-            onClick={() => handleTopPage('/')}
-          >
-            Top画面に戻る
-          </Button>
-        </>
-      ) : (
-        data.cafes.map((cafeInfo: CafeInfo) => {
-          return <CafeCard key={cafeInfo.id} cafeInfo={cafeInfo} /> //keyを指定
-        })
-      )} */}
-
-      {data.data.map((cafeInfo: CafeInfo) => {
+      {returnInfo.data?.map((cafeInfo: CafeInfo) => {
         return <CafeCard key={cafeInfo.id} cafeInfo={cafeInfo} /> //keyを指定
       })}
     </CustomPaper>
-
-    // <CustomPaper>
-
-    //   {/* {data.cafes.map((cafeInfo: CafeInfo) => {
-    //     return <CafeCard key={cafeInfo.id} cafeInfo={cafeInfo} /> //keyを指定
-    //   })} */}
-    // </CustomPaper>
   )
 }

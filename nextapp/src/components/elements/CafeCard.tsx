@@ -21,12 +21,11 @@ import { Cafe, CafeInfo } from '@/features/cafes/types'
 
 import { useRouter } from 'next/router'
 
-interface Props {
-  // cafe: Cafe
+type Props = {
   cafeInfo: CafeInfo
 }
 
-interface State {
+type State = {
   isFavorite: boolean
 }
 

@@ -22,3 +22,16 @@ export type CafeInfo = {
   updated_at: string
   rating: number
 }
+
+export type CafesQuery = {
+  per_page: string
+  page: string
+  search_words: string
+}
+
+export type ReturnInfo = {
+  message: string
+  data: CafeInfo[]
+  status:number
+  error: string
+}
