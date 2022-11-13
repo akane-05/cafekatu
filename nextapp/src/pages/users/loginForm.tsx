@@ -87,18 +87,20 @@ export default function RegisterForm() {
     if (!error) {
       const returnInfo = await login(values)
       if (returnInfo.status == 200) {
-        await dialog
-          .confirm(Dialog.apiOKDialog(returnInfo.message))
-          .then(() => {
-            handleLink(path.cafesList)
-          })
+        // await dialog
+        //   .confirm(Dialog.apiOKDialog(returnInfo.message))
+        //   .then(() => {
+        //     handleLink(path.cafesList)
+        //   })
+        dialog.confirm(Dialog.apiOKDialog(returnInfo.message))
+        handleLink(path.cafesList)
       } else {
-        await dialog.confirm(
+        dialog.confirm(
           Dialog.apiErrorDialog(returnInfo.status, returnInfo.error),
         )
       }
     } else {
-      await dialog.confirm(Dialog.errorDialog('エラーを修正してください。'))
+      dialog.confirm(Dialog.errorDialog('エラーを修正してください。'))
     }
   }
 
