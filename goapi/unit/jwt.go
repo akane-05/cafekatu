@@ -99,11 +99,13 @@ func GetJwtToken(c *gin.Context) (JwtInfo, error) {
 
 func ExtractBearerToken(header string) (string, error) {
 	if header == "" {
+		log.Println("bad header value given")
 		return "", errors.New("bad header value given")
 	}
 
 	jwtToken := strings.Split(header, " ")
 	if len(jwtToken) != 2 {
+		log.Println("incorrectly formatted authorization header")
 		return "", errors.New("incorrectly formatted authorization header")
 	}
 

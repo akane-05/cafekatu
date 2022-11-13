@@ -136,7 +136,7 @@ export default function RegisterForm() {
         )
       }
     } else {
-      await dialog.confirm(Dialog.errorDialog())
+      await dialog.confirm(Dialog.errorDialog('エラーを修正してください。'))
     }
   }
 

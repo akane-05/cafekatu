@@ -68,7 +68,7 @@ func GetRouter() *gin.Engine {
 		MaxAge: 24 * time.Hour,
 	}))
 
-	r.GET("/login", loginC.Login)
+	r.POST("/login", loginC.Login)
 	r.POST("/register", loginC.Register)
 
 	group := r.Group("/")

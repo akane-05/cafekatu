@@ -36,10 +36,10 @@ export const apiErrorDialog = (
   return dialogOptions
 }
 
-export const errorDialog = (): DialogOptions => {
+export const errorDialog = (message: string): DialogOptions => {
   const dialogOptions: DialogOptions = {
     title: 'エラー',
-    message: 'エラーを修正してください',
+    message: message,
     open: true,
   }
   return dialogOptions
@@ -112,7 +112,7 @@ export function MessageDialog({ children }: { children: React.ReactNode }) {
     <>
       <Dialog
         open={options.open}
-        onClick={() => handleClose()}
+        //onClick={() => handleClose()}
         fullWidth={true}
         maxWidth="xs"
         aria-labelledby="alert-dialog-title"
