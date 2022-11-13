@@ -20,24 +20,23 @@ import { styled } from '@mui/system'
 import { truncate } from 'fs'
 import CustomButton from '@/components/elements/CustomButton'
 import { validPattern } from '@/const/Consts'
-
-type State = {
-  email: string
-  password: string
-  showPassword: boolean
-}
+import { LoginInfo } from '@/features/login/types'
+import { login } from '@/features/login/api/login'
+import * as Dialog from '@/context/MessageDialog'
 
 type Error = {
   email: boolean
   password: boolean
+  [key: string]: boolean
 }
 
 function Home() {
-  const [values, setValues] = React.useState<State>({
+  const [values, setValues] = React.useState<LoginInfo>({
     email: '',
     password: '',
-    showPassword: false,
   })
+
+  const [showPassword, setShowPassword] = React.useState<boolean>(false)
 
   const [errors, setErrors] = React.useState<Error>({
     email: false,
@@ -48,10 +47,7 @@ function Home() {
   const passwordRef = useRef<HTMLInputElement>(null)
 
   const handleClickShowPassword = () => {
-    setValues({
-      ...values,
-      showPassword: !values.showPassword,
-    })
+    setShowPassword(!showPassword)
   }
 
   const handleMouseDownPassword = (
@@ -64,12 +60,10 @@ function Home() {
     Router.push(path)
   }
 
-  const login = () => {
-    // Router.push(path)
-  }
+  const dialog = Dialog.useDialogContext()
 
   const handleChange =
-    (prop: keyof State) => (event: React.ChangeEvent<HTMLInputElement>) => {
+    (prop: keyof LoginInfo) => (event: React.ChangeEvent<HTMLInputElement>) => {
       let ref = null
       if (prop == 'email') {
         ref = emailRef.current
@@ -80,6 +74,34 @@ function Home() {
 
       setValues({ ...values, [prop]: event.target.value })
     }
+
+  // const handleLogin = async () => {
+  //   let error = false
+  //   for (const key of Object.keys(errors)) {
+  //     if (errors[key]) {
+  //       error = true
+  //     }
+
+  //     if (!error) {
+  //       const returnInfo = await login(values)
+  //       if (returnInfo.status == 200) {
+  //         await dialog
+  //           .confirm(Dialog.apiOKDialog(returnInfo.message))
+  //           .then(() => {
+  //             console.log('画面遷移')
+  //           })
+  //       } else {
+  //         await dialog.confirm(
+  //           Dialog.apiErrorDialog(returnInfo.status, returnInfo.error),
+  //         )
+  //       }
+  //     } else {
+  //       await dialog.confirm(Dialog.errorDialog())
+  //     }
+  //   }
+  // }
+
+  const handleLogin = () => {}
 
   return (
     <ThemeProvider theme={theme}>
@@ -123,7 +145,7 @@ function Home() {
             <InputLabel htmlFor="password">Password</InputLabel>
             <OutlinedInput
               id="password"
-              type={values.showPassword ? 'text' : 'password'}
+              type={showPassword ? 'text' : 'password'}
               value={values.password}
               onChange={handleChange('password')}
               endAdornment={
@@ -134,7 +156,7 @@ function Home() {
                     onMouseDown={handleMouseDownPassword}
                     edge="end"
                   >
-                    {values.showPassword ? <VisibilityOff /> : <Visibility />}
+                    {showPassword ? <VisibilityOff /> : <Visibility />}
                   </IconButton>
                 </InputAdornment>
               }
@@ -153,7 +175,7 @@ function Home() {
         </Grid>
 
         <Grid item xs={12}>
-          <CustomButton variant="contained" onClick={() => login()}>
+          <CustomButton variant="contained" onClick={() => handleLogin()}>
             ログイン
           </CustomButton>
         </Grid>

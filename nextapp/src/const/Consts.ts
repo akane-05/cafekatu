@@ -8,9 +8,16 @@ const validPattern = {
 
 const requests = {
 base:'http://localhost:8080',
-register:`/register`,
-test:`/testcafes?`
+register:'/register',
+login:'/login',
+cafes:'/cafes?',
+test:'/testcafes?',
 
 };
 
-  export { validPattern,requests}
+const path ={
+  top:'/',
+cafesList:'/cafes/cafesList'
+}
+
+  export { validPattern,requests,path}

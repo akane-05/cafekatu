@@ -1,11 +1,11 @@
-import { RegisterInfo,ReturnInfo } from '@/features/register/types'
+import { LoginInfo,ReturnInfo } from '@/features/login/types'
 import  apiClient from '@/lib/axios'
 import { requests } from '@/const/Consts'
 import { isLoggedIn, setAuthTokens, clearAuthTokens} from 'axios-jwt'
 
-export async function registerUser (info :RegisterInfo) :Promise<ReturnInfo> {
+export async function login (info :LoginInfo) :Promise<ReturnInfo> {
 
-    return apiClient.post(requests.register,
+    return apiClient.post(requests.login,
       JSON.stringify(info),
       )
       .then((res) => {
@@ -35,7 +35,3 @@ export async function registerUser (info :RegisterInfo) :Promise<ReturnInfo> {
         return returnInfo
       });
     }
-
-
-
-    export  const logout = () => clearAuthTokens()

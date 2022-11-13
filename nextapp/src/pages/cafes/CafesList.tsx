@@ -4,20 +4,39 @@ import { Paper, Grid, Button } from '@mui/material'
 import React from 'react'
 import CafeCard from '@/components/elements/CafeCard'
 import CustomPaper from '@/components/layouts/CustomPaper'
-
+import Router from 'next/router'
 import { CafeInfo } from '@/features/cafes/types'
 import { useRouter } from 'next/router'
 import { useState, useEffect } from 'react'
-import { useTest } from '@/features/cafes/api/getCafes'
+import { getCafes } from '@/features/cafes/api/getCafes'
+import * as Dialog from '@/context/MessageDialog'
+import { path } from '@/const/Consts'
+import { ContactMailOutlined } from '@mui/icons-material'
+
+// import { info } from 'console'
 
 export default function CafesList(search: string) {
-  const { data } = useTest()
-  const router = useRouter() //useRouterフックを定義して
+  const [cafes, setCafes] = useState<CafeInfo[]>([])
+  const dialog = Dialog.useDialogContext()
 
-  const handleTopPage = (path: string) => {
-    router.push({
-      pathname: path,
-    })
+  //初回レンダリングのみ実行
+  useEffect(() => {
+    ;(async () => {
+      const returnInfo = await getCafes()
+      if (returnInfo.status == 200) {
+        setCafes(returnInfo.data)
+      } else {
+        await dialog
+          .confirm(Dialog.apiErrorDialog(returnInfo.status, returnInfo.error))
+          .then(() => {
+            handleLink(path.top)
+          })
+      }
+    })()
+  }, [])
+
+  const handleLink = (path: string) => {
+    Router.push(path)
   }
 
   // if (isLoading) {
@@ -41,7 +60,7 @@ export default function CafesList(search: string) {
 
   return (
     <CustomPaper>
-      {data?.data.cafes.map((cafeInfo: CafeInfo) => {
+      {cafes?.map((cafeInfo: CafeInfo) => {
         return <CafeCard key={cafeInfo.id} cafeInfo={cafeInfo} /> //keyを指定
       })}
     </CustomPaper>

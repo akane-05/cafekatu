@@ -5,6 +5,7 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"strings"
 	"time"
 
 	"github.com/dgrijalva/jwt-go"
@@ -73,6 +74,7 @@ func GetJwtToken(c *gin.Context) (JwtInfo, error) {
 	var jwtInfo JwtInfo
 
 	jwtToken, _ := ExtractBearerToken(c.GetHeader("Authorization"))
+
 	token, _ := ParseToken(jwtToken)
 
 	claims, _ := token.Claims.(jwt.MapClaims)
@@ -100,11 +102,19 @@ func ExtractBearerToken(header string) (string, error) {
 		return "", errors.New("bad header value given")
 	}
 
-	jwtToken := header
-	return jwtToken, nil
+	jwtToken := strings.Split(header, " ")
+	if len(jwtToken) != 2 {
+		return "", errors.New("incorrectly formatted authorization header")
+	}
+
+	//jwtToken := header
+	//return jwtToken, nil
+
+	return jwtToken[1], nil
 }
 
 func ParseToken(jwtToken string) (*jwt.Token, error) {
+
 	secret := os.Getenv("SECRET_KEY")
 
 	// jwtの検証

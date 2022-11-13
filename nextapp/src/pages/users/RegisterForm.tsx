@@ -21,7 +21,7 @@ import { registerUser } from '@/features/register/api/registerUser'
 import * as Dialog from '@/context/MessageDialog'
 
 import CustomButton from '@/components/elements/CustomButton'
-import { validPattern } from '@/const/Consts'
+import { validPattern, path } from '@/const/Consts'
 import { resolve } from 'node:path/win32'
 
 type ComfirmValue = {
@@ -128,7 +128,7 @@ export default function RegisterForm() {
         await dialog
           .confirm(Dialog.apiOKDialog(returnInfo.message))
           .then(() => {
-            console.log('画面遷移')
+            handleLink(path.cafesList)
           })
       } else {
         await dialog.confirm(
