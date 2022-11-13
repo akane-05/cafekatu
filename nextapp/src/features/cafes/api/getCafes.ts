@@ -23,57 +23,47 @@ const defaultQuery:CafesQuery = {
   search_words: ""
 }
 
-// export function useCafes ({ props = defaultQuery }: { props?: CafesQuery}) {
-  export function getCafes ( props?: CafesQuery) {
+//   export function getCafes ( props?: CafesQuery) {
+//     if (typeof props === "undefined") {
+//       props = defaultQuery;
+//     }
+
+//   return apiClient.get(requests.cafes + new URLSearchParams({ per_page: props.per_page,page:props.page }), {
+//     headers: {
+//       Authorization: `Bearer ${accessToken}`,
+//     }}).then((res) => {
+//        const { data, status } = res;
+//     const returnInfo = JSON.parse(JSON.stringify(data)) as ReturnInfo
+//     returnInfo.status = status
+
+//    return returnInfo
+//   })
+//   .catch((error) => {
+//     const { data, status } = error.response;
+//     const returnInfo = JSON.parse(JSON.stringify(data)) as ReturnInfo
+//     returnInfo.status = status
+
+//       return returnInfo
+//     });
+// }
+
+export function useCafes ( props?: CafesQuery) {
     if (typeof props === "undefined") {
       props = defaultQuery;
     }
-    console.log('getCafesが走っている')
 
-  return apiClient.get(requests.cafes + new URLSearchParams({ per_page: props.per_page,page:props.page }), {
-    headers: {
-      Authorization: `Bearer ${accessToken}`,
-    }}).then((res) => {
-       const { data, status } = res;
-    const returnInfo = JSON.parse(JSON.stringify(data)) as ReturnInfo
-    returnInfo.status = status
+  const fetcher = (url: string) => apiClient.get(url,{ headers: {
+          Authorization: `Bearer ${accessToken}`,
+        }}).then(res => res.data)
 
-   return returnInfo
-  })
-  .catch((error) => {
-    const { data, status } = error.response;
-    const returnInfo = JSON.parse(JSON.stringify(data)) as ReturnInfo
-    returnInfo.status = status
+  const { data: post, error } = useSWR(requests.cafes + new URLSearchParams({ per_page: props.per_page,page:props.page }), fetcher)
 
-      return returnInfo
-    });
+  console.log(post)
 
-
-// const fetcher = (url: string): Promise<fetchPostReturnType> =>
-	// 	axios(url).then((res) => res.data);
-
-  //   const { data, error } = useSWR(`http://localhost:8080/cafes` + new URLSearchParams({ per_page: props.per_page,page:props.page }), fetcher)
-
-
-  // return {
-  //   data: data,
-  //   isLoading: !error && !data,
-  //   isError: error
-  // }
+  return {
+    returnInfo: post,
+    isLoading: !error && !post,
+    isError: error
+  }
 
 }
-
-// export function useTest () {
-
-//   const fetcher = (url: string): Promise<fetchPostReturnType> =>
-// 		axios(url).then((res) => res.data);
-
-//     const { data, error } = useSWR(`http://localhost:8080/testcafes?` + new URLSearchParams({ per_page: defaultQuery.per_page,page:defaultQuery.page }), fetcher)
-
-
-//   return {
-//     data: data,
-//     isLoading: !error && !data,
-//     isError: error
-//   }
-// }
