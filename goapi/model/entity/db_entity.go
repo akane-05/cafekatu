@@ -30,7 +30,7 @@ type Reviews struct {
 	User_id   int       `json:"user_id"`
 	Cafe_id   int       `json:"cafe_id" binding:"required"`
 	Comment   string    `json:"comment" binding:"required"`
-	Rating    int       `json:"rating" binding:"required"`
+	Rating    float64   `json:"rating" binding:"required"`
 	CreatedAt time.Time `json:"created_at"`
 	UpdatedAt time.Time `json:"updated_at"`
 }

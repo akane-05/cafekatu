@@ -14,7 +14,7 @@ import (
 // DIを用いたコントローラーの実装
 // インターフェースで実装すべきメソッドを決める
 type ReviewsController interface {
-	GetReviews(c *gin.Context)
+	GetUserReviews(c *gin.Context)
 	PostReview(c *gin.Context)
 	DeleteReview(c *gin.Context)
 }
@@ -29,11 +29,11 @@ func NewReviewsController(dr repository.ReviewsRepository) ReviewsController {
 	return &reviewsController{dr}
 }
 
-func (dc *reviewsController) GetReviews(c *gin.Context) {
+func (dc *reviewsController) GetUserReviews(c *gin.Context) {
 
 	var query repository.ReviewQuery
 
-	log.Println("GetReviews")
+	log.Println("GetUserReviews")
 	if err := c.BindQuery(&query); err != nil {
 		log.Println("クエリパラメータに不正な値が含まれています。")
 		c.JSON(http.StatusBadRequest, gin.H{
@@ -44,22 +44,52 @@ func (dc *reviewsController) GetReviews(c *gin.Context) {
 
 	var reviews []entity.Reviews
 	var err error
-	if query.Cafe_id != 0 {
-		reviews, err = dc.dr.GetCafeReviews(&query)
-	} else {
-		//jwtから値取り出し
-		jwtInfo, e := unit.GetJwtToken(c)
-		if e != nil {
-			log.Println(err)
-			c.JSON(http.StatusUnauthorized, gin.H{
-				"error": "ログイン情報を取得できませんでした。再度ログインしてください。",
-			})
-			return
-		}
 
-		query.User_id = jwtInfo.Id
-		reviews, err = dc.dr.GetCafeReviews(&query)
+	jwtInfo, e := unit.GetJwtToken(c)
+	if e != nil {
+		log.Println(err)
+		c.JSON(http.StatusUnauthorized, gin.H{
+			"error": "ログイン情報を取得できませんでした。再度ログインしてください。",
+		})
+		return
 	}
+
+	reviews, err = dc.dr.GetUserReviews(jwtInfo.Id, &query)
+	if err != nil {
+		log.Println(err.Error())
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"error": "サーバーでエラーが発生しました。",
+		})
+		return
+	}
+
+	log.Println("フロントに返却")
+	c.JSON(http.StatusOK, gin.H{
+		"message": "ok",
+		"data":    reviews,
+	})
+
+	log.Println("フロントに返却")
+
+}
+
+func (dc *reviewsController) GetCafeReviews(cafeId int, c *gin.Context) {
+
+	var query repository.ReviewQuery
+
+	log.Println("GetCafeReviews")
+	if err := c.BindQuery(&query); err != nil {
+		log.Println("クエリパラメータに不正な値が含まれています。")
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error": "クエリパラメータに不正な値が含まれています。",
+		})
+		return
+	}
+
+	var reviews []entity.Reviews
+	var err error
+
+	reviews, err = dc.dr.GetCafeReviews(cafeId, &query)
 	if err != nil {
 		log.Println(err.Error())
 		c.JSON(http.StatusInternalServerError, gin.H{

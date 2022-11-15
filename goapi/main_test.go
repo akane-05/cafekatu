@@ -20,11 +20,12 @@ import (
 	"github.com/go-playground/assert/v2"
 )
 
-func createTestTaken() (tokenString string) {
-	// var testTIme = time.Date(2022, 11, 1, 9, 0, 0, 0, time.Local)
-	var testTIme = time.Now()
-	var jwtInfo = unit.JwtInfo{Id: 1, Email: "user1@email.com", ExTime: testTIme}
+var testTIme = time.Now()
+var jwtInfo = unit.JwtInfo{Id: 1, Email: "user1@email.com", ExTime: testTIme}
+var deleteJwtInfo = unit.JwtInfo{Id: 5, Email: "delete@email.com", ExTime: testTIme}
+var userReviewsInfo = unit.JwtInfo{Id: 2, Email: "user2@email.com", ExTime: testTIme}
 
+func createTestTaken(jwtInfo unit.JwtInfo) (tokenString string) {
 	claims := jwt.MapClaims{
 		"id":    jwtInfo.Id,
 		"email": jwtInfo.Email,
@@ -88,8 +89,26 @@ var cafesInfo = []repository.CafeInfo{
 	repository.CafeInfo{3, "喫茶東京", "1040044", 13, "東京都", "中央区", "明石町", "毎週土曜日定休日", time.Date(2022, 10, 1, 9, 0, 0, 0, time.Local), time.Date(2022, 11, 1, 12, 0, 0, 0, time.Local), 5},
 }
 
+var exUserInfo = entity.Users{
+	Id:       1,
+	Email:    "user1@email.com",
+	Nickname: "ユーザー1",
+}
+
+var reviewsInfo = []entity.Reviews{
+	entity.Reviews{2, 2, 2, "コーヒーが好き", 3, time.Date(2022, 10, 1, 9, 0, 0, 0, time.Local), time.Date(2022, 11, 1, 12, 0, 0, 0, time.Local)},
+	entity.Reviews{8, 2, 1, "取得レビュー1", 3.2, time.Date(2022, 10, 1, 9, 0, 0, 0, time.Local), time.Date(2022, 11, 1, 12, 0, 0, 0, time.Local)},
+	entity.Reviews{9, 2, 5, "取得レビュー2", 4.5, time.Date(2022, 10, 1, 9, 0, 0, 0, time.Local), time.Date(2022, 11, 1, 12, 0, 0, 0, time.Local)},
+}
+
 func request(method string, url string, body io.Reader) (w *httptest.ResponseRecorder) {
-	tokenString := createTestTaken()
+
+	tokenString := createTestTaken(jwtInfo)
+	if url == "/users" && method == "DELETE" {
+		tokenString = createTestTaken(deleteJwtInfo)
+	} else if url == "/reviews?per_page=5&page=1" && method == "GET" {
+		tokenString = createTestTaken(userReviewsInfo)
+	}
 
 	r := GetRouter()
 	w = httptest.NewRecorder()
@@ -133,7 +152,7 @@ func TestRegister(t *testing.T) {
 		log.Fatal(err.Error())
 	}
 	assert.Equal(t, email, "register@email.com")
-	assert.Equal(t, id, 4)
+	assert.Equal(t, id, 6)
 
 }
 
@@ -291,8 +310,103 @@ func TestDeleteFavorite(t *testing.T) {
 
 }
 
-func TestGetUsers(t *testing.T) {
-	w := request("GET", "/users/:id", nil)
+func TestGetUser(t *testing.T) {
+	w := request("GET", "/users", nil)
+	t.Log(w.Body.String())
+
+	type userResponse struct {
+		response
+		Data entity.Users `json:"data"`
+	}
+	var response userResponse
+
+	if err := json.Unmarshal(w.Body.Bytes(), &response); err != nil {
+		log.Fatal(err)
+	}
+
+	// assert
+	assert.Equal(t, http.StatusOK, w.Code)
+	assert.Equal(t, response.response.Message, "ok")
+
+	// 入力値と期待値を1件ずつテストする.
+	var userInfo = response.Data
+	assert.Equal(t, userInfo.Id, exUserInfo.Id)
+	assert.Equal(t, userInfo.Email, exUserInfo.Email)
+	assert.Equal(t, userInfo.Nickname, exUserInfo.Nickname)
+
+}
+
+func TestDeleteUser(t *testing.T) {
+	w := request("DELETE", "/users", nil)
+	t.Log(w.Body.String())
+
+	var response response
+	if err := json.Unmarshal(w.Body.Bytes(), &response); err != nil {
+		log.Fatal(err)
+	}
+
+	// assert
+	assert.Equal(t, http.StatusOK, w.Code)
+	assert.Equal(t, response.Message, "ユーザーを削除しました。")
+
+}
+
+func TestGetUserReviews(t *testing.T) {
+	w := request("GET", "/reviews?per_page=5&page=1", nil)
+	t.Log(w.Body.String())
+
+	type reviewsResponse struct {
+		response
+		Data []entity.Reviews `json:"data"`
+	}
+
+	var response reviewsResponse
+	if err := json.Unmarshal(w.Body.Bytes(), &response); err != nil {
+		log.Fatal(err)
+	}
+
+	// assert
+	assert.Equal(t, http.StatusOK, w.Code)
+	assert.Equal(t, response.Message, "ok")
+
+	// 入力値と期待値を1件ずつテストする.
+	for i, exInfo := range reviewsInfo {
+		var reviewInfo = response.Data[i]
+		assert.Equal(t, reviewInfo.Id, exInfo.Id)
+		assert.Equal(t, reviewInfo.User_id, exInfo.User_id)
+		assert.Equal(t, reviewInfo.Cafe_id, exInfo.Cafe_id)
+		assert.Equal(t, reviewInfo.Comment, exInfo.Comment)
+		assert.Equal(t, reviewInfo.Rating, exInfo.Rating)
+		// assert.Equal(t, reviewInfo.CreatedAt, exInfo.CreatedAt)
+		// assert.Equal(t, reviewInfo.UpdatedAt, exInfo.UpdatedAt)
+	}
+
+}
+
+func TestPostReviews(t *testing.T) {
+	review := entity.Reviews{
+		Cafe_id: 1,
+		Comment: "テストコメント",
+		Rating:  3.3,
+	}
+	jsonValue, _ := json.Marshal(review)
+
+	w := request("POST", "/reviews", bytes.NewBuffer(jsonValue))
+	t.Log(w.Body.String())
+
+	var response response
+	if err := json.Unmarshal(w.Body.Bytes(), &response); err != nil {
+		log.Fatal(err)
+	}
+
+	// assert
+	assert.Equal(t, http.StatusOK, w.Code)
+	assert.Equal(t, response.Message, "レビューを投稿しました。")
+
+}
+
+func TestDeleteRevies(t *testing.T) {
+	w := request("DELETE", "/reviews/5", nil)
 	t.Log(w.Body.String())
 
 	var response response
