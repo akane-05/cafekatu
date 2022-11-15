@@ -109,9 +109,6 @@ func ExtractBearerToken(header string) (string, error) {
 		return "", errors.New("incorrectly formatted authorization header")
 	}
 
-	//jwtToken := header
-	//return jwtToken, nil
-
 	return jwtToken[1], nil
 }
 
