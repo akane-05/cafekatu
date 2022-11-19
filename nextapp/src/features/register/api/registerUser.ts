@@ -22,6 +22,8 @@ export async function registerUser (info :RegisterInfo) :Promise<Response> {
 
       const response = JSON.parse(JSON.stringify(data)) as Response
       response.status = status
+      localStorage.setItem("token",response.token )
+
 
         // console.log(response);
         //console.log(response.message); //undefined

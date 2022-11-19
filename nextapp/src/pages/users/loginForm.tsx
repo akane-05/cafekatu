@@ -24,6 +24,7 @@ import { LoginInfo } from '@/features/login/types'
 import { login } from '@/features/login/api/login'
 import * as Dialog from '@/context/MessageDialog'
 //import path from '@/const/Consts'
+//import useToken from '@/hooks/useToken'
 
 import { signIn } from 'next-auth/react'
 
@@ -34,6 +35,7 @@ type Error = {
 }
 
 export default function RegisterForm() {
+  // const token = useToken()
   const [values, setValues] = React.useState<LoginInfo>({
     email: '',
     password: '',
@@ -170,10 +172,10 @@ export default function RegisterForm() {
         </Grid>
 
         <Grid item xs={12}>
-          {/* <CustomButton variant="contained" onClick={() => handleLogin()}>
+          <CustomButton variant="contained" onClick={() => handleLogin()}>
             ログイン
-          </CustomButton> */}
-
+          </CustomButton>
+          {/*
           <CustomButton
             variant="contained"
             onClick={() =>
@@ -181,7 +183,7 @@ export default function RegisterForm() {
             }
           >
             ログイン
-          </CustomButton>
+          </CustomButton> */}
         </Grid>
       </Grid>
     </ThemeProvider>

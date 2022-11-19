@@ -8,6 +8,10 @@ import { CafesQuery,Response } from '@/features/cafes/types';
 import axios from "axios";
 import useSWR from "swr";
 import { requests } from '@/const/Consts';
+// import { useToken } from '@/hooks/useToken'
+import useToken  from '@/hooks/useToken'
+import { useRouter } from 'next/router'
+import { useState, useEffect } from 'react'
 
 
 export type fetchPostReturnType = {
@@ -48,12 +52,20 @@ const defaultQuery:CafesQuery = {
 // }
 
 export function useCafes ( props?: CafesQuery) {
+  //const [token,setNewToken] = useToken()
+
+//   const [token,setToken]= useState<string|undefined>()
+//   useEffect(() => {
+//     setToken(useToken());
+// }, []);
+
     if (typeof props === "undefined") {
       props = defaultQuery;
     }
-const accessToken = ""
+
   const fetcher = (url: string) => apiClient.get(url,{ headers: {
-          Authorization: `Bearer ${accessToken}`,
+          Authorization: `Bearer ${localStorage.getItem("token")
+        }`,
         }}).then(res => res.data)
 
   const { data: post, error } = useSWR(requests.cafes + new URLSearchParams({ per_page: props.per_page,page:props.page }), fetcher)

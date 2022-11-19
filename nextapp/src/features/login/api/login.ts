@@ -1,8 +1,13 @@
 import { LoginInfo,Response } from '@/features/login/types'
 import  apiClient from '@/lib/axios'
 import { requests } from '@/const/Consts'
+// import { useToken } from '@/hooks/useToken'
+//import useToken  from '@/hooks/useToken'
+
+
 
 export async function login (info :LoginInfo) :Promise<Response> {
+  //const  [token, setNewToken]  = useToken()
 
     return apiClient.post(requests.login,
       JSON.stringify(info),
@@ -11,6 +16,8 @@ export async function login (info :LoginInfo) :Promise<Response> {
         const { data, status } = res;
         const response = JSON.parse(JSON.stringify(data)) as Response
         response.status = status
+        //setNewToken(response.token)
+        localStorage.setItem("token",response.token )
 
        return response
       })
