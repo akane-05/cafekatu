@@ -1,9 +1,9 @@
 
 import { CafeInfo } from '@/features/cafes/types'
-import  apiClient,{accessToken}  from '@/lib/axios'
+import  apiClient  from '@/lib/axios'
 import { AxiosRequestConfig, AxiosResponse } from 'axios'
 
-import { CafesQuery,ReturnInfo } from '@/features/cafes/types';
+import { CafesQuery,Response } from '@/features/cafes/types';
 
 import axios from "axios";
 import useSWR from "swr";
@@ -33,17 +33,17 @@ const defaultQuery:CafesQuery = {
 //       Authorization: `Bearer ${accessToken}`,
 //     }}).then((res) => {
 //        const { data, status } = res;
-//     const returnInfo = JSON.parse(JSON.stringify(data)) as ReturnInfo
-//     returnInfo.status = status
+//     const response = JSON.parse(JSON.stringify(data)) as response
+//     response.status = status
 
-//    return returnInfo
+//    return response
 //   })
 //   .catch((error) => {
 //     const { data, status } = error.response;
-//     const returnInfo = JSON.parse(JSON.stringify(data)) as ReturnInfo
-//     returnInfo.status = status
+//     const response = JSON.parse(JSON.stringify(data)) as response
+//     response.status = status
 
-//       return returnInfo
+//       return response
 //     });
 // }
 
@@ -51,7 +51,7 @@ export function useCafes ( props?: CafesQuery) {
     if (typeof props === "undefined") {
       props = defaultQuery;
     }
-
+const accessToken = ""
   const fetcher = (url: string) => apiClient.get(url,{ headers: {
           Authorization: `Bearer ${accessToken}`,
         }}).then(res => res.data)
@@ -61,7 +61,7 @@ export function useCafes ( props?: CafesQuery) {
   console.log(post)
 
   return {
-    returnInfo: post,
+    response: post,
     isLoading: !error && !post,
     isError: error
   }

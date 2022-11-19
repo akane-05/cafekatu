@@ -25,6 +25,8 @@ import { login } from '@/features/login/api/login'
 import * as Dialog from '@/context/MessageDialog'
 //import path from '@/const/Consts'
 
+import { signIn } from 'next-auth/react'
+
 type Error = {
   email: boolean
   password: boolean
@@ -85,19 +87,17 @@ export default function RegisterForm() {
     }
 
     if (!error) {
-      const returnInfo = await login(values)
-      if (returnInfo.status == 200) {
+      const response = await login(values)
+      if (response.status == 200) {
         // await dialog
-        //   .confirm(Dialog.apiOKDialog(returnInfo.message))
+        //   .confirm(Dialog.apiOKDialog(response.message))
         //   .then(() => {
         //     handleLink(path.cafesList)
         //   })
-        dialog.confirm(Dialog.apiOKDialog(returnInfo.message))
+        dialog.confirm(Dialog.apiOKDialog(response.message))
         handleLink(path.cafesList)
       } else {
-        dialog.confirm(
-          Dialog.apiErrorDialog(returnInfo.status, returnInfo.error),
-        )
+        dialog.confirm(Dialog.apiErrorDialog(response.status, response.error))
       }
     } else {
       dialog.confirm(Dialog.errorDialog('エラーを修正してください。'))
@@ -170,7 +170,16 @@ export default function RegisterForm() {
         </Grid>
 
         <Grid item xs={12}>
-          <CustomButton variant="contained" onClick={() => handleLogin()}>
+          {/* <CustomButton variant="contained" onClick={() => handleLogin()}>
+            ログイン
+          </CustomButton> */}
+
+          <CustomButton
+            variant="contained"
+            onClick={() =>
+              signIn('google', { callbackUrl: 'http://localhost:3000/bar' })
+            }
+          >
             ログイン
           </CustomButton>
         </Grid>

@@ -29,7 +29,7 @@ export type CafesQuery = {
   search_words: string
 }
 
-export type ReturnInfo = {
+export type Response = {
   message: string
   data: CafeInfo[]
   status:number
