@@ -17,6 +17,7 @@ type CafesRepository interface {
 	InsertCafe(cafe *entity.Cafes) (err error)
 	InsertFavorite(favo *entity.Favorites) (err error)
 	DeleteFavorite(favo *entity.Favorites) (err error)
+	GetCafeReviews(id *int, query *CafeQuery) (reviews []entity.Reviews, err error)
 }
 
 // 構造体の宣言
@@ -146,4 +147,15 @@ func (tr *cafesRepository) DeleteFavorite(favo *entity.Favorites) (err error) {
 	log.Println("トランザクションが正常に終了しました")
 	return
 
+}
+
+// ポインタレシーバ(*demoRepository)にメソッドを追加
+func (tr *cafesRepository) GetCafeReviews(id *int, query *CafeQuery) (reviews []entity.Reviews, err error) {
+	log.Println("リポジトリ GetCafesReviews")
+
+	if err = Db.Debug().Table("reviews").Where("cafe_id = ?", id).Limit(query.PerPage).Offset(query.PerPage * (query.Page - 1)).Find(&reviews).Error; err != nil {
+		return
+	}
+	//名前付き変数でreturn
+	return
 }

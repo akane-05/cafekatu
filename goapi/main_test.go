@@ -146,6 +146,10 @@ var (
 		entity.Reviews{7, 1, 4, "雰囲気が素敵", 2.9, time.Date(2022, 10, 1, 9, 0, 0, 0, time.Local), time.Date(2022, 11, 1, 12, 0, 0, 0, time.Local)},
 		entity.Reviews{8, 1, 5, "無添加のお菓子が美味しい", 3.6, time.Date(2022, 10, 1, 9, 0, 0, 0, time.Local), time.Date(2022, 11, 1, 12, 0, 0, 0, time.Local)},
 	}
+	cafeReviews = []entity.Reviews{
+		entity.Reviews{1, 1, 1, "ケーキが美味しかった", 2, time.Date(2022, 10, 1, 9, 0, 0, 0, time.Local), time.Date(2022, 11, 1, 12, 0, 0, 0, time.Local)},
+		entity.Reviews{4, 2, 1, "ケーキが絶品", 4, time.Date(2022, 10, 1, 9, 0, 0, 0, time.Local), time.Date(2022, 11, 1, 12, 0, 0, 0, time.Local)},
+	}
 )
 
 // リクエストメソッド
@@ -272,12 +276,12 @@ func TestGetCafe(t *testing.T) {
 	prepareTestDatabase()
 
 	token := createTestTaken(jwtInfo)
-	w := request("GET", "/cafes/1", nil, token)
+	w := request("GET", "/cafes/1?per_page=5&page=1", nil, token)
 	t.Log(w.Body.String())
 
 	type cafeResponse struct {
 		response
-		Data repository.CafeInfo `json:"data"`
+		Data controller.CafeInfo `json:"data"`
 	}
 	var response cafeResponse
 
@@ -291,7 +295,7 @@ func TestGetCafe(t *testing.T) {
 
 	// 入力値と期待値を1件ずつテストする.
 	var exInfo = cafesInfo[0]
-	var cafeInfo = response.Data
+	var cafeInfo = response.Data.Cafe
 	assert.Equal(t, cafeInfo.Id, exInfo.Id)
 	assert.Equal(t, cafeInfo.Zipcode, exInfo.Zipcode)
 	assert.Equal(t, cafeInfo.PrefectureId, exInfo.PrefectureId)
@@ -302,6 +306,19 @@ func TestGetCafe(t *testing.T) {
 	assert.Equal(t, cafeInfo.Rating, exInfo.Rating)
 	// assert.Equal(t, cafeInfo.CreatedAt, exInfo.CreatedAt)
 	// assert.Equal(t, cafeInfo.UpdatedAt, exInfo.UpdatedAt)
+
+	var reviews = response.Data.Reviews
+	// 入力値と期待値を1件ずつテストする.
+	for i, exInfo := range cafeReviews {
+		var reviewInfo = reviews[i]
+		assert.Equal(t, reviewInfo.Id, exInfo.Id)
+		assert.Equal(t, reviewInfo.User_id, exInfo.User_id)
+		assert.Equal(t, reviewInfo.Cafe_id, exInfo.Cafe_id)
+		assert.Equal(t, reviewInfo.Comment, exInfo.Comment)
+		assert.Equal(t, reviewInfo.Rating, exInfo.Rating)
+		// assert.Equal(t, reviewInfo.CreatedAt, exInfo.CreatedAt)
+		// assert.Equal(t, reviewInfo.UpdatedAt, exInfo.UpdatedAt)
+	}
 
 }
 
