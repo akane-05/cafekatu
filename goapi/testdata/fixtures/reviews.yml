@@ -1,0 +1,72 @@
+# reviews.yml
+- id: 1
+  user_id: 1
+  cafe_id: 1
+  comment: ケーキが美味しかった
+  rating: 2
+  created_at: 2022-10-01 09:00:00
+  updated_at: 2022-11-01 12:00:00
+
+- id: 2
+  user_id: 2
+  cafe_id: 2
+  comment: コーヒーが好き
+  rating: 3
+  created_at: 2022-10-01 09:00:00
+  updated_at: 2022-11-01 12:00:00
+
+- id: 3
+  user_id: 3
+  cafe_id: 3
+  comment: 朝早くから営業して使いやすい
+  rating: 5
+  created_at: 2022-10-01 09:00:00
+  updated_at: 2022-11-01 12:00:00
+
+- id: 4
+  user_id: 2
+  cafe_id: 1
+  comment: ケーキが絶品
+  rating: 4
+  created_at: 2022-10-01 09:00:00
+  updated_at: 2022-11-01 12:00:00
+
+- id: 5
+  user_id: 1
+  cafe_id: 4
+  comment: "オムレツが美味しい"
+  rating: 4
+  created_at: 2022-10-01 09:00:00
+  updated_at: 2022-11-01 12:00:00
+
+- id: 6
+  user_id: 1
+  cafe_id: 4
+  comment: エスプレッソが香り高い
+  rating: 4.5
+  created_at: 2022-10-01 09:00:00
+  updated_at: 2022-11-01 12:00:00
+
+- id: 7
+  user_id: 1
+  cafe_id: 4
+  comment: 雰囲気が素敵
+  rating: 2.9
+  created_at: 2022-10-01 09:00:00
+  updated_at: 2022-11-01 12:00:00
+
+- id: 8
+  user_id: 1
+  cafe_id: 5
+  comment: 無添加のお菓子が美味しい
+  rating: 3.6
+  created_at: 2022-10-01 09:00:00
+  updated_at: 2022-11-01 12:00:00
+
+- id: 9
+  user_id: 1
+  cafe_id: 5
+  comment: ランチが絶品
+  rating: 3.2
+  created_at: 2022-10-01 09:00:00
+  updated_at: 2022-11-01 12:00:00

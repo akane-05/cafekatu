@@ -1,0 +1,21 @@
+# users.yml
+- id: 1
+  email: user1@email.com
+  password_digest: $2a$10$lFv9r5L8re196/AjvRoN3uVNAKN7H23KbyOBMmpFCBlmGBy46glse
+  nickname: ユーザー1
+  created_at: 2022-10-01 09:00:00
+  updated_at: 2022-11-01 12:00:00
+
+- id: 2
+  email: user2@email.com
+  password_digest: $2a$10$lFv9r5L8re196/AjvRoN3uVNAKN7H23KbyOBMmpFCBlmGBy46glse
+  nickname: ユーザー2
+  created_at: 2022-10-01 09:00:00
+  updated_at: 2022-11-01 12:00:00
+
+- id: 3
+  email: user3@email.com
+  password_digest: $2a$10$lFv9r5L8re196/AjvRoN3uVNAKN7H23KbyOBMmpFCBlmGBy46glse
+  nickname: ユーザー3
+  created_at: 2022-10-01 09:00:00
+  updated_at: 2022-11-01 12:00:00

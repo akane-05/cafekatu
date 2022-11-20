@@ -68,9 +68,6 @@ func GetRouter() *gin.Engine {
 		MaxAge: 24 * time.Hour,
 	}))
 
-	r.POST("/login", loginC.Login)
-	r.POST("/register", loginC.Register)
-
 	group := r.Group("/")
 	group.Use(unit.CheckJwtToken)
 	{
@@ -89,6 +86,8 @@ func GetRouter() *gin.Engine {
 		group.DELETE("/reviews/:id", reviewsC.DeleteReview)
 
 	}
+	r.POST("/login", loginC.Login)
+	r.POST("/register", loginC.Register)
 	r.NoRoute(func(c *gin.Context) {
 		c.JSON(404, gin.H{"code": "PAGE_NOT_FOUND", "message": "Page not found"})
 	})

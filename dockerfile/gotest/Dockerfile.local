@@ -10,6 +10,7 @@ COPY main_test.go ./
 COPY controller/ ./controller/
 COPY model/ ./model/
 COPY unit/ ./unit/
+COPY testdata/ ./testdata/
 RUN go mod download
 
 EXPOSE 8081

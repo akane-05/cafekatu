@@ -2,8 +2,10 @@ package main
 
 import (
 	"bytes"
+	"database/sql"
 	"encoding/json"
 	"errors"
+	"fmt"
 	"io"
 	"log"
 	"net/http"
@@ -18,12 +20,51 @@ import (
 	"github.com/akane-05/cafekatu/goapi/unit"
 	"github.com/dgrijalva/jwt-go"
 	"github.com/go-playground/assert/v2"
+	"github.com/go-testfixtures/testfixtures"
 )
 
-var testTIme = time.Now()
-var jwtInfo = unit.JwtInfo{Id: 1, Email: "user1@email.com", ExTime: testTIme}
-var deleteJwtInfo = unit.JwtInfo{Id: 5, Email: "delete@email.com", ExTime: testTIme}
-var userReviewsInfo = unit.JwtInfo{Id: 2, Email: "user2@email.com", ExTime: testTIme}
+var (
+	db       *sql.DB
+	fixtures *testfixtures.Context
+)
+
+func TestMain(m *testing.M) {
+	var err error
+
+	user := os.Getenv("MYSQL_USER")
+	pass := os.Getenv("MYSQL_PASSWORD")
+	protocol := os.Getenv("MYSQL_PROTOCOL")
+	database := os.Getenv("MYSQL_DATABASE")
+
+	path := fmt.Sprintf("%s:%s@tcp(%s)/%s?charset=utf8&parseTime=true", user, pass, protocol, database)
+	db, err = sql.Open("mysql", path)
+	if err != nil {
+		log.Printf("DB接続でエラーが発生しました")
+	}
+
+	fixtures, err = testfixtures.NewFolder(db, &testfixtures.MySQL{}, "testdata/fixtures")
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	if err != nil {
+		log.Printf("testfixturesでDB接続でエラーが発生しました")
+	}
+
+	os.Exit(m.Run())
+}
+
+func prepareTestDatabase() {
+	if err := fixtures.Load(); err != nil {
+		log.Fatal(err)
+	}
+}
+
+var (
+	testTIme = time.Now()
+	jwtInfo  = unit.JwtInfo{Id: 1, Email: "user1@email.com", ExTime: testTIme}
+	// userReviewsInfo = unit.JwtInfo{Id: 2, Email: "user2@email.com", ExTime: testTIme}
+)
 
 func createTestTaken(jwtInfo unit.JwtInfo) (tokenString string) {
 	claims := jwt.MapClaims{
@@ -96,26 +137,22 @@ var exUserInfo = entity.Users{
 }
 
 var reviewsInfo = []entity.Reviews{
-	entity.Reviews{2, 2, 2, "コーヒーが好き", 3, time.Date(2022, 10, 1, 9, 0, 0, 0, time.Local), time.Date(2022, 11, 1, 12, 0, 0, 0, time.Local)},
-	entity.Reviews{8, 2, 1, "取得レビュー1", 3.2, time.Date(2022, 10, 1, 9, 0, 0, 0, time.Local), time.Date(2022, 11, 1, 12, 0, 0, 0, time.Local)},
-	entity.Reviews{9, 2, 5, "取得レビュー2", 4.5, time.Date(2022, 10, 1, 9, 0, 0, 0, time.Local), time.Date(2022, 11, 1, 12, 0, 0, 0, time.Local)},
+	entity.Reviews{1, 1, 1, "ケーキが美味しかった", 2, time.Date(2022, 10, 1, 9, 0, 0, 0, time.Local), time.Date(2022, 11, 1, 12, 0, 0, 0, time.Local)},
+	entity.Reviews{5, 1, 4, "オムレツが美味しい", 4, time.Date(2022, 10, 1, 9, 0, 0, 0, time.Local), time.Date(2022, 11, 1, 12, 0, 0, 0, time.Local)},
+	entity.Reviews{6, 1, 4, "エスプレッソが香り高い", 4.5, time.Date(2022, 10, 1, 9, 0, 0, 0, time.Local), time.Date(2022, 11, 1, 12, 0, 0, 0, time.Local)},
+	entity.Reviews{7, 1, 4, "雰囲気が素敵", 2.9, time.Date(2022, 10, 1, 9, 0, 0, 0, time.Local), time.Date(2022, 11, 1, 12, 0, 0, 0, time.Local)},
+	entity.Reviews{8, 1, 5, "無添加のお菓子が美味しい", 3.6, time.Date(2022, 10, 1, 9, 0, 0, 0, time.Local), time.Date(2022, 11, 1, 12, 0, 0, 0, time.Local)},
 }
 
-func request(method string, url string, body io.Reader) (w *httptest.ResponseRecorder) {
-
-	tokenString := createTestTaken(jwtInfo)
-	if url == "/users" && method == "DELETE" {
-		tokenString = createTestTaken(deleteJwtInfo)
-	} else if url == "/reviews?per_page=5&page=1" && method == "GET" {
-		tokenString = createTestTaken(userReviewsInfo)
-	}
+func request(method string, url string, body io.Reader, token string) (w *httptest.ResponseRecorder) {
 
 	r := GetRouter()
 	w = httptest.NewRecorder()
 	req, _ := http.NewRequest(method, url, body)
 
 	if url != "/register" && url != "/login" {
-		req.Header.Add("Authorization", tokenString)
+
+		req.Header.Add("Authorization", token)
 	}
 
 	r.ServeHTTP(w, req)
@@ -125,6 +162,8 @@ func request(method string, url string, body io.Reader) (w *httptest.ResponseRec
 }
 
 func TestRegister(t *testing.T) {
+	prepareTestDatabase()
+
 	registerInfo := controller.RegisterInfo{
 		Email:    "register@email.com",
 		Password: "password",
@@ -132,7 +171,7 @@ func TestRegister(t *testing.T) {
 	}
 	jsonValue, _ := json.Marshal(registerInfo)
 
-	w := request("POST", "/register", bytes.NewBuffer(jsonValue))
+	w := request("POST", "/register", bytes.NewBuffer(jsonValue), "")
 	t.Log(w.Body.String())
 
 	t.Log(bytes.NewBuffer(jsonValue))
@@ -147,22 +186,24 @@ func TestRegister(t *testing.T) {
 	assert.Equal(t, response.response.Message, "ユーザー登録が完了しました。")
 
 	//jwt
-	email, id, err := checkTestJwtToken(response.Token)
+	email, id, err := checkTestJwtToken("Bearer " + response.Token)
 	if err != nil {
 		log.Fatal(err.Error())
 	}
 	assert.Equal(t, email, "register@email.com")
-	assert.Equal(t, id, 6)
+	assert.Equal(t, id, 4)
 
 }
 
 func TestLogin(t *testing.T) {
+	prepareTestDatabase()
+
 	loginInfo := controller.LoginInfo{
-		Email:    "login@email.com",
+		Email:    "user1@email.com",
 		Password: "password",
 	}
 	jsonValue, _ := json.Marshal(loginInfo)
-	w := request("POST", "/login", bytes.NewBuffer(jsonValue))
+	w := request("POST", "/login", bytes.NewBuffer(jsonValue), "")
 	t.Log(w.Body.String())
 
 	var response loginResponse
@@ -175,18 +216,20 @@ func TestLogin(t *testing.T) {
 	assert.Equal(t, response.response.Message, "ログインしました。")
 
 	//jwt
-	email, id, err := checkTestJwtToken(response.Token)
+	email, id, err := checkTestJwtToken("Bearer " + response.Token)
 	if err != nil {
 		log.Fatal(err.Error())
 	}
-	assert.Equal(t, email, "login@email.com")
+	assert.Equal(t, email, "user1@email.com")
 	assert.Equal(t, id, 1)
 
 }
 
 func TestGetCafes(t *testing.T) {
+	prepareTestDatabase()
 
-	w := request("GET", "/cafes?per_page=5&page=1", nil)
+	token := createTestTaken(jwtInfo)
+	w := request("GET", "/cafes?per_page=5&page=1", nil, token)
 	t.Log(w.Body.String())
 
 	type cafesResponse struct {
@@ -220,7 +263,10 @@ func TestGetCafes(t *testing.T) {
 }
 
 func TestGetCafe(t *testing.T) {
-	w := request("GET", "/cafes/1", nil)
+	prepareTestDatabase()
+
+	token := createTestTaken(jwtInfo)
+	w := request("GET", "/cafes/1", nil, token)
 	t.Log(w.Body.String())
 
 	type cafeResponse struct {
@@ -254,6 +300,8 @@ func TestGetCafe(t *testing.T) {
 }
 
 func TestPostCafe(t *testing.T) {
+	prepareTestDatabase()
+
 	cafe := entity.Cafes{
 		Name:          "testCafe",
 		Zipcode:       "1111111",
@@ -265,7 +313,8 @@ func TestPostCafe(t *testing.T) {
 	jsonValue, _ := json.Marshal(cafe)
 	t.Log(jsonValue)
 
-	w := request("POST", "/cafes", bytes.NewBuffer(jsonValue))
+	token := createTestTaken(jwtInfo)
+	w := request("POST", "/cafes", bytes.NewBuffer(jsonValue), token)
 	t.Log(w.Body.String())
 
 	var response response
@@ -280,8 +329,10 @@ func TestPostCafe(t *testing.T) {
 }
 
 func TestPostFavorite(t *testing.T) {
+	prepareTestDatabase()
 
-	w := request("POST", "/cafes/2/favorite", nil)
+	token := createTestTaken(jwtInfo)
+	w := request("POST", "/cafes/2/favorite", nil, token)
 	t.Log(w.Body.String())
 
 	var response response
@@ -296,7 +347,10 @@ func TestPostFavorite(t *testing.T) {
 }
 
 func TestDeleteFavorite(t *testing.T) {
-	w := request("DELETE", "/cafes/4/favorite", nil)
+	prepareTestDatabase()
+
+	token := createTestTaken(jwtInfo)
+	w := request("DELETE", "/cafes/1/favorite", nil, token)
 	t.Log(w.Body.String())
 
 	var response response
@@ -310,8 +364,11 @@ func TestDeleteFavorite(t *testing.T) {
 
 }
 
-func TestGetUser(t *testing.T) {
-	w := request("GET", "/users", nil)
+func TestGetUserInfo(t *testing.T) {
+	prepareTestDatabase()
+
+	token := createTestTaken(jwtInfo)
+	w := request("GET", "/users", nil, token)
 	t.Log(w.Body.String())
 
 	type userResponse struct {
@@ -337,7 +394,10 @@ func TestGetUser(t *testing.T) {
 }
 
 func TestDeleteUser(t *testing.T) {
-	w := request("DELETE", "/users", nil)
+	prepareTestDatabase()
+
+	token := createTestTaken(jwtInfo)
+	w := request("DELETE", "/users", nil, token)
 	t.Log(w.Body.String())
 
 	var response response
@@ -352,7 +412,10 @@ func TestDeleteUser(t *testing.T) {
 }
 
 func TestGetUserReviews(t *testing.T) {
-	w := request("GET", "/reviews?per_page=5&page=1", nil)
+	prepareTestDatabase()
+
+	token := createTestTaken(jwtInfo)
+	w := request("GET", "/reviews?per_page=5&page=1", nil, token)
 	t.Log(w.Body.String())
 
 	type reviewsResponse struct {
@@ -384,14 +447,17 @@ func TestGetUserReviews(t *testing.T) {
 }
 
 func TestPostReviews(t *testing.T) {
+	prepareTestDatabase()
+
 	review := entity.Reviews{
-		Cafe_id: 1,
+		Cafe_id: 2,
 		Comment: "テストコメント",
 		Rating:  3.3,
 	}
 	jsonValue, _ := json.Marshal(review)
 
-	w := request("POST", "/reviews", bytes.NewBuffer(jsonValue))
+	token := createTestTaken(jwtInfo)
+	w := request("POST", "/reviews", bytes.NewBuffer(jsonValue), token)
 	t.Log(w.Body.String())
 
 	var response response
@@ -405,8 +471,11 @@ func TestPostReviews(t *testing.T) {
 
 }
 
-func TestDeleteRevies(t *testing.T) {
-	w := request("DELETE", "/reviews/5", nil)
+func TestDeleteReviesw(t *testing.T) {
+	prepareTestDatabase()
+
+	token := createTestTaken(jwtInfo)
+	w := request("DELETE", "/reviews/1", nil, token)
 	t.Log(w.Body.String())
 
 	var response response
