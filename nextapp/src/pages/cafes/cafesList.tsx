@@ -17,7 +17,7 @@ import { ContactMailOutlined } from '@mui/icons-material'
 // import { info } from 'console'
 
 export default function CafesList(search: string) {
-  const { returnInfo, isLoading, isError } = useCafes()
+  const { response, isLoading, isError } = useCafes()
 
   // const [cafes, setCafes] = useState<CafeInfo[]>([])
   // const dialog = Dialog.useDialogContext()
@@ -25,12 +25,12 @@ export default function CafesList(search: string) {
   // //初回レンダリングのみ実行
   // useEffect(() => {
   //   ;(async () => {
-  //     const returnInfo = await getCafes()
-  //     if (returnInfo.status == 200) {
-  //       setCafes(returnInfo.data)
+  //     const response = await getCafes()
+  //     if (response.status == 200) {
+  //       setCafes(response.data)
   //     } else {
   //       await dialog
-  //         .confirm(Dialog.apiErrorDialog(returnInfo.status, returnInfo.error))
+  //         .confirm(Dialog.apiErrorDialog(response.status, response.error))
   //         .then(() => {
   //           handleLink(path.top)
   //         })
@@ -63,7 +63,7 @@ export default function CafesList(search: string) {
 
   return (
     <CustomPaper>
-      {returnInfo.data?.map((cafeInfo: CafeInfo) => {
+      {response.data?.map((cafeInfo: CafeInfo) => {
         return <CafeCard key={cafeInfo.id} cafeInfo={cafeInfo} /> //keyを指定
       })}
     </CustomPaper>

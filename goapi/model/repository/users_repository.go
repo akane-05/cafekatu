@@ -36,7 +36,9 @@ type PatchUserInfo struct {
 func (tr *usersRepository) GetUser(id *int) (user entity.Users, err error) {
 	log.Println("リポジトリ GetUser")
 
-	if err = Db.Debug().Table("users").Where("email = ?", id).First(&user).Error; err != nil {
+	query := "id,email,nickname"
+
+	if err = Db.Debug().Table("users").Where("id = ?", id).Select(query).First(&user).Error; err != nil {
 		return
 	}
 	//名前付き変数でreturn
@@ -68,8 +70,13 @@ func (tr *usersRepository) DeleteUser(user *entity.Users) (err error) {
 
 	if err = Db.Transaction(func(tx *gorm.DB) error {
 		// データベース操作をトランザクション内で行う
-		if err = tx.Delete(&user).Error; err != nil {
+		//コメント削除
+		if err = tx.Where("user_id= ?", user.Id).Delete(&entity.Reviews{}).Error; err != nil {
 			// エラーを返した場合はロールバックされる
+			return err
+		}
+
+		if err = tx.Delete(&user).Error; err != nil {
 			return err
 		}
 		// nil を返すとコミットされる

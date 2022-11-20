@@ -1,24 +1,25 @@
-import { LoginInfo,ReturnInfo } from '@/features/login/types'
+import { LoginInfo,Response } from '@/features/login/types'
 import  apiClient from '@/lib/axios'
 import { requests } from '@/const/Consts'
-import { isLoggedIn, setAuthTokens, clearAuthTokens} from 'axios-jwt'
+// import { useToken } from '@/hooks/useToken'
+//import useToken  from '@/hooks/useToken'
 
-export async function login (info :LoginInfo) :Promise<ReturnInfo> {
+
+
+export async function login (info :LoginInfo) :Promise<Response> {
+  //const  [token, setNewToken]  = useToken()
 
     return apiClient.post(requests.login,
       JSON.stringify(info),
       )
       .then((res) => {
         const { data, status } = res;
-        const returnInfo = JSON.parse(JSON.stringify(data)) as ReturnInfo
-        returnInfo.status = status
+        const response = JSON.parse(JSON.stringify(data)) as Response
+        response.status = status
+        //setNewToken(response.token)
+        localStorage.setItem("token",response.token )
 
-        setAuthTokens({
-          accessToken: returnInfo.token,
-          refreshToken: ""
-      })
-
-       return returnInfo
+       return response
       })
       .catch((error) => {
         const { data, status } = error.response;
@@ -26,12 +27,12 @@ export async function login (info :LoginInfo) :Promise<ReturnInfo> {
         // console.log(error.response);
         // console.log(error.response.data);
 
-      const returnInfo = JSON.parse(JSON.stringify(data)) as ReturnInfo
-      returnInfo.status = status
+      const response = JSON.parse(JSON.stringify(data)) as Response
+      response.status = status
 
-        // console.log(returnInfo);
-        //console.log(returnInfo.message); //undefined
+        // console.log(response);
+        //console.log(response.message); //undefined
 
-        return returnInfo
+        return response
       });
     }

@@ -122,16 +122,14 @@ export default function RegisterForm() {
     }
 
     if (!error) {
-      const returnInfo = await registerUser(values)
-      if (returnInfo.status == 200) {
-        dialog.confirm(Dialog.apiOKDialog(returnInfo.message))
+      const response = await registerUser(values)
+      if (response.status == 200) {
+        dialog.confirm(Dialog.apiOKDialog(response.message))
         // .then(() => {
         handleLink(path.cafesList)
         // })
       } else {
-        dialog.confirm(
-          Dialog.apiErrorDialog(returnInfo.status, returnInfo.error),
-        )
+        dialog.confirm(Dialog.apiErrorDialog(response.status, response.error))
       }
     } else {
       dialog.confirm(Dialog.errorDialog('エラーを修正してください。'))

@@ -24,6 +24,9 @@ import { LoginInfo } from '@/features/login/types'
 import { login } from '@/features/login/api/login'
 import * as Dialog from '@/context/MessageDialog'
 //import path from '@/const/Consts'
+//import useToken from '@/hooks/useToken'
+
+import { signIn } from 'next-auth/react'
 
 type Error = {
   email: boolean
@@ -32,6 +35,7 @@ type Error = {
 }
 
 export default function RegisterForm() {
+  // const token = useToken()
   const [values, setValues] = React.useState<LoginInfo>({
     email: '',
     password: '',
@@ -85,19 +89,17 @@ export default function RegisterForm() {
     }
 
     if (!error) {
-      const returnInfo = await login(values)
-      if (returnInfo.status == 200) {
+      const response = await login(values)
+      if (response.status == 200) {
         // await dialog
-        //   .confirm(Dialog.apiOKDialog(returnInfo.message))
+        //   .confirm(Dialog.apiOKDialog(response.message))
         //   .then(() => {
         //     handleLink(path.cafesList)
         //   })
-        dialog.confirm(Dialog.apiOKDialog(returnInfo.message))
+        dialog.confirm(Dialog.apiOKDialog(response.message))
         handleLink(path.cafesList)
       } else {
-        dialog.confirm(
-          Dialog.apiErrorDialog(returnInfo.status, returnInfo.error),
-        )
+        dialog.confirm(Dialog.apiErrorDialog(response.status, response.error))
       }
     } else {
       dialog.confirm(Dialog.errorDialog('エラーを修正してください。'))
@@ -173,6 +175,15 @@ export default function RegisterForm() {
           <CustomButton variant="contained" onClick={() => handleLogin()}>
             ログイン
           </CustomButton>
+          {/*
+          <CustomButton
+            variant="contained"
+            onClick={() =>
+              signIn('google', { callbackUrl: 'http://localhost:3000/bar' })
+            }
+          >
+            ログイン
+          </CustomButton> */}
         </Grid>
       </Grid>
     </ThemeProvider>

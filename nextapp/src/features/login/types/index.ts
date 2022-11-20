@@ -1,11 +1,14 @@
 export type LoginInfo = {
-    email: string
-    password: string
+    email?: string
+    password?: string
   }
 
-export type ReturnInfo = {
+export type Response = {
   status:number
   message:string
   token:string
   error: string
+
+  id :number
+  email:string
   }

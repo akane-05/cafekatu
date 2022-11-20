@@ -38,7 +38,7 @@ CREATE TABLE IF NOT EXISTS reviews (
     user_id             INT UNSIGNED NOT NULL,
     cafe_id             INT UNSIGNED NOT NULL,
     comment          VARCHAR(255) NOT NULL,
-    rating    INT NOT NULL,
+    rating    FLOAT NOT NULL,
     created_at      TIMESTAMP NOT NULL DEFAULT current_timestamp ON UPDATE current_timestamp,
     updated_at     TIMESTAMP NOT NULL DEFAULT current_timestamp ON UPDATE current_timestamp,
     FOREIGN KEY (`user_id`) REFERENCES users(`id`) ,
@@ -106,27 +106,28 @@ INSERT INTO prefectures(prefecture) VALUES('沖縄県');
 
 INSERT INTO cafes (name, zipcode,prefecture_id,city,street,business_hours,approved,created_at,updated_at) VALUES ('お菓子の家', '0600042',1,'札幌市','大通１','11時から15時まで',1,'2022-10-1 09:00:00','2022-11-01 12:00:00');
 INSERT INTO cafes (name, zipcode,prefecture_id,city,street,business_hours,approved,created_at,updated_at) VALUES ('coffee shop', '0300846',2,'青森市','青葉','8時から12時まで',1,'2022-10-1 09:00:00','2022-11-01 12:00:00');
-INSERT INTO cafes (name, zipcode,prefecture_id,city,street,business_hours,approved,created_at,updated_at) VALUES ('喫茶東京', '1040044',13,'中央区','明石市','毎週土曜日定休日',1,'2022-10-1 09:00:00','2022-11-01 12:00:00');
+INSERT INTO cafes (name, zipcode,prefecture_id,city,street,business_hours,approved,created_at,updated_at) VALUES ('喫茶東京', '1040044',13,'中央区','明石町','毎週土曜日定休日',1,'2022-10-1 09:00:00','2022-11-01 12:00:00');
 INSERT INTO cafes (name, zipcode,prefecture_id,city,street,business_hours,approved,created_at,updated_at) VALUES ('海の家', '9000002',47,'那覇市','曙','13時から',1,'2022-10-1 09:00:00','2022-11-01 12:00:00');
 INSERT INTO cafes (name, zipcode,prefecture_id,city,street,business_hours,approved,created_at,updated_at) VALUES ('morning', '4520813',38,'名古屋市','西区','年中無休',1,'2022-10-1 09:00:00','2022-11-01 12:00:00');
-INSERT INTO cafes (name, zipcode,prefecture_id,city,street,business_hours,approved) VALUES ('お菓子の家', '1111111',1,'渋谷区','渋谷','毎週土曜日定休日',1);
-INSERT INTO cafes (name, zipcode,prefecture_id,city,street,business_hours,approved) VALUES ('お菓子の家', '1111111',1,'中央区','銀座','11時から15時まで',1);
-INSERT INTO cafes (name, zipcode,prefecture_id,city,street,business_hours,approved) VALUES ('coffee shop', '1111111',1,'新宿区','歌舞伎町','8時から12時まで',1);
-INSERT INTO cafes (name, zipcode,prefecture_id,city,street,business_hours,approved) VALUES ('お菓子の家', '1111111',1,'渋谷区','渋谷','毎週土曜日定休日',1);
-INSERT INTO cafes (name, zipcode,prefecture_id,city,street,business_hours,approved) VALUES ('お菓子の家', '1111111',1,'中央区','銀座','11時から15時まで',1);
-INSERT INTO cafes (name, zipcode,prefecture_id,city,street,business_hours,approved) VALUES ('coffee shop', '1111111',1,'新宿区','歌舞伎町','8時から12時まで',1);
-INSERT INTO cafes (name, zipcode,prefecture_id,city,street,business_hours,approved) VALUES ('お菓子の家', '1111111',1,'渋谷区','渋谷','毎週土曜日定休日',1);
 
 
-INSERT INTO users (email, password_digest,nickname) VALUES ('user1@email.com', '$2a$10$lFv9r5L8re196/AjvRoN3uVNAKN7H23KbyOBMmpFCBlmGBy46glse','ユーザー1');
-INSERT INTO users (email, password_digest,nickname) VALUES ('user2@email.com', '$2a$10$lFv9r5L8re196/AjvRoN3uVNAKN7H23KbyOBMmpFCBlmGBy46glse','ユーザー2');
-INSERT INTO users (email, password_digest,nickname) VALUES ('user3@email.com', '$2a$10$lFv9r5L8re196/AjvRoN3uVNAKN7H23KbyOBMmpFCBlmGBy46glse','ユーザー3');
+INSERT INTO users (id,email, password_digest,nickname) VALUES (1,'user1@email.com', '$2a$10$lFv9r5L8re196/AjvRoN3uVNAKN7H23KbyOBMmpFCBlmGBy46glse','ユーザー1');
+INSERT INTO users (id,email, password_digest,nickname) VALUES (2,'user2@email.com', '$2a$10$lFv9r5L8re196/AjvRoN3uVNAKN7H23KbyOBMmpFCBlmGBy46glse','ユーザー2');
+INSERT INTO users (id,email, password_digest,nickname) VALUES (3,'user3@email.com', '$2a$10$lFv9r5L8re196/AjvRoN3uVNAKN7H23KbyOBMmpFCBlmGBy46glse','ユーザー3');
+INSERT INTO users (id,email, password_digest,nickname) VALUES (4,'login@email.com', '$2a$10$lFv9r5L8re196/AjvRoN3uVNAKN7H23KbyOBMmpFCBlmGBy46glse','ログインテスト');
+INSERT INTO users (id,email, password_digest,nickname) VALUES (5,'delete@email.com', '$2a$10$lFv9r5L8re196/AjvRoN3uVNAKN7H23KbyOBMmpFCBlmGBy46glse','削除テスト');
 
-INSERT INTO reviews (user_id, cafe_id,comment,rating) VALUES ('1', '1','ケーキが美味しかった',2);
-INSERT INTO reviews (user_id, cafe_id,comment,rating) VALUES ('2', '2','コーヒーが好き',3);
-INSERT INTO reviews (user_id, cafe_id,comment,rating) VALUES ('3', '3','朝早くから営業して使いやすい',5);
-INSERT INTO reviews (user_id, cafe_id,comment,rating) VALUES ('1', '1','ケーキが絶品',4);
+INSERT INTO reviews (id,user_id, cafe_id,comment,rating) VALUES (1,'1', '1','ケーキが美味しかった',2);
+INSERT INTO reviews (id,user_id, cafe_id,comment,rating) VALUES (2,'2', '2','コーヒーが好き',3);
+INSERT INTO reviews (id,user_id, cafe_id,comment,rating) VALUES (3,'3', '3','朝早くから営業して使いやすい',5);
+INSERT INTO reviews (id,user_id, cafe_id,comment,rating) VALUES (4,'1', '1','ケーキが絶品',4);
+INSERT INTO reviews (id,user_id, cafe_id,comment,rating) VALUES (5,'1', '5','削除レビュー',4);
+INSERT INTO reviews (id,user_id, cafe_id,comment,rating) VALUES (6,'5', '3','ユーザー削除レビュー',3);
+INSERT INTO reviews (id,user_id, cafe_id,comment,rating) VALUES (7,'5', '5','ユーザー削除レビュー',4.5);
+INSERT INTO reviews (id,user_id, cafe_id,comment,rating) VALUES (8,'2', '1','取得レビュー1',3.2);
+INSERT INTO reviews (id,user_id, cafe_id,comment,rating) VALUES (9,'2', '5','取得レビュー2',4.5);
 
-INSERT INTO favorites (user_id, cafe_id) VALUES (1, 8);
-INSERT INTO favorites (user_id, cafe_id) VALUES (2, 8);
+
+INSERT INTO favorites (user_id, cafe_id) VALUES (1, 1);
+INSERT INTO favorites (user_id, cafe_id) VALUES (2, 1);
 INSERT INTO favorites (user_id, cafe_id) VALUES (1, 4);

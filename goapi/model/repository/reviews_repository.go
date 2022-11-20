@@ -11,8 +11,8 @@ import (
 // DIを用いたリポジトリの実装
 // インターフェースで実装すべきメソッドを決める
 type ReviewsRepository interface {
-	GetUserReviews(query *ReviewQuery) (reviews []entity.Reviews, err error)
-	GetCafeReviews(query *ReviewQuery) (reviews []entity.Reviews, err error)
+	GetUserReviews(userId int, query *ReviewQuery) (reviews []entity.Reviews, err error)
+	GetCafeReviews(cafeId int, query *ReviewQuery) (reviews []entity.Reviews, err error)
 	InsertReview(review *entity.Reviews) (err error)
 	DeleteReview(review *entity.Reviews) (err error)
 }
@@ -29,15 +29,13 @@ func NewReviewsRepository() ReviewsRepository {
 type ReviewQuery struct {
 	PerPage int `form:"per_page" binding:"required"`
 	Page    int `form:"page" binding:"required"`
-	User_id int `form:"user_id"`
-	Cafe_id int `form:"cafe_id"`
 }
 
 // ポインタレシーバ(*demoRepository)にメソッドを追加
-func (tr *reviewsRepository) GetUserReviews(query *ReviewQuery) (reviews []entity.Reviews, err error) {
+func (tr *reviewsRepository) GetUserReviews(userId int, query *ReviewQuery) (reviews []entity.Reviews, err error) {
 	log.Println("リポジトリ GetUserReviews")
 
-	if err = Db.Debug().Table("reviews").Where("user_id = ?", query.User_id).Limit(query.PerPage).Offset(query.PerPage * (query.Page - 1)).Find(&reviews).Error; err != nil {
+	if err = Db.Debug().Table("reviews").Where("user_id = ?", userId).Limit(query.PerPage).Offset(query.PerPage * (query.Page - 1)).Find(&reviews).Error; err != nil {
 		return
 	}
 	//名前付き変数でreturn
@@ -45,10 +43,10 @@ func (tr *reviewsRepository) GetUserReviews(query *ReviewQuery) (reviews []entit
 }
 
 // ポインタレシーバ(*demoRepository)にメソッドを追加
-func (tr *reviewsRepository) GetCafeReviews(query *ReviewQuery) (reviews []entity.Reviews, err error) {
+func (tr *reviewsRepository) GetCafeReviews(cafeId int, query *ReviewQuery) (reviews []entity.Reviews, err error) {
 	log.Println("リポジトリ GetCafesReviews")
 
-	if err = Db.Debug().Table("reviews").Where("cafe_id = ?", query.User_id).Limit(query.PerPage).Offset(query.PerPage * (query.Page - 1)).Find(&reviews).Error; err != nil {
+	if err = Db.Debug().Table("reviews").Where("cafe_id = ?", cafeId).Limit(query.PerPage).Offset(query.PerPage * (query.Page - 1)).Find(&reviews).Error; err != nil {
 		return
 	}
 	//名前付き変数でreturn
