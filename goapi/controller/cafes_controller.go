@@ -62,8 +62,9 @@ func (dc *cafesController) GetCafes(c *gin.Context) {
 	}
 
 	const baseNum = 10
-	for _, cafe := range cafes {
+	for i, cafe := range cafes {
 		cafe.Rating = (math.Floor(cafe.Rating*baseNum) / baseNum)
+		cafes[i] = cafe
 	}
 
 	log.Println("フロントに返却")
