@@ -23,6 +23,7 @@ import (
 	"github.com/go-testfixtures/testfixtures"
 )
 
+// testデータ作成
 var (
 	db       *sql.DB
 	fixtures *testfixtures.Context
@@ -60,10 +61,10 @@ func prepareTestDatabase() {
 	}
 }
 
+// jwtトークンを確認、作成メソッド
 var (
 	testTIme = time.Now()
 	jwtInfo  = unit.JwtInfo{Id: 1, Email: "user1@email.com", ExTime: testTIme}
-	// userReviewsInfo = unit.JwtInfo{Id: 2, Email: "user2@email.com", ExTime: testTIme}
 )
 
 func createTestTaken(jwtInfo unit.JwtInfo) (tokenString string) {
@@ -112,6 +113,7 @@ func checkTestJwtToken(tokenString string) (email string, id int, err error) {
 	return email, id, nil
 }
 
+// レスポンス構造体
 type response struct {
 	Err     string `json:"error"`
 	Message string `json:"message"`
@@ -124,26 +126,29 @@ type loginResponse struct {
 }
 
 // テストをしたい入力値と期待値の一覧を作成
-var cafesInfo = []repository.CafeInfo{
-	repository.CafeInfo{1, "お菓子の家", "0600042", 1, "北海道", "札幌市", "大通１", "11時から15時まで", time.Date(2022, 10, 1, 9, 0, 0, 0, time.Local), time.Date(2022, 11, 1, 12, 0, 0, 0, time.Local), 3},
-	repository.CafeInfo{2, "coffee shop", "0300846", 2, "青森県", "青森市", "青葉", "8時から12時まで", time.Date(2022, 10, 1, 9, 0, 0, 0, time.Local), time.Date(2022, 11, 1, 12, 0, 0, 0, time.Local), 3},
-	repository.CafeInfo{3, "喫茶東京", "1040044", 13, "東京都", "中央区", "明石町", "毎週土曜日定休日", time.Date(2022, 10, 1, 9, 0, 0, 0, time.Local), time.Date(2022, 11, 1, 12, 0, 0, 0, time.Local), 5},
-}
+var (
+	cafesInfo = []repository.CafeInfo{
+		repository.CafeInfo{1, "お菓子の家", "0600042", 1, "北海道", "札幌市", "大通１", "11時から15時まで", time.Date(2022, 10, 1, 9, 0, 0, 0, time.Local), time.Date(2022, 11, 1, 12, 0, 0, 0, time.Local), 3},
+		repository.CafeInfo{2, "coffee shop", "0300846", 2, "青森県", "青森市", "青葉", "8時から12時まで", time.Date(2022, 10, 1, 9, 0, 0, 0, time.Local), time.Date(2022, 11, 1, 12, 0, 0, 0, time.Local), 3},
+		repository.CafeInfo{3, "喫茶東京", "1040044", 13, "東京都", "中央区", "明石町", "毎週土曜日定休日", time.Date(2022, 10, 1, 9, 0, 0, 0, time.Local), time.Date(2022, 11, 1, 12, 0, 0, 0, time.Local), 5},
+	}
 
-var exUserInfo = entity.Users{
-	Id:       1,
-	Email:    "user1@email.com",
-	Nickname: "ユーザー1",
-}
+	exUserInfo = entity.Users{
+		Id:       1,
+		Email:    "user1@email.com",
+		Nickname: "ユーザー1",
+	}
 
-var reviewsInfo = []entity.Reviews{
-	entity.Reviews{1, 1, 1, "ケーキが美味しかった", 2, time.Date(2022, 10, 1, 9, 0, 0, 0, time.Local), time.Date(2022, 11, 1, 12, 0, 0, 0, time.Local)},
-	entity.Reviews{5, 1, 4, "オムレツが美味しい", 4, time.Date(2022, 10, 1, 9, 0, 0, 0, time.Local), time.Date(2022, 11, 1, 12, 0, 0, 0, time.Local)},
-	entity.Reviews{6, 1, 4, "エスプレッソが香り高い", 4.5, time.Date(2022, 10, 1, 9, 0, 0, 0, time.Local), time.Date(2022, 11, 1, 12, 0, 0, 0, time.Local)},
-	entity.Reviews{7, 1, 4, "雰囲気が素敵", 2.9, time.Date(2022, 10, 1, 9, 0, 0, 0, time.Local), time.Date(2022, 11, 1, 12, 0, 0, 0, time.Local)},
-	entity.Reviews{8, 1, 5, "無添加のお菓子が美味しい", 3.6, time.Date(2022, 10, 1, 9, 0, 0, 0, time.Local), time.Date(2022, 11, 1, 12, 0, 0, 0, time.Local)},
-}
+	reviewsInfo = []entity.Reviews{
+		entity.Reviews{1, 1, 1, "ケーキが美味しかった", 2, time.Date(2022, 10, 1, 9, 0, 0, 0, time.Local), time.Date(2022, 11, 1, 12, 0, 0, 0, time.Local)},
+		entity.Reviews{5, 1, 4, "オムレツが美味しい", 4, time.Date(2022, 10, 1, 9, 0, 0, 0, time.Local), time.Date(2022, 11, 1, 12, 0, 0, 0, time.Local)},
+		entity.Reviews{6, 1, 4, "エスプレッソが香り高い", 4.5, time.Date(2022, 10, 1, 9, 0, 0, 0, time.Local), time.Date(2022, 11, 1, 12, 0, 0, 0, time.Local)},
+		entity.Reviews{7, 1, 4, "雰囲気が素敵", 2.9, time.Date(2022, 10, 1, 9, 0, 0, 0, time.Local), time.Date(2022, 11, 1, 12, 0, 0, 0, time.Local)},
+		entity.Reviews{8, 1, 5, "無添加のお菓子が美味しい", 3.6, time.Date(2022, 10, 1, 9, 0, 0, 0, time.Local), time.Date(2022, 11, 1, 12, 0, 0, 0, time.Local)},
+	}
+)
 
+// リクエストメソッド
 func request(method string, url string, body io.Reader, token string) (w *httptest.ResponseRecorder) {
 
 	r := GetRouter()
@@ -161,6 +166,7 @@ func request(method string, url string, body io.Reader, token string) (w *httpte
 
 }
 
+// 以下テスト
 func TestRegister(t *testing.T) {
 	prepareTestDatabase()
 
@@ -368,12 +374,12 @@ func TestGetUserInfo(t *testing.T) {
 	prepareTestDatabase()
 
 	token := createTestTaken(jwtInfo)
-	w := request("GET", "/users", nil, token)
+	w := request("GET", "/users?per_page=5&page=1", nil, token)
 	t.Log(w.Body.String())
 
 	type userResponse struct {
 		response
-		Data entity.Users `json:"data"`
+		Data controller.UserInfo `json:"data"`
 	}
 	var response userResponse
 
@@ -386,10 +392,23 @@ func TestGetUserInfo(t *testing.T) {
 	assert.Equal(t, response.response.Message, "ok")
 
 	// 入力値と期待値を1件ずつテストする.
-	var userInfo = response.Data
+	var userInfo = response.Data.User
 	assert.Equal(t, userInfo.Id, exUserInfo.Id)
 	assert.Equal(t, userInfo.Email, exUserInfo.Email)
 	assert.Equal(t, userInfo.Nickname, exUserInfo.Nickname)
+
+	var reviews = response.Data.Reviews
+	// 入力値と期待値を1件ずつテストする.
+	for i, exInfo := range reviewsInfo {
+		var reviewInfo = reviews[i]
+		assert.Equal(t, reviewInfo.Id, exInfo.Id)
+		assert.Equal(t, reviewInfo.User_id, exInfo.User_id)
+		assert.Equal(t, reviewInfo.Cafe_id, exInfo.Cafe_id)
+		assert.Equal(t, reviewInfo.Comment, exInfo.Comment)
+		assert.Equal(t, reviewInfo.Rating, exInfo.Rating)
+		// assert.Equal(t, reviewInfo.CreatedAt, exInfo.CreatedAt)
+		// assert.Equal(t, reviewInfo.UpdatedAt, exInfo.UpdatedAt)
+	}
 
 }
 
@@ -411,40 +430,40 @@ func TestDeleteUser(t *testing.T) {
 
 }
 
-func TestGetUserReviews(t *testing.T) {
-	prepareTestDatabase()
+// func TestGetUserReviews(t *testing.T) {
+// 	prepareTestDatabase()
 
-	token := createTestTaken(jwtInfo)
-	w := request("GET", "/reviews?per_page=5&page=1", nil, token)
-	t.Log(w.Body.String())
+// 	token := createTestTaken(jwtInfo)
+// 	w := request("GET", "/reviews?per_page=5&page=1", nil, token)
+// 	t.Log(w.Body.String())
 
-	type reviewsResponse struct {
-		response
-		Data []entity.Reviews `json:"data"`
-	}
+// 	type reviewsResponse struct {
+// 		response
+// 		Data []entity.Reviews `json:"data"`
+// 	}
 
-	var response reviewsResponse
-	if err := json.Unmarshal(w.Body.Bytes(), &response); err != nil {
-		log.Fatal(err)
-	}
+// 	var response reviewsResponse
+// 	if err := json.Unmarshal(w.Body.Bytes(), &response); err != nil {
+// 		log.Fatal(err)
+// 	}
 
-	// assert
-	assert.Equal(t, http.StatusOK, w.Code)
-	assert.Equal(t, response.Message, "ok")
+// 	// assert
+// 	assert.Equal(t, http.StatusOK, w.Code)
+// 	assert.Equal(t, response.Message, "ok")
 
-	// 入力値と期待値を1件ずつテストする.
-	for i, exInfo := range reviewsInfo {
-		var reviewInfo = response.Data[i]
-		assert.Equal(t, reviewInfo.Id, exInfo.Id)
-		assert.Equal(t, reviewInfo.User_id, exInfo.User_id)
-		assert.Equal(t, reviewInfo.Cafe_id, exInfo.Cafe_id)
-		assert.Equal(t, reviewInfo.Comment, exInfo.Comment)
-		assert.Equal(t, reviewInfo.Rating, exInfo.Rating)
-		// assert.Equal(t, reviewInfo.CreatedAt, exInfo.CreatedAt)
-		// assert.Equal(t, reviewInfo.UpdatedAt, exInfo.UpdatedAt)
-	}
+// 	// 入力値と期待値を1件ずつテストする.
+// 	for i, exInfo := range reviewsInfo {
+// 		var reviewInfo = response.Data[i]
+// 		assert.Equal(t, reviewInfo.Id, exInfo.Id)
+// 		assert.Equal(t, reviewInfo.User_id, exInfo.User_id)
+// 		assert.Equal(t, reviewInfo.Cafe_id, exInfo.Cafe_id)
+// 		assert.Equal(t, reviewInfo.Comment, exInfo.Comment)
+// 		assert.Equal(t, reviewInfo.Rating, exInfo.Rating)
+// 		// assert.Equal(t, reviewInfo.CreatedAt, exInfo.CreatedAt)
+// 		// assert.Equal(t, reviewInfo.UpdatedAt, exInfo.UpdatedAt)
+// 	}
 
-}
+// }
 
 func TestPostReviews(t *testing.T) {
 	prepareTestDatabase()
