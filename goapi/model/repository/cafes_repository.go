@@ -40,7 +40,7 @@ type CafeInfo struct {
 	BusinessHours string    `json:"business_hours"`
 	CreatedAt     time.Time `json:"created_at"`
 	UpdatedAt     time.Time `json:"updated_at"`
-	Rating        float32   `json:"rating"`
+	Rating        float64   `json:"rating"`
 }
 
 type CafeQuery struct {

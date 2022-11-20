@@ -2,6 +2,7 @@ package controller
 
 import (
 	"log"
+	"math"
 	"net/http"
 	"strconv"
 
@@ -60,6 +61,11 @@ func (dc *cafesController) GetCafes(c *gin.Context) {
 		return
 	}
 
+	const baseNum = 10
+	for _, cafe := range cafes {
+		cafe.Rating = (math.Floor(cafe.Rating*baseNum) / baseNum)
+	}
+
 	log.Println("フロントに返却")
 	c.JSON(http.StatusOK, gin.H{
 		"message": "ok",
@@ -103,6 +109,9 @@ func (dc *cafesController) GetCafe(c *gin.Context) {
 		})
 		return
 	}
+
+	const baseNum = 10
+	cafe.Rating = (math.Floor(cafe.Rating*baseNum) / baseNum)
 
 	reviews, err := dc.dr.GetCafeReviews(&id, &query)
 	if err != nil {
