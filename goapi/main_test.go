@@ -63,8 +63,8 @@ func prepareTestDatabase() {
 
 // jwtトークンを確認、作成メソッド
 var (
-	testTIme = time.Now()
-	jwtInfo  = unit.JwtInfo{Id: 1, Email: "user1@email.com", ExTime: testTIme}
+	testTime = time.Now()
+	jwtInfo  = unit.JwtInfo{Id: 1, Email: "user1@email.com", ExTime: testTime}
 )
 
 func createTestTaken(jwtInfo unit.JwtInfo) (tokenString string) {
@@ -150,6 +150,19 @@ var (
 		entity.Reviews{1, 1, 1, "ケーキが美味しかった", 2, time.Date(2022, 10, 1, 9, 0, 0, 0, time.Local), time.Date(2022, 11, 1, 12, 0, 0, 0, time.Local)},
 		entity.Reviews{4, 2, 1, "ケーキが絶品", 4, time.Date(2022, 10, 1, 9, 0, 0, 0, time.Local), time.Date(2022, 11, 1, 12, 0, 0, 0, time.Local)},
 		entity.Reviews{10, 3, 1, "お米が美味しい", 5, time.Date(2022, 10, 1, 9, 0, 0, 0, time.Local), time.Date(2022, 11, 1, 12, 0, 0, 0, time.Local)},
+	}
+
+	prefectures = []entity.Prefectures{
+		entity.Prefectures{1, "北海道", time.Date(2022, 10, 1, 9, 0, 0, 0, time.Local), time.Date(2022, 11, 1, 12, 0, 0, 0, time.Local)},
+		entity.Prefectures{2, "青森県", time.Date(2022, 10, 1, 9, 0, 0, 0, time.Local), time.Date(2022, 11, 1, 12, 0, 0, 0, time.Local)},
+		entity.Prefectures{13, "東京都", time.Date(2022, 10, 1, 9, 0, 0, 0, time.Local), time.Date(2022, 11, 1, 12, 0, 0, 0, time.Local)},
+		entity.Prefectures{38, "愛知県", time.Date(2022, 10, 1, 9, 0, 0, 0, time.Local), time.Date(2022, 11, 1, 12, 0, 0, 0, time.Local)},
+		entity.Prefectures{47, "沖縄県", time.Date(2022, 10, 1, 9, 0, 0, 0, time.Local), time.Date(2022, 11, 1, 12, 0, 0, 0, time.Local)},
+	}
+
+	cafeFreeWord = []repository.CafeInfo{
+		repository.CafeInfo{3, "喫茶東京", "1040044", 13, "東京都", "中央区", "明石町", "毎週土曜日定休日", time.Date(2022, 10, 1, 9, 0, 0, 0, time.Local), time.Date(2022, 11, 1, 12, 0, 0, 0, time.Local), 5},
+		repository.CafeInfo{6, "純喫茶", "1330052", 13, "東京都", "江戸川区", "小岩", "AM6:00 ~ PM13:00", time.Date(2022, 10, 1, 9, 0, 0, 0, time.Local), time.Date(2022, 11, 1, 12, 0, 0, 0, time.Local), 0},
 	}
 )
 
@@ -259,6 +272,43 @@ func TestGetCafes(t *testing.T) {
 
 	// 入力値と期待値を1件ずつテストする.
 	for i, exInfo := range cafesInfo {
+		var cafeInfo = reponse.Data[i]
+		assert.Equal(t, cafeInfo.Id, exInfo.Id)
+		assert.Equal(t, cafeInfo.Zipcode, exInfo.Zipcode)
+		assert.Equal(t, cafeInfo.PrefectureId, exInfo.PrefectureId)
+		assert.Equal(t, cafeInfo.Prefecture, exInfo.Prefecture)
+		assert.Equal(t, cafeInfo.City, exInfo.City)
+		assert.Equal(t, cafeInfo.Street, exInfo.Street)
+		assert.Equal(t, cafeInfo.BusinessHours, exInfo.BusinessHours)
+		assert.Equal(t, cafeInfo.Rating, exInfo.Rating)
+		// assert.Equal(t, cafeInfo.CreatedAt, exInfo.CreatedAt)
+		// assert.Equal(t, cafeInfo.UpdatedAt, exInfo.UpdatedAt)
+	}
+}
+
+func TestGetCafesFreeWord(t *testing.T) {
+	prepareTestDatabase()
+
+	token := createTestTaken(jwtInfo)
+	w := request("GET", "/cafes?per_page=5&page=1&search_word=東京", nil, token)
+	t.Log(w.Body.String())
+
+	type cafesResponse struct {
+		response
+		Data []repository.CafeInfo `json:"data"`
+	}
+	var reponse cafesResponse
+
+	if err := json.Unmarshal(w.Body.Bytes(), &reponse); err != nil {
+		log.Fatal(err)
+	}
+
+	// assert
+	assert.Equal(t, http.StatusOK, w.Code)
+	assert.Equal(t, reponse.response.Message, "ok")
+
+	// 入力値と期待値を1件ずつテストする.
+	for i, exInfo := range cafeFreeWord {
 		var cafeInfo = reponse.Data[i]
 		assert.Equal(t, cafeInfo.Id, exInfo.Id)
 		assert.Equal(t, cafeInfo.Zipcode, exInfo.Zipcode)
@@ -523,5 +573,36 @@ func TestDeleteReviesw(t *testing.T) {
 	// assert
 	assert.Equal(t, http.StatusOK, w.Code)
 	assert.Equal(t, response.Message, "お気に入りから削除しました。")
+
+}
+
+func TestGetPrefectures(t *testing.T) {
+	prepareTestDatabase()
+
+	w := request("GET", "/prefectures", nil, "")
+	t.Log(w.Body.String())
+
+	type prefecturesResponse struct {
+		response
+		Data []entity.Prefectures `json:"data"`
+	}
+	var reponse prefecturesResponse
+
+	if err := json.Unmarshal(w.Body.Bytes(), &reponse); err != nil {
+		log.Fatal(err)
+	}
+
+	// assert
+	assert.Equal(t, http.StatusOK, w.Code)
+	assert.Equal(t, reponse.response.Message, "ok")
+
+	// 入力値と期待値を1件ずつテストする.
+	for i, exInfo := range prefectures {
+		var prefecture = reponse.Data[i]
+		assert.Equal(t, prefecture.Id, exInfo.Id)
+		assert.Equal(t, prefecture.Prefecture, exInfo.Prefecture)
+		//assert.Equal(t, prefecture.CreatedAt, exInfo.CreatedAt)
+		//assert.Equal(t, prefecture.UpdatedAt, exInfo.UpdatedAt)
+	}
 
 }

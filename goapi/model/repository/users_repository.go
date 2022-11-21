@@ -34,9 +34,8 @@ type PatchUserInfo struct {
 }
 
 type UserQuery struct {
-	PerPage     int    `form:"per_page" binding:"required"`
-	Page        int    `form:"page" binding:"required"`
-	SearchWords string `form:"search_words"`
+	PerPage int `form:"per_page" binding:"required"`
+	Page    int `form:"page" binding:"required"`
 }
 
 // ポインタレシーバ(*demoRepository)にメソッドを追加

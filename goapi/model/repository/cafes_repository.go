@@ -44,9 +44,9 @@ type CafeInfo struct {
 }
 
 type CafeQuery struct {
-	PerPage     int    `form:"per_page" binding:"required"`
-	Page        int    `form:"page" binding:"required"`
-	SearchWords string `form:"search_words"`
+	PerPage    int    `form:"per_page" binding:"required"`
+	Page       int    `form:"page" binding:"required"`
+	SearchWord string `form:"search_word"`
 }
 
 // ポインタレシーバ(*demoRepository)にメソッドを追加
@@ -60,8 +60,15 @@ func (tr *cafesRepository) GetCafes(cafeQuery *CafeQuery) (cafeInfos []CafeInfo,
 	`
 	join := `join prefectures on cafes.prefecture_id = prefectures.id left join reviews on cafes.id = reviews.cafe_id`
 
+	where := "cafes.approved = 1"
+	shWord := ""
+	if cafeQuery.SearchWord != "" {
+		shWord = "%" + cafeQuery.SearchWord + "%"
+		where = where + " AND (cafes.name LIKE ? OR prefectures.prefecture LIKE ? OR cafes.city LIKE ? OR cafes.street LIKE ? )"
+	}
+
 	//名前付き変数
-	if err = Db.Debug().Table("cafes").Order("cafes.id").Where("cafes.approved = 1").Limit(cafeQuery.PerPage).Offset(cafeQuery.PerPage * (cafeQuery.Page - 1)).Select(query).Joins(join).Group("cafes.id").Find(&cafeInfos).Error; err != nil {
+	if err = Db.Debug().Table("cafes").Order("cafes.id").Where(where, shWord, shWord, shWord, shWord).Limit(cafeQuery.PerPage).Offset(cafeQuery.PerPage * (cafeQuery.Page - 1)).Select(query).Joins(join).Group("cafes.id").Find(&cafeInfos).Error; err != nil {
 		return
 	}
 

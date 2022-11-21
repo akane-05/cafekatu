@@ -58,3 +58,15 @@
   deleted: 0
   created_at: 2022-10-01 09:00:00
   updated_at: 2022-11-01 12:00:00
+
+- id: 6
+  name: "純喫茶"
+  zipcode: "1330052"
+  prefecture_id: 13
+  city: 江戸川区
+  street: 小岩
+  business_hours: AM6:00 ~ PM13:00
+  approved: 1
+  deleted: 0
+  created_at: 2022-10-01 09:00:00
+  updated_at: 2022-11-01 12:00:00
