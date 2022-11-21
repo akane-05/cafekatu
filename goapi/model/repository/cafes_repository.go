@@ -17,6 +17,7 @@ type CafesRepository interface {
 	InsertCafe(cafe *entity.Cafes) (err error)
 	InsertFavorite(favo *entity.Favorites) (err error)
 	DeleteFavorite(favo *entity.Favorites) (err error)
+	GetCafeReviews(id *int, query *CafeQuery) (reviews []entity.Reviews, err error)
 }
 
 // 構造体の宣言
@@ -39,13 +40,13 @@ type CafeInfo struct {
 	BusinessHours string    `json:"business_hours"`
 	CreatedAt     time.Time `json:"created_at"`
 	UpdatedAt     time.Time `json:"updated_at"`
-	Rating        float32   `json:"rating"`
+	Rating        float64   `json:"rating"`
 }
 
 type CafeQuery struct {
-	PerPage     int    `form:"per_page" binding:"required"`
-	Page        int    `form:"page" binding:"required"`
-	SearchWords string `form:"search_words"`
+	PerPage    int    `form:"per_page" binding:"required"`
+	Page       int    `form:"page" binding:"required"`
+	SearchWord string `form:"search_word"`
 }
 
 // ポインタレシーバ(*demoRepository)にメソッドを追加
@@ -59,8 +60,15 @@ func (tr *cafesRepository) GetCafes(cafeQuery *CafeQuery) (cafeInfos []CafeInfo,
 	`
 	join := `join prefectures on cafes.prefecture_id = prefectures.id left join reviews on cafes.id = reviews.cafe_id`
 
+	where := "cafes.approved = 1"
+	shWord := ""
+	if cafeQuery.SearchWord != "" {
+		shWord = "%" + cafeQuery.SearchWord + "%"
+		where = where + " AND (cafes.name LIKE ? OR prefectures.prefecture LIKE ? OR cafes.city LIKE ? OR cafes.street LIKE ? )"
+	}
+
 	//名前付き変数
-	if err = Db.Debug().Table("cafes").Order("cafes.id").Where("cafes.approved = 1").Limit(cafeQuery.PerPage).Offset(cafeQuery.PerPage * (cafeQuery.Page - 1)).Select(query).Joins(join).Group("cafes.id").Find(&cafeInfos).Error; err != nil {
+	if err = Db.Debug().Table("cafes").Order("cafes.id").Where(where, shWord, shWord, shWord, shWord).Limit(cafeQuery.PerPage).Offset(cafeQuery.PerPage * (cafeQuery.Page - 1)).Select(query).Joins(join).Group("cafes.id").Find(&cafeInfos).Error; err != nil {
 		return
 	}
 
@@ -146,4 +154,15 @@ func (tr *cafesRepository) DeleteFavorite(favo *entity.Favorites) (err error) {
 	log.Println("トランザクションが正常に終了しました")
 	return
 
+}
+
+// ポインタレシーバ(*demoRepository)にメソッドを追加
+func (tr *cafesRepository) GetCafeReviews(id *int, query *CafeQuery) (reviews []entity.Reviews, err error) {
+	log.Println("リポジトリ GetCafesReviews")
+
+	if err = Db.Debug().Table("reviews").Where("cafe_id = ?", id).Limit(query.PerPage).Offset(query.PerPage * (query.Page - 1)).Find(&reviews).Error; err != nil {
+		return
+	}
+	//名前付き変数でreturn
+	return
 }

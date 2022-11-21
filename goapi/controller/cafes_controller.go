@@ -2,6 +2,7 @@ package controller
 
 import (
 	"log"
+	"math"
 	"net/http"
 	"strconv"
 
@@ -24,6 +25,11 @@ type CafesController interface {
 // 構造体の宣言
 type cafesController struct {
 	dr repository.CafesRepository
+}
+
+type CafeInfo struct {
+	Cafe    repository.CafeInfo `json:"cafe"`
+	Reviews []entity.Reviews    `json:"reviews"`
 }
 
 // demoControllerのコンストラクタ
@@ -55,6 +61,12 @@ func (dc *cafesController) GetCafes(c *gin.Context) {
 		return
 	}
 
+	const baseNum = 10
+	for i, cafe := range cafes {
+		cafe.Rating = (math.Floor(cafe.Rating*baseNum) / baseNum)
+		cafes[i] = cafe
+	}
+
 	log.Println("フロントに返却")
 	c.JSON(http.StatusOK, gin.H{
 		"message": "ok",
@@ -78,7 +90,17 @@ func (dc *cafesController) GetCafe(c *gin.Context) {
 		return
 	}
 
-	// GetDemosメソッドにwhere句追加する
+	var query repository.CafeQuery
+
+	log.Println("GetCafes")
+	if err := c.BindQuery(&query); err != nil {
+		log.Println("クエリパラメータに不正な値が含まれています。")
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error": "クエリパラメータに不正な値が含まれています。",
+		})
+		return
+	}
+
 	cafe, err := dc.dr.GetCafe(&id)
 	if err != nil {
 		log.Println(err.Error())
@@ -89,10 +111,25 @@ func (dc *cafesController) GetCafe(c *gin.Context) {
 		return
 	}
 
+	const baseNum = 10
+	cafe.Rating = (math.Floor(cafe.Rating*baseNum) / baseNum)
+
+	reviews, err := dc.dr.GetCafeReviews(&id, &query)
+	if err != nil {
+		log.Println(err.Error())
+		c.JSON(http.StatusInternalServerError, gin.H{
+			// "error": "サーバーでエラーが発生しました。 " + err.Error()
+			"error": err.Error(),
+		})
+		return
+	}
+
+	cafeInfo := CafeInfo{cafe, reviews}
+
 	log.Println("フロントに返却")
 	c.JSON(http.StatusOK, gin.H{
 		"message": "ok",
-		"data":    cafe,
+		"data":    cafeInfo,
 	})
 
 	log.Println("フロントに返却")

@@ -14,6 +14,7 @@ type UsersRepository interface {
 	GetUser(id *int) (user entity.Users, err error)
 	UpdateUser(patchUserInfo PatchUserInfo) (err error)
 	DeleteUser(user *entity.Users) (err error)
+	GetUserReviews(id *int, query *UserQuery) (reviews []entity.Reviews, err error)
 }
 
 // 構造体の宣言
@@ -30,6 +31,11 @@ type PatchUserInfo struct {
 	Email    string `json:"email"`
 	Password string `json:"password"`
 	Nickname string `json:"nickname"`
+}
+
+type UserQuery struct {
+	PerPage int `form:"per_page" binding:"required"`
+	Page    int `form:"page" binding:"required"`
 }
 
 // ポインタレシーバ(*demoRepository)にメソッドを追加
@@ -88,4 +94,15 @@ func (tr *usersRepository) DeleteUser(user *entity.Users) (err error) {
 	log.Println("トランザクションが正常に終了しました")
 	return
 
+}
+
+// ポインタレシーバ(*demoRepository)にメソッドを追加
+func (tr *usersRepository) GetUserReviews(id *int, query *UserQuery) (reviews []entity.Reviews, err error) {
+	log.Println("リポジトリ GetUserReviews")
+
+	if err = Db.Debug().Table("reviews").Where("user_id = ?", id).Limit(query.PerPage).Offset(query.PerPage * (query.Page - 1)).Find(&reviews).Error; err != nil {
+		return
+	}
+	//名前付き変数でreturn
+	return
 }

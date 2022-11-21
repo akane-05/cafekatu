@@ -1,0 +1,72 @@
+# cafes.yml
+- id: 1
+  name: お菓子の家
+  zipcode: "0600042"
+  prefecture_id: 1
+  city: 札幌市
+  street: 大通１
+  business_hours: 11時から15時まで
+  approved: 1
+  deleted: 0
+  created_at: 2022-10-01 09:00:00
+  updated_at: 2022-11-01 12:00:00
+
+- id: 2
+  name: coffee shop
+  zipcode: "0300846"
+  prefecture_id: 2
+  city: 青森市
+  street: 青葉
+  business_hours: 8時から12時まで
+  approved: 1
+  deleted: 0
+  created_at: 2022-10-01 09:00:00
+  updated_at: 2022-11-01 12:00:00
+
+- id: 3
+  name: 喫茶東京
+  zipcode: "1040044"
+  prefecture_id: 13
+  city: 中央区
+  street: 明石町
+  business_hours: 毎週土曜日定休日
+  approved: 1
+  deleted: 0
+  created_at: 2022-10-01 09:00:00
+  updated_at: 2022-11-01 12:00:00
+
+- id: 4
+  name: 海の家
+  zipcode: "9000002"
+  prefecture_id: 47
+  city: 那覇市
+  street: 曙
+  business_hours: 13時から
+  approved: 1
+  deleted: 0
+  created_at: 2022-10-01 09:00:00
+  updated_at: 2022-11-01 12:00:00
+
+- id: 5
+  name: morning
+  zipcode: "4520813"
+  prefecture_id: 38
+  city: 名古屋市
+  street: 西区
+  business_hours: 年中無休
+  approved: 1
+  deleted: 0
+  created_at: 2022-10-01 09:00:00
+  updated_at: 2022-11-01 12:00:00
+
+- id: 6
+  name: "純喫茶"
+  zipcode: "1330052"
+  prefecture_id: 13
+  city: 江戸川区
+  street: 小岩
+  business_hours: AM6:00 ~ PM13:00
+  approved: 1
+  deleted: 0
+  created_at: 2022-10-01 09:00:00
+  updated_at: 2022-11-01 12:00:00

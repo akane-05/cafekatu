@@ -24,6 +24,9 @@ var reviewsC = controller.NewReviewsController(reviewsR)
 var loginR = repository.NewLoginRepository()
 var loginC = controller.NewLoginController(loginR)
 
+var commonR = repository.NewCommonRepository()
+var commonC = controller.NewCommonController(commonR)
+
 func main() {
 
 	log.Println("main.go")
@@ -68,9 +71,6 @@ func GetRouter() *gin.Engine {
 		MaxAge: 24 * time.Hour,
 	}))
 
-	r.POST("/login", loginC.Login)
-	r.POST("/register", loginC.Register)
-
 	group := r.Group("/")
 	group.Use(unit.CheckJwtToken)
 	{
@@ -84,11 +84,14 @@ func GetRouter() *gin.Engine {
 		group.PATCH("/users", usersC.PatchUser)
 		group.DELETE("/users", usersC.DeleteUser)
 
-		group.GET("/reviews", reviewsC.GetUserReviews) //いらないかも
+		// group.GET("/reviews", reviewsC.GetUserReviews) //いらないかも
 		group.POST("/reviews", reviewsC.PostReview)
 		group.DELETE("/reviews/:id", reviewsC.DeleteReview)
 
 	}
+	r.POST("/login", loginC.Login)
+	r.POST("/register", loginC.Register)
+	r.GET("/prefectures", commonC.GetPrefectures)
 	r.NoRoute(func(c *gin.Context) {
 		c.JSON(404, gin.H{"code": "PAGE_NOT_FOUND", "message": "Page not found"})
 	})

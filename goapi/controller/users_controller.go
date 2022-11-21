@@ -23,18 +23,32 @@ type usersController struct {
 	dr repository.UsersRepository
 }
 
+type UserInfo struct {
+	User    entity.Users     `json:"user"`
+	Reviews []entity.Reviews `json:"reviews"`
+}
+
 // demoControllerのコンストラクタ
 func NewUsersController(dr repository.UsersRepository) UsersController {
 	return &usersController{dr}
 }
 
 func (dc *usersController) GetUser(c *gin.Context) {
-
 	jwtInfo, err := unit.GetJwtToken(c)
 	if err != nil {
 		log.Println(err)
 		c.JSON(http.StatusUnauthorized, gin.H{
 			"error": "ログイン情報を取得できませんでした。再度ログインしてください。",
+		})
+		return
+	}
+
+	var query repository.UserQuery
+
+	if err := c.BindQuery(&query); err != nil {
+		log.Println("クエリパラメータに不正な値が含まれています。")
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error": "クエリパラメータに不正な値が含まれています。",
 		})
 		return
 	}
@@ -48,10 +62,21 @@ func (dc *usersController) GetUser(c *gin.Context) {
 		return
 	}
 
+	reviews, err := dc.dr.GetUserReviews(&jwtInfo.Id, &query)
+	if err != nil {
+		log.Println(err.Error())
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"error": "サーバーでエラーが発生しました。",
+		})
+		return
+	}
+
+	userInfo := UserInfo{user, reviews}
+
 	log.Println("フロントに返却")
 	c.JSON(http.StatusOK, gin.H{
 		"message": "ok",
-		"data":    user,
+		"data":    userInfo,
 	})
 
 	log.Println("フロントに返却")
