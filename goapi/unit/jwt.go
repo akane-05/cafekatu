@@ -42,6 +42,7 @@ func CreateToken(jwtInfo *JwtInfo) (tokenString string) {
 
 // Parse は jwt トークンから元になった認証情報を取り出す。
 func CheckJwtToken(c *gin.Context) {
+	log.Println(1)
 
 	jwtToken, err := ExtractBearerToken(c.GetHeader("Authorization"))
 	if err != nil {
@@ -50,6 +51,7 @@ func CheckJwtToken(c *gin.Context) {
 		})
 		return
 	}
+	log.Println(2)
 
 	token, err := ParseToken(jwtToken)
 	if err != nil {
@@ -58,6 +60,7 @@ func CheckJwtToken(c *gin.Context) {
 		})
 		return
 	}
+	log.Println(3)
 
 	_, OK := token.Claims.(jwt.MapClaims)
 	if !OK {
@@ -98,6 +101,7 @@ func GetJwtToken(c *gin.Context) (JwtInfo, error) {
 }
 
 func ExtractBearerToken(header string) (string, error) {
+	log.Println("E1")
 	if header == "" {
 		log.Println("bad header value given")
 		return "", errors.New("bad header value given")
@@ -113,9 +117,9 @@ func ExtractBearerToken(header string) (string, error) {
 }
 
 func ParseToken(jwtToken string) (*jwt.Token, error) {
-
+	log.Println("P1")
 	secret := os.Getenv("SECRET_KEY")
-
+	log.Println("P2")
 	// jwtの検証
 	token, err := jwt.Parse(jwtToken, func(token *jwt.Token) (interface{}, error) {
 		return []byte(secret), nil // CreateTokenにて指定した文字列を使います
@@ -123,6 +127,7 @@ func ParseToken(jwtToken string) (*jwt.Token, error) {
 	if err != nil {
 		return token, err
 	}
+	log.Println("P3")
 
 	return token, nil
 }

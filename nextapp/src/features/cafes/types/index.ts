@@ -15,23 +15,18 @@ export type CafeInfo = {
   id: number
   name: string
   prefecture_id: number
+  prefecture: string
   city: string
   street: string
   business_hours: string
   created_at: string
   updated_at: string
   rating: number
-}
-
-export type CafesQuery = {
-  per_page: string
-  page: string
-  search_words: string
+  is_favorite: boolean
 }
 
 export type Response = {
   message: string
-  data: CafeInfo[]
-  status:number
+  status: number
   error: string
 }

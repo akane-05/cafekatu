@@ -13,6 +13,7 @@ import (
 // インターフェースで実装すべきメソッドを決める
 type CafesRepository interface {
 	GetCafes(cafeQuery *CafeQuery) (cafeInfos []CafeInfo, err error)
+	// GetFavoirtes(userId *int, ids *[]int) (favorite []entity.Favorites, err error)
 	GetCafe(id *int) (cafeInfo CafeInfo, err error)
 	InsertCafe(cafe *entity.Cafes) (err error)
 	InsertFavorite(favo *entity.Favorites) (err error)
@@ -54,27 +55,39 @@ func (tr *cafesRepository) GetCafes(cafeQuery *CafeQuery) (cafeInfos []CafeInfo,
 	log.Println("リポジトリ")
 
 	query := `
-	cafes.id,cafes.name,cafes.zipcode,cafes.prefecture_id,prefectures.prefecture,cafes.city,cafes.street,cafes.business_hours,
+	cafes.id,cafes.name,
+	cafes.zipcode,cafes.prefecture_id,prefectures.prefecture,cafes.city,cafes.street,
+	cafes.business_hours,
 	cafes.created_at,cafes.updated_at,
 	AVG(reviews.rating) as rating
 	`
 	join := `join prefectures on cafes.prefecture_id = prefectures.id left join reviews on cafes.id = reviews.cafe_id`
 
 	where := "cafes.approved = 1"
-	shWord := ""
 	if cafeQuery.SearchWord != "" {
-		shWord = "%" + cafeQuery.SearchWord + "%"
+		shWord := "%" + cafeQuery.SearchWord + "%"
 		where = where + " AND (cafes.name LIKE ? OR prefectures.prefecture LIKE ? OR cafes.city LIKE ? OR cafes.street LIKE ? )"
+		if err = Db.Debug().Table("cafes").Order("cafes.id").Where(where, shWord, shWord, shWord, shWord).Limit(cafeQuery.PerPage).Offset(cafeQuery.PerPage * (cafeQuery.Page - 1)).Select(query).Joins(join).Group("cafes.id").Find(&cafeInfos).Error; err != nil {
+			return
+		}
+	} else {
+		if err = Db.Debug().Table("cafes").Order("cafes.id").Where(where).Limit(cafeQuery.PerPage).Offset(cafeQuery.PerPage * (cafeQuery.Page - 1)).Select(query).Joins(join).Group("cafes.id").Find(&cafeInfos).Error; err != nil {
+			return
+		}
 	}
-
-	//名前付き変数
-	if err = Db.Debug().Table("cafes").Order("cafes.id").Where(where, shWord, shWord, shWord, shWord).Limit(cafeQuery.PerPage).Offset(cafeQuery.PerPage * (cafeQuery.Page - 1)).Select(query).Joins(join).Group("cafes.id").Find(&cafeInfos).Error; err != nil {
-		return
-	}
-
 	//名前付き変数でreturn
 	return
 }
+
+// // ポインタレシーバ(*demoRepository)にメソッドを追加
+// func (tr *cafesRepository) GetFavoirtes(userId *int, ids *[]int) (favoirtes []entity.Favorites, err error) {
+
+// 	// if err = Db.Debug()Where().Find(&favoirtes).Error; err != nil {
+// 	// 	return
+// 	// }
+// 	//名前付き変数でreturn
+// 	return
+// }
 
 // ポインタレシーバ(*demoRepository)にメソッドを追加
 func (tr *cafesRepository) GetCafe(id *int) (cafeInfo CafeInfo, err error) {

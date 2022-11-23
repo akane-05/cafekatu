@@ -20,29 +20,35 @@ import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder'
 import { Cafe, CafeInfo } from '@/features/cafes/types'
 
 import { useRouter } from 'next/router'
+import { postFavorite } from '@/features/cafes/api/postfavorite'
+import { deleteFavorite } from '@/features/cafes/api/deleteFavorite'
+import * as Dialog from '@/context/MessageDialog'
 
 type Props = {
   cafeInfo: CafeInfo
 }
 
-type State = {
-  isFavorite: boolean
-}
-
 export default function CafeCard(props: Props) {
   const router = useRouter() //useRouterフックを定義して
 
-  const [values, setValues] = React.useState<State>({
-    isFavorite: false,
-  })
-
+  const [isFavorite, setIsFavorite] = React.useState<boolean>(
+    props.cafeInfo.is_favorite,
+  )
   const [cafeInfo] = useState(props.cafeInfo)
+  const dialog = Dialog.useDialogContext()
 
-  const handleClickFavorite = () => {
-    setValues({
-      ...values,
-      isFavorite: !values.isFavorite,
-    })
+  const handleClickFavorite = async () => {
+    let res
+    if (!isFavorite) {
+      res = await postFavorite(cafeInfo.id)
+    } else {
+      res = await deleteFavorite(cafeInfo.id)
+    }
+    if (res.status == 200) {
+      setIsFavorite(!isFavorite)
+    } else {
+      dialog.confirm(Dialog.apiErrorDialog(res.status, res.error))
+    }
   }
 
   const handleDetailsPage = (path: string) => {
@@ -93,7 +99,7 @@ export default function CafeCard(props: Props) {
                     edge="end"
                     sx={{ mr: 1 }}
                   >
-                    {values.isFavorite ? (
+                    {isFavorite ? (
                       <FavoriteIcon color="primary" />
                     ) : (
                       <FavoriteBorderIcon color="primary" />
@@ -137,7 +143,7 @@ export default function CafeCard(props: Props) {
               color="text.secondary"
               component="div"
             >
-              {cafeInfo.prefecture_id}
+              {cafeInfo.prefecture}
               {cafeInfo.city}
               {cafeInfo.street}
             </Typography>

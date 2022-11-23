@@ -51,7 +51,6 @@ func (dc *cafesController) GetCafes(c *gin.Context) {
 		return
 	}
 
-	// GetDemosメソッドにwhere句追加する
 	cafes, err := dc.dr.GetCafes(&query)
 	if err != nil {
 		log.Println(err.Error())
@@ -61,11 +60,15 @@ func (dc *cafesController) GetCafes(c *gin.Context) {
 		return
 	}
 
+	// var ids []int
 	const baseNum = 10
 	for i, cafe := range cafes {
+		// ids[i] = cafe.Id
 		cafe.Rating = (math.Floor(cafe.Rating*baseNum) / baseNum)
 		cafes[i] = cafe
 	}
+
+	// favoirtes, err := dc.dr.GetFavoirtes(,ids)
 
 	log.Println("フロントに返却")
 	c.JSON(http.StatusOK, gin.H{

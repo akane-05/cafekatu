@@ -15,13 +15,20 @@ import SearchIcon from '@mui/icons-material/Search'
 import { styled, alpha } from '@mui/material/styles'
 import InputBase from '@mui/material/InputBase'
 import * as React from 'react'
-import Router from 'next/router'
+import { path } from '@/const/Consts'
+import { useRouter } from 'next/router'
+
+// type State = {
+//   searchWord: string
+// }
 
 export default function Header() {
   const [anchorElUser, setAnchorElUser] = React.useState<null | HTMLElement>(
     null,
   )
+  //const [values, setValues] = React.useState<State>({ searchWord: '' })
   const settings = ['マイページ', 'ログアウト']
+  const router = useRouter()
 
   const handleOpenUserMenu = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorElUser(event.currentTarget)
@@ -33,9 +40,10 @@ export default function Header() {
 
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault()
-
-    const path = './cafes/cafesList'
-    Router.push(path)
+    router.push({
+      pathname: path.cafesList,
+      query: { searchWord: searchWord },
+    })
   }
 
   const Search = styled('div')(({ theme }) => ({
@@ -80,6 +88,13 @@ export default function Header() {
     },
   }))
 
+  let searchWord: string
+  const handleChange = (
+    e: React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement>,
+  ) => {
+    searchWord = e.target.value
+  }
+
   return (
     <AppBar position="static" style={{ backgroundColor: '#CC74AB' }}>
       <Toolbar>
@@ -95,8 +110,12 @@ export default function Header() {
               <SearchIcon />
             </SearchIconWrapper>
             <StyledInputBase
-              placeholder="検索…"
+              id="searchWord"
+              placeholder="店舗名、住所..."
               inputProps={{ 'aria-label': 'search' }}
+              onChange={handleChange}
+              //value={values.searchWord}
+              type="text"
             />
           </Search>
         </form>

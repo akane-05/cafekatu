@@ -9,34 +9,24 @@ import { CafeInfo } from '@/features/cafes/types'
 import { useRouter } from 'next/router'
 import { useState, useEffect } from 'react'
 //import { getCafes } from '@/features/cafes/api/getCafes'
-import { useCafes } from '@/features/cafes/api/getCafes'
+import { useCafes } from '@/features/cafes/api/useCafes'
 import * as Dialog from '@/context/MessageDialog'
 import { path } from '@/const/Consts'
 import { ContactMailOutlined } from '@mui/icons-material'
+import PageButton from '@/components/elements/PageButton'
 
 // import { info } from 'console'
 
-export default function CafesList(search: string) {
-  const { response, isLoading, isError } = useCafes()
+export default function CafesList() {
+  const router = useRouter()
+  const [page, setPage] = React.useState(1)
+  const [parPage, setparPage] = React.useState(10)
 
-  // const [cafes, setCafes] = useState<CafeInfo[]>([])
-  // const dialog = Dialog.useDialogContext()
-
-  // //初回レンダリングのみ実行
-  // useEffect(() => {
-  //   ;(async () => {
-  //     const response = await getCafes()
-  //     if (response.status == 200) {
-  //       setCafes(response.data)
-  //     } else {
-  //       await dialog
-  //         .confirm(Dialog.apiErrorDialog(response.status, response.error))
-  //         .then(() => {
-  //           handleLink(path.top)
-  //         })
-  //     }
-  //   })()
-  // }, [])
+  const { response, isLoading, isError } = useCafes(
+    page,
+    parPage,
+    router.query.searchWord,
+  )
 
   const handleLink = (path: string) => {
     Router.push(path)
@@ -66,6 +56,13 @@ export default function CafesList(search: string) {
       {response.data?.map((cafeInfo: CafeInfo) => {
         return <CafeCard key={cafeInfo.id} cafeInfo={cafeInfo} /> //keyを指定
       })}
+
+      <PageButton variant="outlined" onClick={() => setPage(page - 1)}>
+        ＜
+      </PageButton>
+      <PageButton variant="outlined" onClick={() => setPage(page + 1)}>
+        ＞
+      </PageButton>
     </CustomPaper>
   )
 }
