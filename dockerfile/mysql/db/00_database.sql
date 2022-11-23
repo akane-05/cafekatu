@@ -125,3 +125,6 @@ INSERT INTO users (email, password_digest,nickname) VALUES ('user3@email.com', '
 INSERT INTO reviews (user_id, cafe_id,comment,rating) VALUES ('1', '1','ケーキが美味しかった',3);
 INSERT INTO reviews (user_id, cafe_id,comment,rating) VALUES ('2', '1','コーヒーが好き',3);
 INSERT INTO reviews (user_id, cafe_id,comment,rating) VALUES ('3', '1','朝早くから営業して使いやすい',5);
+
+INSERT INTO favorites (user_id, cafe_id) VALUES ('1', '1');
+INSERT INTO favorites (user_id, cafe_id) VALUES ('1', '4');
