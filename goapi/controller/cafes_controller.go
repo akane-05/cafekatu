@@ -40,6 +40,16 @@ func NewCafesController(dr repository.CafesRepository) CafesController {
 // ポインタレシーバ(*demoController)にメソッドを追加
 func (dc *cafesController) GetCafes(c *gin.Context) {
 
+	//jwtから値取り出し
+	jwtInfo, err := unit.GetJwtToken(c)
+	if err != nil {
+		log.Println(err)
+		c.JSON(http.StatusUnauthorized, gin.H{
+			"error": "ログイン情報を取得できませんでした。再度ログインしてください。",
+		})
+		return
+	}
+
 	var query repository.CafeQuery
 
 	log.Println("GetCafes")
@@ -60,15 +70,21 @@ func (dc *cafesController) GetCafes(c *gin.Context) {
 		return
 	}
 
-	// var ids []int
-	const baseNum = 10
-	for i, cafe := range cafes {
-		// ids[i] = cafe.Id
-		cafe.Rating = (math.Floor(cafe.Rating*baseNum) / baseNum)
-		cafes[i] = cafe
+	favoCafes, err := dc.dr.GetFavoirtes(&jwtInfo.Id, &cafes)
+	if err != nil {
+		log.Println(err.Error())
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"error": "サーバーでエラーが発生しました。",
+		})
+		return
 	}
 
-	// favoirtes, err := dc.dr.GetFavoirtes(,ids)
+	const baseNum = 10
+	for i, cafe := range cafes {
+		result := unit.Include(favoCafes, cafe.Id)
+		cafes[i].IsFavorite = result
+		cafes[i].Rating = (math.Floor(cafe.Rating*baseNum) / baseNum)
+	}
 
 	log.Println("フロントに返却")
 	c.JSON(http.StatusOK, gin.H{

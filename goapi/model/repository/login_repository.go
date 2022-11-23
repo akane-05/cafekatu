@@ -1,7 +1,6 @@
 package repository
 
 import (
-	"errors"
 	"log"
 
 	"github.com/akane-05/cafekatu/goapi/model/entity"
@@ -43,17 +42,19 @@ func (tr *loginRepository) CheckEmail(email *string) (exist bool, err error) {
 
 	exist = false
 	var user entity.Users
-	err = Db.Debug().Where("email = ?", email).First(&user).Error
+	if err = Db.Debug().Where("email = ?", email).Limit(1).Find(&user).Error; err != nil {
+		return
+	}
 
-	if errors.Is(err, gorm.ErrRecordNotFound) {
-		exist = false
-		err = nil
-		return
-	}
-	if err != nil {
-		exist = false
-		return
-	}
+	// if errors.Is(err, gorm.ErrRecordNotFound) {
+	// 	exist = false
+	// 	err = nil
+	// 	return
+	// }
+	// if err != nil {
+	// 	exist = false
+	// 	return
+	// }
 
 	//名前付き変数でreturn
 	exist = true

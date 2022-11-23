@@ -1,7 +1,9 @@
 package repository
 
 import (
+	"fmt"
 	"log"
+	"strings"
 	"time"
 
 	"github.com/akane-05/cafekatu/goapi/model/entity"
@@ -13,7 +15,7 @@ import (
 // インターフェースで実装すべきメソッドを決める
 type CafesRepository interface {
 	GetCafes(cafeQuery *CafeQuery) (cafeInfos []CafeInfo, err error)
-	// GetFavoirtes(userId *int, ids *[]int) (favorite []entity.Favorites, err error)
+	GetFavoirtes(userId *int, cafes *[]CafeInfo) (cafeIds []int, err error)
 	GetCafe(id *int) (cafeInfo CafeInfo, err error)
 	InsertCafe(cafe *entity.Cafes) (err error)
 	InsertFavorite(favo *entity.Favorites) (err error)
@@ -42,6 +44,7 @@ type CafeInfo struct {
 	CreatedAt     time.Time `json:"created_at"`
 	UpdatedAt     time.Time `json:"updated_at"`
 	Rating        float64   `json:"rating"`
+	IsFavorite    bool      `json:"is_favorite"`
 }
 
 type CafeQuery struct {
@@ -79,15 +82,26 @@ func (tr *cafesRepository) GetCafes(cafeQuery *CafeQuery) (cafeInfos []CafeInfo,
 	return
 }
 
-// // ポインタレシーバ(*demoRepository)にメソッドを追加
-// func (tr *cafesRepository) GetFavoirtes(userId *int, ids *[]int) (favoirtes []entity.Favorites, err error) {
+// ポインタレシーバ(*demoRepository)にメソッドを追加
+func (tr *cafesRepository) GetFavoirtes(userId *int, cafes *[]CafeInfo) (cafeIds []int, err error) {
 
-// 	// if err = Db.Debug()Where().Find(&favoirtes).Error; err != nil {
-// 	// 	return
-// 	// }
-// 	//名前付き変数でreturn
-// 	return
-// }
+	subQuery1 := Db.Where("user_id = ?", userId).Model(&entity.Favorites{})
+
+	var shCafes []CafeInfo = *cafes
+	var conditions []string
+	for _, cafe := range shCafes {
+		condition := fmt.Sprintf("cafe_id = %v", cafe.Id)
+		conditions = append(conditions, condition)
+	}
+
+	where := strings.Join(conditions, " OR ")
+
+	if err = Db.Debug().Table("(?) as userFavo", subQuery1).Where(where).Select("cafe_id").Find(&cafeIds).Error; err != nil {
+		return
+	}
+	//名前付き変数でreturn
+	return
+}
 
 // ポインタレシーバ(*demoRepository)にメソッドを追加
 func (tr *cafesRepository) GetCafe(id *int) (cafeInfo CafeInfo, err error) {
