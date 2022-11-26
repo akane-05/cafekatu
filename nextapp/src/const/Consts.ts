@@ -15,6 +15,7 @@ const requests = {
 
 const path = {
   top: '/',
+  login: '/users/loginForm',
   register: '/users/registerForm',
   cafesList: '/cafes/cafesList',
   cafeDatail: '/cafes/cafeDetail',

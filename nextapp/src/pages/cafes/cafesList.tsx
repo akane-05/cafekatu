@@ -14,6 +14,9 @@ import * as Dialog from '@/context/MessageDialog'
 import { path } from '@/const/Consts'
 import { ContactMailOutlined } from '@mui/icons-material'
 import PageButton from '@/components/elements/PageButton'
+import { useHaveToken } from '@/hooks/useHaveToken'
+import { useSetRecoilState, RecoilRoot } from 'recoil'
+import { haveTokenState } from '@/globalStates/haveToken'
 
 // import { info } from 'console'
 
@@ -21,6 +24,7 @@ export default function CafesList() {
   const router = useRouter()
   const [page, setPage] = React.useState(1)
   const [parPage, setparPage] = React.useState(10)
+  const setHaveToken = useSetRecoilState(haveTokenState)
 
   const { response, isLoading, isError } = useCafes(
     page,
@@ -36,7 +40,32 @@ export default function CafesList() {
     return <span>読み込み中...</span>
   }
 
+  if (isError && isError.response.status == 401) {
+    console.log(isError)
+    console.log(isError.message)
+    console.log(isError.response)
+    console.log(isError.response.status)
+    setHaveToken(false)
+
+    return (
+      <>
+        <span>
+          ログイン情報を取得できませんでした。再度ログインしてください。
+        </span>
+        <Button
+          variant="contained"
+          color="primary"
+          onClick={() => handleLink(path.top)}
+        >
+          Top画面に戻る
+        </Button>
+      </>
+    )
+  }
+
   if (isError) {
+    console.log(isError)
+    console.log(isError.response.stasus)
     return (
       <>
         <span>エラーが発生しました</span>

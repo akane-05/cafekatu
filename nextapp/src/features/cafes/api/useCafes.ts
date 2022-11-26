@@ -35,7 +35,7 @@ export function useCafes(
       })
       .then((res) => res.data)
 
-  const { data: post, error } = useSWR(
+  const { data: data, error } = useSWR(
     requests.cafes +
       new URLSearchParams({
         per_page: `${perPage}`,
@@ -46,8 +46,8 @@ export function useCafes(
   )
 
   return {
-    response: post,
-    isLoading: !error && !post,
+    response: data,
+    isLoading: !error && !data,
     isError: error,
   }
 }
