@@ -33,17 +33,6 @@ type Props = {
 export default function cafeInfo(props: Props) {
   const [cafeInfo] = useState(props.cafeInfo)
 
-  // const [values, setValues] = React.useState<State>({
-  //   isFavorite: false,
-  // })
-
-  // const handleClickFavorite = () => {
-  //   setValues({
-  //     ...values,
-  //     isFavorite: !values.isFavorite,
-  //   })
-  // }
-
   const dialog = Dialog.useDialogContext()
 
   const [isFavorite, setIsFavorite] = React.useState<boolean>(

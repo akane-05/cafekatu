@@ -15,13 +15,12 @@ import Visibility from '@mui/icons-material/Visibility'
 import VisibilityOff from '@mui/icons-material/VisibilityOff'
 import theme from '../styles/theme'
 import { ThemeProvider } from '@mui/material/styles'
-import React, { useState, useRef } from 'react'
+import React, { useState, useRef, useEffect } from 'react'
 import CustomButton from '@/components/elements/CustomButton'
 import { LoginInfo } from '@/features/login/types'
 import { validPattern, path } from '@/const/Consts'
 import { login } from '@/features/login/api/login'
 import * as Dialog from '@/context/MessageDialog'
-import * as TokenProvide from '@/context/TokenProvide'
 
 type Error = {
   email: boolean
@@ -30,11 +29,6 @@ type Error = {
 }
 
 function Home() {
-  // const token = TokenProvide.useTokenContext()
-  // return (
-  //   //{token.haveToken? <></>:}
-  //   <></>
-  // )
   const [values, setValues] = React.useState<LoginInfo>({
     email: '',
     password: '',

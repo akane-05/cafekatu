@@ -4,18 +4,17 @@ import theme from '../styles/theme'
 import '../styles/global.css'
 import { ThemeProvider } from '@mui/material/styles'
 import { MessageDialog } from '@/context/MessageDialog'
-import { TokenProvide } from '@/context/TokenProvide'
+import React, { useState, useEffect } from 'react'
+//import useHaveToken from 'hooks/useHaveToken'
 
 function MyApp({ Component, pageProps }: AppProps) {
   return (
     <ThemeProvider theme={theme}>
-      {/* <TokenProvide> */}
       <MessageDialog>
         <Layout>
           <Component {...pageProps} />
         </Layout>
       </MessageDialog>
-      {/* </TokenProvide> */}
     </ThemeProvider>
   )
 }

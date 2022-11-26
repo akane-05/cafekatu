@@ -17,7 +17,6 @@ import InputBase from '@mui/material/InputBase'
 import * as React from 'react'
 import { path } from '@/const/Consts'
 import { useRouter } from 'next/router'
-import * as TokenProvide from '@/context/TokenProvide'
 
 // type State = {
 //   searchWord: string
@@ -30,7 +29,6 @@ export default function Header() {
   //const [values, setValues] = React.useState<State>({ searchWord: '' })
   const settings = ['マイページ', 'ログアウト']
   const router = useRouter()
-  const token = TokenProvide.useTokenContext()
 
   const handleOpenUserMenu = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorElUser(event.currentTarget)
@@ -133,48 +131,7 @@ export default function Header() {
         <Box sx={{ flexGrow: 1 }} />
 
         <Box sx={{ flexGrow: 0 }} textAlign="right">
-          {token.haveToken ? (
-            <>
-              <Tooltip title="設定を開く">
-                <IconButton
-                  size="large"
-                  aria-label="account of current user"
-                  aria-controls="menu-appbar"
-                  aria-haspopup="true"
-                  onClick={handleOpenUserMenu}
-                  sx={{ p: 0 }}
-                >
-                  <AccountCircle />
-                </IconButton>
-              </Tooltip>
-              <Menu
-                sx={{ mt: '45px' }}
-                id="menu-appbar"
-                anchorEl={anchorElUser}
-                anchorOrigin={{
-                  vertical: 'top',
-                  horizontal: 'right',
-                }}
-                keepMounted
-                transformOrigin={{
-                  vertical: 'top',
-                  horizontal: 'right',
-                }}
-                open={Boolean(anchorElUser)}
-                onClose={handleCloseUserMenu}
-              >
-                {settings.map((setting) => (
-                  <MenuItem key={setting} onClick={handleCloseUserMenu}>
-                    <Typography textAlign="center">{setting}</Typography>
-                  </MenuItem>
-                ))}
-              </Menu>
-            </>
-          ) : (
-            <></>
-          )}
-
-          {/* <Tooltip title="設定を開く">
+          <Tooltip title="設定を開く">
             <IconButton
               size="large"
               aria-label="account of current user"
@@ -207,7 +164,7 @@ export default function Header() {
                 <Typography textAlign="center">{setting}</Typography>
               </MenuItem>
             ))}
-          </Menu> */}
+          </Menu>
         </Box>
       </Toolbar>
     </AppBar>
