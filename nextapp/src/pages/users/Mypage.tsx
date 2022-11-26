@@ -15,7 +15,7 @@ import {
   FormHelperText,
 } from '@mui/material'
 import React, { useState, useRef } from 'react'
-import Comment from '@/components/elements/Comment'
+import Review from '@/components/elements/Review'
 import CustomPaper from '@/components/layouts/CustomPaper'
 import Visibility from '@mui/icons-material/Visibility'
 import VisibilityOff from '@mui/icons-material/VisibilityOff'
@@ -424,7 +424,9 @@ export default function Mypage(props: Props) {
           過去の口コミ
         </Typography>
 
-        <Comment mypage={true}></Comment>
+        {/* {response.response.data.reviews?.map((review: Review) => {
+          return <ReviewCard key={review.id} review={review} /> //keyを指定
+        })} */}
       </CustomPaper>
     </>
   )

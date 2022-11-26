@@ -29,7 +29,7 @@ export default function CafesList() {
   )
 
   const handleLink = (path: string) => {
-    Router.push(path)
+    router.push(path)
   }
 
   if (isLoading) {
@@ -43,7 +43,7 @@ export default function CafesList() {
         <Button
           variant="contained"
           color="primary"
-          onClick={() => handleLink('/')}
+          onClick={() => handleLink(path.top)}
         >
           Top画面に戻る
         </Button>

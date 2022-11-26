@@ -17,6 +17,7 @@ type CafesRepository interface {
 	GetCafes(cafeQuery *CafeQuery) (cafeInfos []CafeInfo, err error)
 	GetFavoirtes(userId *int, cafes *[]CafeInfo) (cafeIds []int, err error)
 	GetCafe(id *int) (cafeInfo CafeInfo, err error)
+	GetFavoirte(userId *int, cafeId *int) (exist bool, err error)
 	InsertCafe(cafe *entity.Cafes) (err error)
 	InsertFavorite(favo *entity.Favorites) (err error)
 	DeleteFavorite(favo *entity.Favorites) (err error)
@@ -118,6 +119,22 @@ func (tr *cafesRepository) GetCafe(id *int) (cafeInfo CafeInfo, err error) {
 		return
 	}
 
+	//名前付き変数でreturn
+	return
+}
+
+// ポインタレシーバ(*demoRepository)にメソッドを追加
+func (tr *cafesRepository) GetFavoirte(userId *int, cafeId *int) (exist bool, err error) {
+
+	exist = false
+	var count int64
+	if err = Db.Debug().Model(&entity.Favorites{}).Where("user_id = ? AND cafe_id = ?", userId, cafeId).Count(&count).Error; err != nil {
+		return
+	}
+
+	if count == 1 {
+		exist = true
+	}
 	//名前付き変数でreturn
 	return
 }

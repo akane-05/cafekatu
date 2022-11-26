@@ -13,7 +13,7 @@ import {
 } from '@mui/material'
 import Visibility from '@mui/icons-material/Visibility'
 import VisibilityOff from '@mui/icons-material/VisibilityOff'
-import theme from '../styles/theme'
+import theme from '@/styles/theme'
 import { ThemeProvider } from '@mui/material/styles'
 import React, { useState, useRef } from 'react'
 import CustomButton from '@/components/elements/CustomButton'
@@ -29,31 +29,32 @@ type Error = {
   [key: string]: boolean
 }
 
-function Home() {
-  // const token = TokenProvide.useTokenContext()
-  // return (
-  //   //{token.haveToken? <></>:}
-  //   <></>
-  // )
+export default function LoginForm() {
   const [values, setValues] = React.useState<LoginInfo>({
     email: '',
     password: '',
   })
+
   const [showPassword, setShowPassword] = React.useState<boolean>(false)
+
   const [errors, setErrors] = React.useState<Error>({
     email: false,
     password: false,
   })
+
   const emailRef = useRef<HTMLInputElement>(null)
   const passwordRef = useRef<HTMLInputElement>(null)
+
   const handleClickShowPassword = () => {
     setShowPassword(!showPassword)
   }
+
   const handleMouseDownPassword = (
     event: React.MouseEvent<HTMLButtonElement>,
   ) => {
     event.preventDefault()
   }
+
   const handleChange =
     (prop: keyof LoginInfo) => (event: React.ChangeEvent<HTMLInputElement>) => {
       let ref = null
@@ -63,11 +64,14 @@ function Home() {
         ref = passwordRef.current
       }
       setErrors({ ...errors, [prop]: !ref?.validity.valid })
+
       setValues({ ...values, [prop]: event.target.value })
     }
+
   const handleLink = (path: string) => {
     Router.push(path)
   }
+
   const dialog = Dialog.useDialogContext()
   const handleLogin = async () => {
     let error = false
@@ -76,6 +80,7 @@ function Home() {
         error = true
       }
     }
+
     if (!error) {
       const response = await login(values)
       if (response.status == 200) {
@@ -88,6 +93,7 @@ function Home() {
       dialog.confirm(Dialog.errorDialog('エラーを修正してください。'))
     }
   }
+
   return (
     <ThemeProvider theme={theme}>
       <Grid
@@ -102,6 +108,7 @@ function Home() {
             Cafe活
           </Typography>
         </Grid>
+
         <Grid item xs={12}>
           <FormControl sx={{ m: 1, width: '25ch' }} variant="outlined">
             <InputLabel htmlFor="email">email</InputLabel>
@@ -123,6 +130,7 @@ function Home() {
             )}
           </FormControl>
         </Grid>
+
         <Grid item xs={12}>
           <FormControl sx={{ m: 1, width: '25ch' }} variant="outlined">
             <InputLabel htmlFor="password">Password</InputLabel>
@@ -156,15 +164,17 @@ function Home() {
             )}
           </FormControl>
         </Grid>
+
         <Grid item xs={12}>
           <CustomButton variant="contained" onClick={() => handleLogin()}>
             ログイン
           </CustomButton>
         </Grid>
+
         <Grid item xs={12}>
           <CustomButton
             variant="contained"
-            onClick={() => handleLink('./users/registerForm')}
+            onClick={() => handleLink(path.register)}
           >
             新規会員登録
           </CustomButton>
@@ -173,5 +183,3 @@ function Home() {
     </ThemeProvider>
   )
 }
-
-export default Home

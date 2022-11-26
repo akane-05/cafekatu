@@ -10,12 +10,14 @@ const requests = {
   register: '/register',
   login: '/login',
   cafes: '/cafes?',
-  test: '/testcafes?',
+  cafeDeatil: '/cafes/',
 }
 
 const path = {
   top: '/',
+  register: '/users/registerForm',
   cafesList: '/cafes/cafesList',
+  cafeDatail: '/cafes/cafeDetail',
 }
 
 export { validPattern, requests, path }

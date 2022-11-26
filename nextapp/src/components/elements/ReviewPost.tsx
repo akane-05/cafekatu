@@ -30,7 +30,7 @@ type Error = {
   comment: boolean
 }
 
-export default function CommentPost(props: Props) {
+export default function ReviewPost(props: Props) {
   const [values, setValues] = React.useState<State>({
     rating: 0,
     comment: '',

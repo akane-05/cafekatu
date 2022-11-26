@@ -14,18 +14,18 @@ import {
   Hidden,
 } from '@mui/material'
 import React from 'react'
-import FavoriteIcon from '@mui/icons-material/Favorite'
-import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder'
+import { Review } from '@/features/cafes/types/index'
 
 type Props = {
-  mypage: boolean | null
+  review: Review
 }
 
-export default function Comment(props: Props) {
+export default function ReviewCard(props: Props) {
   // const handleLink = (path: string) => {
   //   Router.push(path)
   // }
-  const mypage = props.mypage ? true : false
+  //const mypage = props.Review ? true : false
+  const review = props.review
 
   return (
     <Card sx={{ mt: 1, mb: 1 }}>
@@ -48,8 +48,7 @@ export default function Comment(props: Props) {
         <Grid item xs={12} sm={9}>
           <CardContent sx={{ alignSelf: 'stretch' }}>
             <Typography component="div" variant="h5" sx={{ mb: 1 }}>
-              {/* {props.num} */}
-              ユーザー名
+              {review.nickname}
             </Typography>
 
             <Grid container>
@@ -68,7 +67,7 @@ export default function Comment(props: Props) {
                   color="text.secondary"
                   sx={{ mr: 3 }}
                 >
-                  3.0
+                  {review.rating}
                 </Typography>
               </Grid>
               <Grid item xs={0} sm={6}>
@@ -82,16 +81,16 @@ export default function Comment(props: Props) {
               component="div"
               sx={{ mb: 1 }}
             >
-              コメント
+              {review.comment}
             </Typography>
-            <Grid
+            {/* <Grid
               container
               direction="row"
               justifyContent="flex-end"
               alignItems="flex-end"
             >
               {props.mypage ? <Button variant="contained">削除</Button> : <></>}
-            </Grid>
+            </Grid> */}
           </CardContent>
         </Grid>
       </Grid>

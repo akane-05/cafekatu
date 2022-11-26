@@ -99,6 +99,16 @@ func (dc *cafesController) GetCafe(c *gin.Context) {
 
 	log.Println("GetCafe")
 
+	//jwtから値取り出し
+	jwtInfo, err := unit.GetJwtToken(c)
+	if err != nil {
+		log.Println(err)
+		c.JSON(http.StatusUnauthorized, gin.H{
+			"error": "ログイン情報を取得できませんでした。再度ログインしてください。",
+		})
+		return
+	}
+
 	// パスパラメータの取得、数字じゃなかったらどうするのか確認
 	id, err := strconv.Atoi(c.Param("id"))
 	if err != nil {
@@ -111,7 +121,7 @@ func (dc *cafesController) GetCafe(c *gin.Context) {
 
 	var query repository.CafeQuery
 
-	log.Println("GetCafes")
+	log.Println("GetCafe")
 	if err := c.BindQuery(&query); err != nil {
 		log.Println("クエリパラメータに不正な値が含まれています。")
 		c.JSON(http.StatusBadRequest, gin.H{
@@ -132,6 +142,17 @@ func (dc *cafesController) GetCafe(c *gin.Context) {
 
 	const baseNum = 10
 	cafe.Rating = (math.Floor(cafe.Rating*baseNum) / baseNum)
+
+	favorite, err := dc.dr.GetFavoirte(&jwtInfo.Id, &id)
+	if err != nil {
+		log.Println(err.Error())
+		c.JSON(http.StatusInternalServerError, gin.H{
+			// "error": "サーバーでエラーが発生しました。 " + err.Error()
+			"error": err.Error(),
+		})
+		return
+	}
+	cafe.IsFavorite = favorite
 
 	reviews, err := dc.dr.GetCafeReviews(&id, &query)
 	if err != nil {

@@ -4,15 +4,18 @@ import theme from '../styles/theme'
 import '../styles/global.css'
 import { ThemeProvider } from '@mui/material/styles'
 import { MessageDialog } from '@/context/MessageDialog'
+import { TokenProvide } from '@/context/TokenProvide'
 
 function MyApp({ Component, pageProps }: AppProps) {
   return (
     <ThemeProvider theme={theme}>
-      <Layout>
-        <MessageDialog>
+      {/* <TokenProvide> */}
+      <MessageDialog>
+        <Layout>
           <Component {...pageProps} />
-        </MessageDialog>
-      </Layout>
+        </Layout>
+      </MessageDialog>
+      {/* </TokenProvide> */}
     </ThemeProvider>
   )
 }

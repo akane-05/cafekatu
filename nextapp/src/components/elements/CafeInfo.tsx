@@ -17,31 +17,51 @@ import {
 import React, { useState } from 'react'
 import FavoriteIcon from '@mui/icons-material/Favorite'
 import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder'
-
 import { CafeInfo } from '@/features/cafes/types'
+import * as Dialog from '@/context/MessageDialog'
+import { postFavorite } from '@/features/cafes/api/postFavorite'
+import { deleteFavorite } from '@/features/cafes/api/deleteFavorite'
 
 type Props = {
   cafeInfo: CafeInfo
 }
 
-type State = {
-  isFavorite: boolean
-}
+// type State = {
+//   isFavorite: boolean
+// }
 
 export default function cafeInfo(props: Props) {
   const [cafeInfo] = useState(props.cafeInfo)
 
-  console.log(cafeInfo)
+  // const [values, setValues] = React.useState<State>({
+  //   isFavorite: false,
+  // })
 
-  const [values, setValues] = React.useState<State>({
-    isFavorite: false,
-  })
+  // const handleClickFavorite = () => {
+  //   setValues({
+  //     ...values,
+  //     isFavorite: !values.isFavorite,
+  //   })
+  // }
 
-  const handleClickFavorite = () => {
-    setValues({
-      ...values,
-      isFavorite: !values.isFavorite,
-    })
+  const dialog = Dialog.useDialogContext()
+
+  const [isFavorite, setIsFavorite] = React.useState<boolean>(
+    props.cafeInfo.is_favorite,
+  )
+
+  const handleClickFavorite = async () => {
+    let res
+    if (!isFavorite) {
+      res = await postFavorite(cafeInfo.id)
+    } else {
+      res = await deleteFavorite(cafeInfo.id)
+    }
+    if (res.status == 200) {
+      setIsFavorite(!isFavorite)
+    } else {
+      dialog.confirm(Dialog.apiErrorDialog(res.status, res.error))
+    }
   }
 
   const handleMouseDownFavorite = (
@@ -85,7 +105,7 @@ export default function cafeInfo(props: Props) {
                     edge="end"
                     sx={{ mr: 1 }}
                   >
-                    {values.isFavorite ? (
+                    {isFavorite ? (
                       <FavoriteIcon color="primary" />
                     ) : (
                       <FavoriteBorderIcon color="primary" />

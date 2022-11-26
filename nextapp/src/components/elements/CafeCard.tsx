@@ -18,9 +18,9 @@ import React, { useState } from 'react'
 import FavoriteIcon from '@mui/icons-material/Favorite'
 import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder'
 import { Cafe, CafeInfo } from '@/features/cafes/types'
-
+import { path } from '@/const/Consts'
 import { useRouter } from 'next/router'
-import { postFavorite } from '@/features/cafes/api/postfavorite'
+import { postFavorite } from '@/features/cafes/api/postFavorite'
 import { deleteFavorite } from '@/features/cafes/api/deleteFavorite'
 import * as Dialog from '@/context/MessageDialog'
 
@@ -51,7 +51,14 @@ export default function CafeCard(props: Props) {
     }
   }
 
-  const handleDetailsPage = (path: string) => {
+  // const handleDetailsPage = (path: string) => {
+  //   router.push({
+  //     pathname: path,
+  //     query: { id: cafeInfo.id },
+  //   })
+  // }
+
+  const handleLink = (path: string) => {
     router.push({
       pathname: path,
       query: { id: cafeInfo.id },
@@ -157,7 +164,7 @@ export default function CafeCard(props: Props) {
               <Button
                 variant="contained"
                 color="primary"
-                onClick={() => handleDetailsPage('./CafeDetail')}
+                onClick={() => handleLink(path.cafeDatail)}
               >
                 詳細
               </Button>
