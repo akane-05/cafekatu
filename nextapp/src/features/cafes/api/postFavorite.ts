@@ -1,11 +1,12 @@
 import apiClient from '@/lib/axios'
 import { Response } from '@/features/cafes/types'
+import { strage } from '@/const/Consts'
 
 export async function postFavorite(id: number): Promise<Response> {
   return apiClient
     .post(`/cafes/${id}/favorite`, null, {
       headers: {
-        Authorization: `Bearer ${localStorage.getItem('token')}`,
+        Authorization: `Bearer ${localStorage.getItem(strage.Token)}`,
       },
     })
     .then((res) => {

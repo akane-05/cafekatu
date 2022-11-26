@@ -117,16 +117,20 @@ func ExtractBearerToken(header string) (string, error) {
 }
 
 func ParseToken(jwtToken string) (*jwt.Token, error) {
+	log.Println(1)
 
 	secret := os.Getenv("SECRET_KEY")
 
+	log.Println(2)
 	// jwtの検証
 	token, err := jwt.Parse(jwtToken, func(token *jwt.Token) (interface{}, error) {
+		log.Println(3)
 		return []byte(secret), nil // CreateTokenにて指定した文字列を使います
 	})
 	if err != nil {
+		log.Println(4)
 		return token, err
 	}
-
+	log.Println(5)
 	return token, nil
 }

@@ -8,9 +8,11 @@ import ReviewPost from '@/components/elements/ReviewPost'
 import CustomPaper from '@/components/layouts/CustomPaper'
 import { useCafe } from '@/features/cafes/api/useCafe'
 import { useRouter } from 'next/router'
-import { path } from '@/const/Consts'
+import { path, strage } from '@/const/Consts'
 import { Review } from '@/features/cafes/types/index'
 import PageButton from '@/components/elements/PageButton'
+import { useSetRecoilState, RecoilRoot } from 'recoil'
+import { haveTokenState } from '@/globalStates/haveToken'
 
 type State = {
   isCommentPost: boolean
@@ -31,6 +33,8 @@ export default function CafeDetail() {
 
   const [page, setPage] = React.useState(1)
 
+  const setHaveToken = useSetRecoilState(haveTokenState)
+
   const handleCommentPost = () => {
     setIsCommentPost(!isCommentPost)
   }
@@ -41,6 +45,25 @@ export default function CafeDetail() {
 
   if (isLoading) {
     return <span>読み込み中...</span>
+  }
+
+  if (isError && isError.response.status == 401) {
+    setHaveToken(false)
+
+    return (
+      <>
+        <span>
+          ログイン情報を取得できませんでした。再度ログインしてください。
+        </span>
+        <Button
+          variant="contained"
+          color="primary"
+          onClick={() => handleLink(path.top)}
+        >
+          Top画面に戻る
+        </Button>
+      </>
+    )
   }
 
   if (isError) {

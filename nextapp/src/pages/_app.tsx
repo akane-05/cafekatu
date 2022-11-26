@@ -17,13 +17,10 @@ function AppInit() {
     const haveToken = localStorage.getItem('token')
     console.log(haveToken)
     if (haveToken != null) {
-      console.log('トークンあった')
       setHaveToken(true)
     } else {
-      console.log('トークンない')
       setHaveToken(false)
     }
-    console.log(haveToken)
   }, [])
 
   return null

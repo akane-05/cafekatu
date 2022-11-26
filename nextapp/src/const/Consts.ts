@@ -21,4 +21,8 @@ const path = {
   cafeDatail: '/cafes/cafeDetail',
 }
 
-export { validPattern, requests, path }
+const strage = {
+  Token: 'CafeKatuJWTToken',
+}
+
+export { validPattern, requests, path, strage }

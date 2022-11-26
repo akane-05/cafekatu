@@ -11,7 +11,7 @@ import { useState, useEffect } from 'react'
 //import { getCafes } from '@/features/cafes/api/getCafes'
 import { useCafes } from '@/features/cafes/api/useCafes'
 import * as Dialog from '@/context/MessageDialog'
-import { path } from '@/const/Consts'
+import { path, strage } from '@/const/Consts'
 import { ContactMailOutlined } from '@mui/icons-material'
 import PageButton from '@/components/elements/PageButton'
 import { useHaveToken } from '@/hooks/useHaveToken'
@@ -41,10 +41,10 @@ export default function CafesList() {
   }
 
   if (isError && isError.response.status == 401) {
-    console.log(isError)
-    console.log(isError.message)
-    console.log(isError.response)
-    console.log(isError.response.status)
+    // console.log(isError)
+    // console.log(isError.message)
+    // console.log(isError.response)
+    // console.log(isError.response.status)
     setHaveToken(false)
 
     return (
@@ -64,8 +64,6 @@ export default function CafesList() {
   }
 
   if (isError) {
-    console.log(isError)
-    console.log(isError.response.stasus)
     return (
       <>
         <span>エラーが発生しました</span>

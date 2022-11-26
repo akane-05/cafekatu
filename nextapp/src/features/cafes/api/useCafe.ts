@@ -2,9 +2,9 @@ import { CafeInfo } from '@/features/cafes/types'
 import apiClient from '@/lib/axios'
 import useSWR from 'swr'
 import { requests } from '@/const/Consts'
-// import { useToken } from '@/hooks/useToken'
 import { useRouter } from 'next/router'
 import { useState, useEffect } from 'react'
+import { strage } from '@/const/Consts'
 
 export type fetchPostReturnType = {
   data: {
@@ -31,7 +31,7 @@ export function useCafe(
     apiClient
       .get(url, {
         headers: {
-          Authorization: `Bearer ${localStorage.getItem('token')}`,
+          Authorization: `Bearer ${localStorage.getItem(strage.Token)}`,
         },
       })
       .then((res) => res.data)
