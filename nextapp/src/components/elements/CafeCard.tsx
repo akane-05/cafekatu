@@ -23,6 +23,8 @@ import { useRouter } from 'next/router'
 import { postFavorite } from '@/features/cafes/api/postFavorite'
 import { deleteFavorite } from '@/features/cafes/api/deleteFavorite'
 import * as Dialog from '@/context/MessageDialog'
+import { useSetRecoilState, RecoilRoot } from 'recoil'
+import { haveTokenState } from '@/globalStates/haveToken'
 
 type Props = {
   cafeInfo: CafeInfo
@@ -30,6 +32,7 @@ type Props = {
 
 export default function CafeCard(props: Props) {
   const router = useRouter() //useRouterフックを定義して
+  const setHaveToken = useSetRecoilState(haveTokenState)
 
   const [isFavorite, setIsFavorite] = React.useState<boolean>(
     props.cafeInfo.is_favorite,
@@ -47,6 +50,9 @@ export default function CafeCard(props: Props) {
     if (res.status == 200) {
       setIsFavorite(!isFavorite)
     } else {
+      if (res.status == 401) {
+        setHaveToken(false)
+      }
       dialog.confirm(Dialog.apiErrorDialog(res.status, res.error))
     }
   }

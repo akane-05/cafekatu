@@ -7,16 +7,15 @@ import { MessageDialog } from '@/context/MessageDialog'
 import React, { useState, useEffect } from 'react'
 import { useSetRecoilState, RecoilRoot } from 'recoil'
 import { haveTokenState } from '@/globalStates/haveToken'
+import { strage } from '@/const/Consts'
 
 function AppInit() {
   // グローバルステートにユーザー情報をセットするためのもの
   const setHaveToken = useSetRecoilState(haveTokenState)
 
   useEffect(() => {
-    console.log('トークン取得前')
-    const haveToken = localStorage.getItem('token')
-    console.log(haveToken)
-    if (haveToken != null) {
+    const token = localStorage.getItem(strage.Token)
+    if (token != null) {
       setHaveToken(true)
     } else {
       setHaveToken(false)

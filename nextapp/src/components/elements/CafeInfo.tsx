@@ -21,6 +21,8 @@ import { CafeInfo } from '@/features/cafes/types'
 import * as Dialog from '@/context/MessageDialog'
 import { postFavorite } from '@/features/cafes/api/postFavorite'
 import { deleteFavorite } from '@/features/cafes/api/deleteFavorite'
+import { useSetRecoilState, RecoilRoot } from 'recoil'
+import { haveTokenState } from '@/globalStates/haveToken'
 
 type Props = {
   cafeInfo: CafeInfo
@@ -32,6 +34,7 @@ type Props = {
 
 export default function cafeInfo(props: Props) {
   const [cafeInfo] = useState(props.cafeInfo)
+  const setHaveToken = useSetRecoilState(haveTokenState)
 
   const dialog = Dialog.useDialogContext()
 
@@ -49,6 +52,9 @@ export default function cafeInfo(props: Props) {
     if (res.status == 200) {
       setIsFavorite(!isFavorite)
     } else {
+      if (res.status == 401) {
+        setHaveToken(false)
+      }
       dialog.confirm(Dialog.apiErrorDialog(res.status, res.error))
     }
   }

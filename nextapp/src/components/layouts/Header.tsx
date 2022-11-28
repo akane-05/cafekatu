@@ -17,20 +17,19 @@ import InputBase from '@mui/material/InputBase'
 import * as React from 'react'
 import { path } from '@/const/Consts'
 import { useRouter } from 'next/router'
-import { useHaveToken } from '@/hooks/useHaveToken'
-
-// type State = {
-//   searchWord: string
-// }
+import * as Dialog from '@/context/MessageDialog'
+import { useSetRecoilState, RecoilRoot } from 'recoil'
+import { haveTokenState } from '@/globalStates/haveToken'
+import { logout } from '@/features/login/api/logout'
 
 export default function Header() {
-  const { haveToken, isAuthChecking } = useHaveToken()
   const [anchorElUser, setAnchorElUser] = React.useState<null | HTMLElement>(
     null,
   )
-  //const [values, setValues] = React.useState<State>({ searchWord: '' })
   const settings = ['マイページ', 'ログアウト']
   const router = useRouter()
+  const dialog = Dialog.useDialogContext()
+  const setHaveToken = useSetRecoilState(haveTokenState)
 
   const handleOpenUserMenu = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorElUser(event.currentTarget)
@@ -38,6 +37,21 @@ export default function Header() {
 
   const handleCloseUserMenu = () => {
     setAnchorElUser(null)
+  }
+
+  const handleClickUserMenu = async (setting: string) => {
+    if (setting == settings[0]) {
+      handleLink('マイページ')
+    } else if (setting == settings[1]) {
+      await dialog
+        .confirm(Dialog.confirmDialog('ログアウトしますか？'))
+        .then(() => {
+          logout()
+          setHaveToken(false)
+          dialog.confirm(Dialog.apiOKDialog('ログアウトしました！'))
+          handleLink(path.top)
+        })
+    }
   }
 
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
@@ -104,7 +118,9 @@ export default function Header() {
   return (
     <AppBar position="static" style={{ backgroundColor: '#CC74AB' }}>
       <Toolbar>
-        {haveToken ? (
+        {!(
+          router.pathname == path.login || router.pathname == path.register
+        ) ? (
           <>
             <Box sx={{ m: 0 }}>
               <Button
@@ -147,7 +163,7 @@ export default function Header() {
               <Menu
                 sx={{ mt: '45px' }}
                 id="menu-appbar"
-                anchorEl={anchorElUser}
+                //anchorEl={anchorElUser}
                 anchorOrigin={{
                   vertical: 'top',
                   horizontal: 'right',
@@ -161,7 +177,10 @@ export default function Header() {
                 onClose={handleCloseUserMenu}
               >
                 {settings.map((setting) => (
-                  <MenuItem key={setting} onClick={handleCloseUserMenu}>
+                  <MenuItem
+                    key={setting}
+                    onClick={() => handleClickUserMenu(setting)}
+                  >
                     <Typography textAlign="center">{setting}</Typography>
                   </MenuItem>
                 ))}

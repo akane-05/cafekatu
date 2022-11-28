@@ -19,15 +19,9 @@ import React, { useState, useRef, useEffect } from 'react'
 import { useRouter } from 'next/router'
 import CustomButton from '@/components/elements/CustomButton'
 import { LoginInfo } from '@/features/login/types'
-import { validPattern, path } from '@/const/Consts'
-import { login } from '@/features/login/api/login'
+import { validPattern, path, strage } from '@/const/Consts'
 import * as Dialog from '@/context/MessageDialog'
 import { useHaveToken } from '@/hooks/useHaveToken'
-type Error = {
-  email: boolean
-  password: boolean
-  [key: string]: boolean
-}
 
 function Home() {
   const router = useRouter()

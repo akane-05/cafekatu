@@ -12,20 +12,12 @@ import { useState, useEffect } from 'react'
 import { useCafes } from '@/features/cafes/api/useCafes'
 import * as Dialog from '@/context/MessageDialog'
 import { path, strage } from '@/const/Consts'
-import { ContactMailOutlined } from '@mui/icons-material'
 import PageButton from '@/components/elements/PageButton'
-import { useHaveToken } from '@/hooks/useHaveToken'
-import { useSetRecoilState, RecoilRoot } from 'recoil'
-import { haveTokenState } from '@/globalStates/haveToken'
-
-// import { info } from 'console'
 
 export default function CafesList() {
   const router = useRouter()
   const [page, setPage] = React.useState(1)
   const [parPage, setparPage] = React.useState(10)
-  const setHaveToken = useSetRecoilState(haveTokenState)
-
   const { response, isLoading, isError } = useCafes(
     page,
     parPage,
@@ -40,13 +32,7 @@ export default function CafesList() {
     return <span>読み込み中...</span>
   }
 
-  if (isError && isError.response.status == 401) {
-    // console.log(isError)
-    // console.log(isError.message)
-    // console.log(isError.response)
-    // console.log(isError.response.status)
-    setHaveToken(false)
-
+  if (isError && isError?.response?.status == 401) {
     return (
       <>
         <span>

@@ -81,7 +81,7 @@ export default function ReviewPost(props: Props) {
         </Typography>
 
         <Grid container>
-          <Grid xs={6}>
+          <Grid item xs={6}>
             <Typography
               variant="subtitle1"
               color="text.secondary"
@@ -90,7 +90,7 @@ export default function ReviewPost(props: Props) {
               ☆☆☆
             </Typography>
           </Grid>
-          <Grid xs={6}>
+          <Grid item xs={6}>
             <Typography
               variant="subtitle1"
               color="text.secondary"

@@ -10,6 +10,7 @@ export async function login(info: LoginInfo): Promise<Response> {
       const { data, status } = res
       const response = JSON.parse(JSON.stringify(data)) as Response
       response.status = status
+
       localStorage.setItem(strage.Token, response.token)
 
       return response

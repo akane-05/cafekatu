@@ -21,6 +21,8 @@ import { LoginInfo } from '@/features/login/types'
 import { validPattern, path } from '@/const/Consts'
 import { login } from '@/features/login/api/login'
 import * as Dialog from '@/context/MessageDialog'
+import { useSetRecoilState, RecoilRoot } from 'recoil'
+import { haveTokenState } from '@/globalStates/haveToken'
 
 type Error = {
   email: boolean
@@ -29,6 +31,8 @@ type Error = {
 }
 
 export default function LoginForm() {
+  const setHaveToken = useSetRecoilState(haveTokenState)
+
   const [values, setValues] = React.useState<LoginInfo>({
     email: '',
     password: '',
@@ -84,6 +88,7 @@ export default function LoginForm() {
       const response = await login(values)
       if (response.status == 200) {
         dialog.confirm(Dialog.apiOKDialog(response.message))
+        setHaveToken(true)
         handleLink(path.cafesList)
       } else {
         dialog.confirm(Dialog.apiErrorDialog(response.status, response.error))

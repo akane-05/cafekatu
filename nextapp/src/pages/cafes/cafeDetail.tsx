@@ -47,7 +47,7 @@ export default function CafeDetail() {
     return <span>読み込み中...</span>
   }
 
-  if (isError && isError.response.status == 401) {
+  if (isError && isError?.response?.status == 401) {
     setHaveToken(false)
 
     return (

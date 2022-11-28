@@ -35,7 +35,7 @@ export default function ReviewCard(props: Props) {
         justifyContent="flex-start"
         alignItems="center"
       >
-        <Grid item xs={12} sm={3}>
+        {/* <Grid item xs={12} sm={3}>
           <CardMedia
             component="img"
             // sx={{ width: 151 }}
@@ -43,9 +43,9 @@ export default function ReviewCard(props: Props) {
             alt="写真の説明"
             sx={{ width: '100%', height: '100%' }}
           />
-        </Grid>
+        </Grid> */}
 
-        <Grid item xs={12} sm={9}>
+        <Grid item xs={12} sm={12}>
           <CardContent sx={{ alignSelf: 'stretch' }}>
             <Typography component="div" variant="h5" sx={{ mb: 1 }}>
               {review.nickname}

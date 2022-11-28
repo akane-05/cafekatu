@@ -19,6 +19,11 @@ export async function postFavorite(id: number): Promise<Response> {
       const { data, status } = error.response
       const response = JSON.parse(JSON.stringify(data)) as Response
       response.status = status
+
+      if (status == 401) {
+        localStorage.removeItem(strage.Token)
+      }
+
       return response
     })
 }
