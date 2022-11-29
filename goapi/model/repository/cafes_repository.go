@@ -16,6 +16,7 @@ import (
 type CafesRepository interface {
 	GetCafes(cafeQuery *CafeQuery) (cafeInfos []CafeInfo, err error)
 	GetFavoirtes(userId *int, cafes *[]CafeInfo) (cafeIds []int, err error)
+	GetCafesTotal(cafeQuery *CafeQuery) (cafesTotal int64, err error)
 	GetCafe(id *int) (cafeInfo CafeInfo, err error)
 	GetFavoirte(userId *int, cafeId *int) (exist bool, err error)
 	InsertCafe(cafe *entity.Cafes) (err error)
@@ -80,6 +81,25 @@ func (tr *cafesRepository) GetCafes(cafeQuery *CafeQuery) (cafeInfos []CafeInfo,
 		}
 	}
 	//名前付き変数でreturn
+	return
+}
+
+func (tr *cafesRepository) GetCafesTotal(cafeQuery *CafeQuery) (cafesTotal int64, err error) {
+
+	where := "cafes.approved = 1"
+	if cafeQuery.SearchWord != "" {
+		shWord := "%" + cafeQuery.SearchWord + "%"
+		where = where + " AND (cafes.name LIKE ? OR prefectures.prefecture LIKE ? OR cafes.city LIKE ? OR cafes.street LIKE ? )"
+		if err = Db.Debug().Model(&entity.Cafes{}).Where(where, shWord, shWord, shWord, shWord).Count(&cafesTotal).Error; err != nil {
+			return
+		}
+	} else {
+		if err = Db.Debug().Model(&entity.Cafes{}).Where(where).Count(&cafesTotal).Error; err != nil {
+			return
+		}
+
+	}
+
 	return
 }
 

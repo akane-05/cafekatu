@@ -27,6 +27,12 @@ type cafesController struct {
 	dr repository.CafesRepository
 }
 
+type CafesResponse struct {
+	Cafes      []repository.CafeInfo `json:"cafes"`
+	CafesTotal int                   `json:"cafes_total"`
+	PagesTotal int                   `json:"pages_total"`
+}
+
 type CafeInfo struct {
 	Cafe    repository.CafeInfo `json:"cafe"`
 	Reviews []entity.Reviews    `json:"reviews"`
@@ -70,6 +76,19 @@ func (dc *cafesController) GetCafes(c *gin.Context) {
 		return
 	}
 
+	//件数
+	cafesTotal, err := dc.dr.GetCafesTotal(&query)
+	if err != nil {
+		log.Println(err.Error())
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"error": "サーバーでエラーが発生しました。",
+		})
+		return
+	}
+
+	//ページ数
+	pageTotals := cafesTotal/int64(query.PerPage) + 1
+
 	favoCafes, err := dc.dr.GetFavoirtes(&jwtInfo.Id, &cafes)
 	if err != nil {
 		log.Println(err.Error())
@@ -86,10 +105,11 @@ func (dc *cafesController) GetCafes(c *gin.Context) {
 		cafes[i].Rating = (math.Floor(cafe.Rating*baseNum) / baseNum)
 	}
 
+	cafesResponse := CafesResponse{cafes, int(cafesTotal), int(pageTotals)}
 	log.Println("フロントに返却")
 	c.JSON(http.StatusOK, gin.H{
 		"message": "ok",
-		"data":    cafes,
+		"data":    cafesResponse,
 	})
 
 }
