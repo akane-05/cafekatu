@@ -52,17 +52,6 @@ export default function CafesList() {
 
     return (
       <>
-        {/* <span>
-          ログイン情報を取得できませんでした。再度ログインしてください。
-        </span>
-        <Button
-          variant="contained"
-          color="primary"
-          onClick={() => handleLink(path.top)}
-        >
-          Top画面に戻る
-        </Button> */}
-
         <Grid
           container
           alignItems="center"
@@ -89,15 +78,6 @@ export default function CafesList() {
   if (isError) {
     return (
       <>
-        {/* <span>エラーが発生しました</span>
-        <Button
-          variant="contained"
-          color="primary"
-          onClick={() => handleLink(path.top)}
-        >
-          Top画面に戻る
-        </Button> */}
-
         <Grid
           container
           alignItems="center"

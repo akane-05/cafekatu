@@ -23,26 +23,13 @@ export default function CafeDetail() {
   const router = useRouter()
   const { response, isLoading, isError } = useCafe(1, 10, router.query.id)
 
-  // const [values, setValues] = React.useState<State>({
-  //   isCommentPost: false,
-  // })
-
-  const [isCommentPost, setIsCommentPost] = React.useState<boolean>(false)
-
-  const [page, setPage] = React.useState(1)
-
   const setHaveToken = useSetRecoilState(haveTokenState)
-
-  const handleCommentPost = () => {
-    setIsCommentPost(!isCommentPost)
-  }
 
   const handleLink = (path: string) => {
     router.push(path)
   }
 
   if (isLoading) {
-    // return <span>読み込み中...</span>
     return (
       <Grid
         container
@@ -62,16 +49,6 @@ export default function CafeDetail() {
 
     return (
       <>
-        {/* <span>
-          ログイン情報を取得できませんでした。再度ログインしてください。
-        </span>
-        <Button
-          variant="contained"
-          color="primary"
-          onClick={() => handleLink(path.top)}
-        >
-          Top画面に戻る
-        </Button> */}
         <Grid
           container
           alignItems="center"
@@ -98,15 +75,6 @@ export default function CafeDetail() {
   if (isError) {
     return (
       <>
-        {/* <span>エラーが発生しました</span>
-        <Button
-          variant="contained"
-          color="primary"
-          onClick={() => handleLink(path.top)}
-        >
-          Top画面に戻る
-        </Button> */}
-
         <Grid
           container
           alignItems="center"

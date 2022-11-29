@@ -31,10 +31,6 @@ export default function ReviewsList(props: Props) {
 
   const [isCommentPost, setIsCommentPost] = React.useState<boolean>(false)
 
-  //   const handleLink = (path: string) => {
-  //     router.push(path)
-  //   }
-
   const handleCommentPost = async () => {
     if (isCommentPost) {
       await dialog
@@ -54,8 +50,6 @@ export default function ReviewsList(props: Props) {
     return (
       <>
         <CustomPaper sx={{ mt: 2 }}>
-          {/* <span>口コミを取得できませんでした。</span> */}
-
           <Grid
             container
             alignItems="center"
@@ -69,15 +63,6 @@ export default function ReviewsList(props: Props) {
             </Grid>
           </Grid>
         </CustomPaper>
-
-        {/* <span>エラーが発生しました</span>
-        <Button
-          variant="contained"
-          color="primary"
-          onClick={() => handleLink(path.top)}
-        >
-          Top画面に戻る
-        </Button> */}
       </>
     )
   }
