@@ -21,6 +21,7 @@ import * as Dialog from '@/context/MessageDialog'
 import { useSetRecoilState, RecoilRoot } from 'recoil'
 import { haveTokenState } from '@/globalStates/haveToken'
 import { logout } from '@/features/login/api/logout'
+import { useHaveToken } from '@/hooks/useHaveToken'
 
 export default function Header() {
   const [anchorElUser, setAnchorElUser] = React.useState<null | HTMLElement>(
@@ -30,6 +31,8 @@ export default function Header() {
   const router = useRouter()
   const dialog = Dialog.useDialogContext()
   const setHaveToken = useSetRecoilState(haveTokenState)
+  const { haveToken, isAuthChecking } = useHaveToken()
+  const visibility = haveToken ? 'visible' : 'hidden'
 
   const handleOpenUserMenu = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorElUser(event.currentTarget)
@@ -41,11 +44,13 @@ export default function Header() {
 
   const handleClickUserMenu = async (setting: string) => {
     if (setting == settings[0]) {
+      setAnchorElUser(null)
       handleLink('マイページ')
     } else if (setting == settings[1]) {
       await dialog
         .confirm(Dialog.confirmDialog('ログアウトしますか？'))
         .then(() => {
+          setAnchorElUser(null)
           logout()
           setHaveToken(false)
           dialog.confirm(Dialog.apiOKDialog('ログアウトしました！'))
@@ -60,6 +65,17 @@ export default function Header() {
       pathname: path.cafesList,
       query: { searchWord: searchWord },
     })
+  }
+
+  const handleLink = (path: string) => {
+    router.push(path)
+  }
+
+  let searchWord: string
+  const handleChange = (
+    e: React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement>,
+  ) => {
+    searchWord = e.target.value
   }
 
   const Search = styled('div')(({ theme }) => ({
@@ -104,96 +120,75 @@ export default function Header() {
     },
   }))
 
-  const handleLink = (path: string) => {
-    router.push(path)
-  }
-
-  let searchWord: string
-  const handleChange = (
-    e: React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement>,
-  ) => {
-    searchWord = e.target.value
-  }
-
   return (
     <AppBar position="static" style={{ backgroundColor: '#CC74AB' }}>
       <Toolbar>
-        {!(
-          router.pathname == path.login || router.pathname == path.register
-        ) ? (
-          <>
-            <Box sx={{ m: 0 }}>
-              <Button
-                size="medium"
-                color="inherit"
-                onClick={() => handleLink(path.cafesList)}
+        <>
+          <Box sx={{ m: 0 }}>
+            <Button
+              size="medium"
+              color="inherit"
+              onClick={() => handleLink(path.top)}
+            >
+              Cafe活
+            </Button>
+          </Box>
+          <form onSubmit={handleSubmit}>
+            <Search sx={{ mr: 'auto', ml: 'auto', visibility: visibility }}>
+              <SearchIconWrapper>
+                <SearchIcon />
+              </SearchIconWrapper>
+              <StyledInputBase
+                id="searchWord"
+                placeholder="店舗名、住所..."
+                inputProps={{ 'aria-label': 'search' }}
+                onChange={handleChange}
+                //value={values.searchWord}
+                type="text"
+              />
+            </Search>
+          </form>
+          <Box sx={{ flexGrow: 1 }} />
+          <Box sx={{ flexGrow: 0, visibility: visibility }} textAlign="right">
+            <Tooltip title="設定を開く">
+              <IconButton
+                size="large"
+                aria-label="account of current user"
+                aria-controls="menu-appbar"
+                aria-haspopup="true"
+                onClick={handleOpenUserMenu}
+                sx={{ p: 0 }}
               >
-                Cafe活
-              </Button>
-            </Box>
-            <form onSubmit={handleSubmit}>
-              <Search sx={{ mr: 'auto', ml: 'auto' }}>
-                <SearchIconWrapper>
-                  <SearchIcon />
-                </SearchIconWrapper>
-                <StyledInputBase
-                  id="searchWord"
-                  placeholder="店舗名、住所..."
-                  inputProps={{ 'aria-label': 'search' }}
-                  onChange={handleChange}
-                  //value={values.searchWord}
-                  type="text"
-                />
-              </Search>
-            </form>
-            <Box sx={{ flexGrow: 1 }} />
-            <Box sx={{ flexGrow: 0 }} textAlign="right">
-              <Tooltip title="設定を開く">
-                <IconButton
-                  size="large"
-                  aria-label="account of current user"
-                  aria-controls="menu-appbar"
-                  aria-haspopup="true"
-                  onClick={handleOpenUserMenu}
-                  sx={{ p: 0 }}
+                <AccountCircle />
+              </IconButton>
+            </Tooltip>
+            <Menu
+              sx={{ mt: '45px' }}
+              id="menu-appbar"
+              anchorEl={anchorElUser}
+              anchorOrigin={{
+                vertical: 'top',
+                horizontal: 'right',
+              }}
+              keepMounted
+              transformOrigin={{
+                vertical: 'top',
+                horizontal: 'right',
+              }}
+              open={Boolean(anchorElUser)}
+              onClose={handleCloseUserMenu}
+            >
+              {settings.map((setting) => (
+                <MenuItem
+                  key={setting}
+                  onClick={() => handleClickUserMenu(setting)}
                 >
-                  <AccountCircle />
-                </IconButton>
-              </Tooltip>
-              <Menu
-                sx={{ mt: '45px' }}
-                id="menu-appbar"
-                //anchorEl={anchorElUser}
-                anchorOrigin={{
-                  vertical: 'top',
-                  horizontal: 'right',
-                }}
-                keepMounted
-                transformOrigin={{
-                  vertical: 'top',
-                  horizontal: 'right',
-                }}
-                open={Boolean(anchorElUser)}
-                onClose={handleCloseUserMenu}
-              >
-                {settings.map((setting) => (
-                  <MenuItem
-                    key={setting}
-                    onClick={() => handleClickUserMenu(setting)}
-                  >
-                    <Typography textAlign="center">{setting}</Typography>
-                  </MenuItem>
-                ))}
-              </Menu>
-            </Box>
-          </>
-        ) : (
-          <>
-            <Box sx={{ m: 0 }}>
-              <Typography>Cafe活</Typography>
-            </Box>
-          </>
-        )}
+                  <Typography textAlign="center">{setting}</Typography>
+                </MenuItem>
+              ))}
+            </Menu>
+          </Box>
+        </>
       </Toolbar>
     </AppBar>
   )
