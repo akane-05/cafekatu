@@ -27,7 +27,21 @@ function Home() {
   const router = useRouter()
   const { haveToken, isAuthChecking } = useHaveToken()
 
-  if (isAuthChecking) return <div>ログイン情報を確認中…</div>
+  if (isAuthChecking) {
+    // return <div>ログイン情報を確認中…</div>
+    return (
+      <Grid
+        container
+        alignItems="center"
+        justifyContent="center"
+        direction="column"
+      >
+        <Grid item xs={12}>
+          <Typography variant="body1">読み込み中...</Typography>
+        </Grid>
+      </Grid>
+    )
+  }
 
   if (haveToken) {
     router.push(path.cafesList)
