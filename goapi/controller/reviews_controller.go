@@ -31,9 +31,9 @@ func NewReviewsController(dr repository.ReviewsRepository) ReviewsController {
 }
 
 type ReviewsResponse struct {
-	Reviews      []entity.Reviews `json:"reviews"`
-	ReviewsTotal int              `json:"reviews_total"`
-	PagesTotal   int              `json:"pages_total"`
+	Reviews      []repository.Review `json:"reviews"`
+	ReviewsTotal int                 `json:"reviews_total"`
+	PagesTotal   int                 `json:"pages_total"`
 }
 
 // func (dc *reviewsController) GetUserReviews(c *gin.Context) {
@@ -103,7 +103,7 @@ func (dc *reviewsController) GetCafesReviews(c *gin.Context) {
 		return
 	}
 
-	var reviews []entity.Reviews
+	var reviews []repository.Review
 
 	reviews, err = dc.dr.GetCafesReviews(&id, &query)
 	if err != nil {

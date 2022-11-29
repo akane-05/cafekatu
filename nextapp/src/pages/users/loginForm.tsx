@@ -23,6 +23,7 @@ import { login } from '@/features/login/api/login'
 import * as Dialog from '@/context/MessageDialog'
 import { useSetRecoilState, RecoilRoot } from 'recoil'
 import { haveTokenState } from '@/globalStates/haveToken'
+import { userInfoState } from '@/globalStates/userInfo'
 
 type Error = {
   email: boolean
@@ -32,6 +33,7 @@ type Error = {
 
 export default function LoginForm() {
   const setHaveToken = useSetRecoilState(haveTokenState)
+  const setUserInfo = useSetRecoilState(userInfoState)
 
   const [values, setValues] = React.useState<LoginInfo>({
     email: '',
@@ -89,6 +91,7 @@ export default function LoginForm() {
       if (response.status == 200) {
         dialog.confirm(Dialog.apiOKDialog(response.message))
         setHaveToken(true)
+        setUserInfo(response.nickname)
         handleLink(path.cafesList)
       } else {
         dialog.confirm(Dialog.apiErrorDialog(response.status, response.error))

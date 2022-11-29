@@ -13,8 +13,7 @@ import {
   CardActions,
 } from '@mui/material'
 import React, { useRef } from 'react'
-import FavoriteIcon from '@mui/icons-material/Favorite'
-import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder'
+import { useUserInfo } from '@/hooks/useUserInfo'
 
 type Props = {
   //num: number
@@ -31,6 +30,8 @@ type Error = {
 }
 
 export default function ReviewPost(props: Props) {
+  const { nickname } = useUserInfo()
+
   const [values, setValues] = React.useState<State>({
     rating: 0,
     comment: '',
@@ -40,10 +41,6 @@ export default function ReviewPost(props: Props) {
     rating: false,
     comment: false,
   })
-
-  // const handleLink = (path: string) => {
-  //   Router.push(path)
-  // }
 
   const commentVaildPattern = '^.{1,250}$'
   const commentRef = useRef<HTMLInputElement>(null)
@@ -75,9 +72,8 @@ export default function ReviewPost(props: Props) {
 
         <Grid xs={12} sm={9}> */}
       <CardContent sx={{ alignSelf: 'stretch' }}>
-        <Typography component="div" variant="h5">
-          {/* {props.num} */}
-          ユーザー名
+        <Typography component="div" variant="h6">
+          {nickname}
         </Typography>
 
         <Grid container>

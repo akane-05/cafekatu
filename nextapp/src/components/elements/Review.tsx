@@ -47,7 +47,12 @@ export default function ReviewCard(props: Props) {
 
         <Grid item xs={12} sm={12}>
           <CardContent sx={{ alignSelf: 'stretch' }}>
-            <Typography component="div" variant="h5" sx={{ mb: 1 }}>
+            <Typography
+              component="div"
+              variant="h6"
+              sx={{ mb: 1 }}
+              // color="text.secondary"
+            >
               {review.nickname}
             </Typography>
 

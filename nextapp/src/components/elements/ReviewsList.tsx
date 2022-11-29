@@ -100,29 +100,37 @@ export default function ReviewsList(props: Props) {
         </Grid>
       )}
 
-      {response.data.reviews?.map((review: Review) => {
-        return <ReviewCard key={review.id} review={review} /> //keyを指定
-      })}
+      {response.data?.reviews_total != 0 ? (
+        <>
+          {response.data.reviews?.map((review: Review) => {
+            return <ReviewCard key={review.id} review={review} /> //keyを指定
+          })}
 
-      <Grid
-        container
-        alignItems="center"
-        justifyContent="center"
-        direction="column"
-      >
-        <Grid item xs={12}>
-          <Pagination
-            count={response.data?.pages_total}
-            hideNextButton={page == response.data?.pages_total ? true : false}
-            hidePrevButton={page == 1 ? true : false}
-            defaultPage={1}
-            siblingCount={3}
-            color="primary" //ページネーションの色
-            onChange={(e, page) => setPage(page)} //変更されたときに走る関数。第2引数にページ番号が入る
-            page={page} //現在のページ番号
-          />
-        </Grid>
-      </Grid>
+          <Grid
+            container
+            alignItems="center"
+            justifyContent="center"
+            direction="column"
+          >
+            <Grid item xs={12}>
+              <Pagination
+                count={response.data?.pages_total}
+                hideNextButton={
+                  page == response.data?.pages_total ? true : false
+                }
+                hidePrevButton={page == 1 ? true : false}
+                defaultPage={1}
+                siblingCount={3}
+                color="primary" //ページネーションの色
+                onChange={(e, page) => setPage(page)} //変更されたときに走る関数。第2引数にページ番号が入る
+                page={page} //現在のページ番号
+              />
+            </Grid>
+          </Grid>
+        </>
+      ) : (
+        <></>
+      )}
     </CustomPaper>
   )
 }

@@ -103,7 +103,7 @@ export default function CafesList() {
     <CustomPaper>
       {response.data?.cafes_total != 0 ? (
         <>
-          <Typography style={{ color: '#515151' }}>
+          <Typography color="text.secondary">
             {parPage * (page - 1) + 1}～
             {parPage * (page - 1) + response.data?.cafes.length} 件を表示 ／ 全
             {response.data?.cafes_total} 件
@@ -146,7 +146,7 @@ export default function CafesList() {
             </Typography>
           </Grid>
           <Grid item xs={12}>
-            <Typography style={{ color: '#515151' }} variant="body2">
+            <Typography color="text.secondary" variant="body2">
               検索条件を変更してください。
             </Typography>
           </Grid>

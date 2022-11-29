@@ -2,6 +2,7 @@ package repository
 
 import (
 	"log"
+	"time"
 
 	"github.com/akane-05/cafekatu/goapi/model/entity"
 	_ "github.com/go-sql-driver/mysql"
@@ -12,7 +13,7 @@ import (
 // インターフェースで実装すべきメソッドを決める
 type ReviewsRepository interface {
 	//GetUserReviews(userId int, query *ReviewQuery) (reviews []entity.Reviews, err error)
-	GetCafesReviews(id *int, query *ReviewQuery) (reviews []entity.Reviews, err error)
+	GetCafesReviews(id *int, query *ReviewQuery) (reviews []Review, err error)
 	GetReviewsTotal(id *int) (reviewsTotal int64, err error)
 	InsertReview(review *entity.Reviews) (err error)
 	DeleteReview(review *entity.Reviews) (err error)
@@ -25,6 +26,18 @@ type reviewsRepository struct {
 // cafesRepositoryのコンストラクタ
 func NewReviewsRepository() ReviewsRepository {
 	return &reviewsRepository{}
+}
+
+type Review struct {
+	Id         int       `json:"id"`
+	User_id    int       `json:"user_id"`
+	Nickname   string    `json:"nickname" binding:"required"`
+	Cafe_id    int       `json:"cafe_id" binding:"required"`
+	Comment    string    `json:"comment" binding:"required"`
+	Rating     float64   `json:"rating" binding:"required"`
+	CreatedAt  time.Time `json:"created_at"`
+	UpdatedAt  time.Time `json:"updated_at"`
+	IsFavorite bool      `json:"is_favorite"`
 }
 
 type ReviewQuery struct {
@@ -44,10 +57,14 @@ type ReviewQuery struct {
 // }
 
 // ポインタレシーバ(*demoRepository)にメソッドを追加
-func (tr *reviewsRepository) GetCafesReviews(id *int, query *ReviewQuery) (reviews []entity.Reviews, err error) {
+func (tr *reviewsRepository) GetCafesReviews(id *int, query *ReviewQuery) (reviews []Review, err error) {
 	log.Println("リポジトリ GetCafesReviews")
 
-	if err = Db.Debug().Table("reviews").Where("cafe_id = ?", id).Limit(query.PerPage).Offset(query.PerPage * (query.Page - 1)).Find(&reviews).Error; err != nil {
+	colume := `reviews.id,reviews.user_id,reviews.cafe_id,reviews.comment,reviews.rating,
+	users.nickname,reviews.created_at,reviews.updated_at
+	`
+
+	if err = Db.Debug().Table("reviews").Select(colume).Where("cafe_id = ?", id).Limit(query.PerPage).Offset(query.PerPage * (query.Page - 1)).Joins("left join users on reviews.user_id = users.id").Find(&reviews).Error; err != nil {
 		return
 	}
 	//名前付き変数でreturn

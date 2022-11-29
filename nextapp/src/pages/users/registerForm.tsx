@@ -23,6 +23,7 @@ import CustomButton from '@/components/elements/CustomButton'
 import { validPattern, path } from '@/const/Consts'
 import { useSetRecoilState, RecoilRoot } from 'recoil'
 import { haveTokenState } from '@/globalStates/haveToken'
+import { userInfoState } from '@/globalStates/userInfo'
 
 type ComfirmValue = {
   passwordConfirm: string
@@ -42,6 +43,7 @@ type Error = {
 export default function RegisterForm() {
   const dialog = Dialog.useDialogContext()
   const setHaveToken = useSetRecoilState(haveTokenState)
+  const setUserInfo = useSetRecoilState(userInfoState)
 
   const [values, setValues] = React.useState<InputValue>({
     email: '',
@@ -128,6 +130,7 @@ export default function RegisterForm() {
       if (response.status == 200) {
         dialog.confirm(Dialog.apiOKDialog(response.message))
         setHaveToken(true)
+        setUserInfo(response.nickname)
         handleLink(path.cafesList)
       } else {
         dialog.confirm(Dialog.apiErrorDialog(response.status, response.error))
