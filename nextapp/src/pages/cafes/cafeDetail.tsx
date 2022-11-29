@@ -1,6 +1,6 @@
 // import { NextPage } from 'next'
 // import Router from 'next/router'
-import { Button, Paper } from '@mui/material'
+import { Button, Grid, Typography } from '@mui/material'
 import React, { useState, useEffect } from 'react'
 import CafeInfo from '@/components/elements/CafeInfo'
 import ReviewCard from '@/components/elements/Review'
@@ -13,16 +13,14 @@ import { Review } from '@/features/cafes/types/index'
 import PageButton from '@/components/elements/PageButton'
 import { useSetRecoilState, RecoilRoot } from 'recoil'
 import { haveTokenState } from '@/globalStates/haveToken'
+import ReviewsList from '@/components/elements/ReviewsList'
 
 type State = {
   isCommentPost: boolean
 }
 
 export default function CafeDetail() {
-  //   const [cafeInfo, setCafeInfo] = useState()
   const router = useRouter()
-  //const id = router.query.id === undefined ? '' : router.query.id[0]
-  //const cafeQuery = useCafe(router.query.id)
   const { response, isLoading, isError } = useCafe(1, 10, router.query.id)
 
   // const [values, setValues] = React.useState<State>({
@@ -44,7 +42,19 @@ export default function CafeDetail() {
   }
 
   if (isLoading) {
-    return <span>読み込み中...</span>
+    // return <span>読み込み中...</span>
+    return (
+      <Grid
+        container
+        alignItems="center"
+        justifyContent="center"
+        direction="column"
+      >
+        <Grid item xs={12}>
+          <Typography variant="body1">読み込み中...</Typography>
+        </Grid>
+      </Grid>
+    )
   }
 
   if (isError && isError?.response?.status == 401) {
@@ -52,7 +62,7 @@ export default function CafeDetail() {
 
     return (
       <>
-        <span>
+        {/* <span>
           ログイン情報を取得できませんでした。再度ログインしてください。
         </span>
         <Button
@@ -61,7 +71,26 @@ export default function CafeDetail() {
           onClick={() => handleLink(path.top)}
         >
           Top画面に戻る
-        </Button>
+        </Button> */}
+        <Grid
+          container
+          alignItems="center"
+          justifyContent="center"
+          direction="column"
+        >
+          <Grid item xs={12} p={2}>
+            <Typography variant="body1">
+              ログイン情報を取得できませんでした。再度ログインしてください。
+            </Typography>
+          </Grid>
+          <Button
+            variant="contained"
+            color="primary"
+            onClick={() => handleLink(path.top)}
+          >
+            Top画面に戻る
+          </Button>
+        </Grid>
       </>
     )
   }
@@ -69,14 +98,32 @@ export default function CafeDetail() {
   if (isError) {
     return (
       <>
-        <span>エラーが発生しました</span>
+        {/* <span>エラーが発生しました</span>
         <Button
           variant="contained"
           color="primary"
           onClick={() => handleLink(path.top)}
         >
           Top画面に戻る
-        </Button>
+        </Button> */}
+
+        <Grid
+          container
+          alignItems="center"
+          justifyContent="center"
+          direction="column"
+        >
+          <Grid item xs={12} p={2}>
+            <Typography variant="body1">エラーが発生しました</Typography>
+          </Grid>
+          <Button
+            variant="contained"
+            color="primary"
+            onClick={() => handleLink(path.top)}
+          >
+            Top画面に戻る
+          </Button>
+        </Grid>
       </>
     )
   }
@@ -90,23 +137,7 @@ export default function CafeDetail() {
         <CafeInfo cafeInfo={response.data.cafe}></CafeInfo>
       </CustomPaper>
 
-      <CustomPaper sx={{ mt: 2 }}>
-        <Button variant="contained" onClick={handleCommentPost}>
-          口コミを投稿する
-        </Button>
-
-        {isCommentPost ? <ReviewPost num={1}></ReviewPost> : <></>}
-
-        {response.data.reviews?.map((review: Review) => {
-          return <ReviewCard key={review.id} review={review} /> //keyを指定
-        })}
-        <PageButton variant="outlined" onClick={() => setPage(page - 1)}>
-          ＜
-        </PageButton>
-        <PageButton variant="outlined" onClick={() => setPage(page + 1)}>
-          ＞
-        </PageButton>
-      </CustomPaper>
+      <ReviewsList id={router.query.id}></ReviewsList>
     </>
   )
 }

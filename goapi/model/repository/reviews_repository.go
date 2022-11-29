@@ -12,7 +12,8 @@ import (
 // インターフェースで実装すべきメソッドを決める
 type ReviewsRepository interface {
 	//GetUserReviews(userId int, query *ReviewQuery) (reviews []entity.Reviews, err error)
-	GetCafeReviews(cafeId int, query *ReviewQuery) (reviews []entity.Reviews, err error)
+	GetCafesReviews(id *int, query *ReviewQuery) (reviews []entity.Reviews, err error)
+	GetReviewsTotal(id *int) (reviewsTotal int64, err error)
 	InsertReview(review *entity.Reviews) (err error)
 	DeleteReview(review *entity.Reviews) (err error)
 }
@@ -43,13 +44,22 @@ type ReviewQuery struct {
 // }
 
 // ポインタレシーバ(*demoRepository)にメソッドを追加
-func (tr *reviewsRepository) GetCafeReviews(cafeId int, query *ReviewQuery) (reviews []entity.Reviews, err error) {
+func (tr *reviewsRepository) GetCafesReviews(id *int, query *ReviewQuery) (reviews []entity.Reviews, err error) {
 	log.Println("リポジトリ GetCafesReviews")
 
-	if err = Db.Debug().Table("reviews").Where("cafe_id = ?", cafeId).Limit(query.PerPage).Offset(query.PerPage * (query.Page - 1)).Find(&reviews).Error; err != nil {
+	if err = Db.Debug().Table("reviews").Where("cafe_id = ?", id).Limit(query.PerPage).Offset(query.PerPage * (query.Page - 1)).Find(&reviews).Error; err != nil {
 		return
 	}
 	//名前付き変数でreturn
+	return
+}
+
+func (tr *reviewsRepository) GetReviewsTotal(id *int) (reviewsTotal int64, err error) {
+
+	if err = Db.Debug().Model(&entity.Reviews{}).Where("cafe_id = ?", id).Count(&reviewsTotal).Error; err != nil {
+		return
+	}
+
 	return
 }
 

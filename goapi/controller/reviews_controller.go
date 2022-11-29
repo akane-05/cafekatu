@@ -15,6 +15,7 @@ import (
 // インターフェースで実装すべきメソッドを決める
 type ReviewsController interface {
 	// GetUserReviews(c *gin.Context)
+	GetCafesReviews(c *gin.Context)
 	PostReview(c *gin.Context)
 	DeleteReview(c *gin.Context)
 }
@@ -27,6 +28,12 @@ type reviewsController struct {
 // demoControllerのコンストラクタ
 func NewReviewsController(dr repository.ReviewsRepository) ReviewsController {
 	return &reviewsController{dr}
+}
+
+type ReviewsResponse struct {
+	Reviews      []entity.Reviews `json:"reviews"`
+	ReviewsTotal int              `json:"reviews_total"`
+	PagesTotal   int              `json:"pages_total"`
 }
 
 // func (dc *reviewsController) GetUserReviews(c *gin.Context) {
@@ -73,11 +80,21 @@ func NewReviewsController(dr repository.ReviewsRepository) ReviewsController {
 
 // }
 
-func (dc *reviewsController) GetCafeReviews(cafeId int, c *gin.Context) {
+func (dc *reviewsController) GetCafesReviews(c *gin.Context) {
+
+	log.Println("GetCafesReviews")
+
+	// パスパラメータの取得、数字じゃなかったらどうするのか確認
+	id, err := strconv.Atoi(c.Param("id"))
+	if err != nil {
+		log.Println(err)
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error": "idが不正な値です。数値を入力してください。",
+		})
+		return
+	}
 
 	var query repository.ReviewQuery
-
-	log.Println("GetCafeReviews")
 	if err := c.BindQuery(&query); err != nil {
 		log.Println("クエリパラメータに不正な値が含まれています。")
 		c.JSON(http.StatusBadRequest, gin.H{
@@ -87,9 +104,8 @@ func (dc *reviewsController) GetCafeReviews(cafeId int, c *gin.Context) {
 	}
 
 	var reviews []entity.Reviews
-	var err error
 
-	reviews, err = dc.dr.GetCafeReviews(cafeId, &query)
+	reviews, err = dc.dr.GetCafesReviews(&id, &query)
 	if err != nil {
 		log.Println(err.Error())
 		c.JSON(http.StatusInternalServerError, gin.H{
@@ -98,13 +114,26 @@ func (dc *reviewsController) GetCafeReviews(cafeId int, c *gin.Context) {
 		return
 	}
 
+	//件数
+	reviewsTotal, err := dc.dr.GetReviewsTotal(&id)
+	if err != nil {
+		log.Println(err.Error())
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"error": "サーバーでエラーが発生しました。",
+		})
+		return
+	}
+
+	//ページ数
+	pageTotals := reviewsTotal/int64(query.PerPage) + 1
+
+	reviewsResponse := ReviewsResponse{reviews, int(reviewsTotal), int(pageTotals)}
+
 	log.Println("フロントに返却")
 	c.JSON(http.StatusOK, gin.H{
 		"message": "ok",
-		"data":    reviews,
+		"data":    reviewsResponse,
 	})
-
-	log.Println("フロントに返却")
 
 }
 

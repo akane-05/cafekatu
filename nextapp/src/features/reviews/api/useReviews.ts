@@ -16,7 +16,7 @@ export type fetchPostReturnType = {
   }
 }
 
-export function useCafe(
+export function useReviews(
   page: number,
   perPage: number,
   param?: string | string[],
@@ -45,7 +45,7 @@ export function useCafe(
       .then((res) => res.data)
 
   const { data: data, error } = useSWR(
-    requests.cafeDeatil +
+    requests.reviews +
       id +
       '?' +
       new URLSearchParams({

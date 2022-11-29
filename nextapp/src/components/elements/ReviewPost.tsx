@@ -17,7 +17,7 @@ import FavoriteIcon from '@mui/icons-material/Favorite'
 import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder'
 
 type Props = {
-  num: number
+  //num: number
 }
 
 type State = {

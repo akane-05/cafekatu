@@ -57,13 +57,6 @@ export default function CafeCard(props: Props) {
     }
   }
 
-  // const handleDetailsPage = (path: string) => {
-  //   router.push({
-  //     pathname: path,
-  //     query: { id: cafeInfo.id },
-  //   })
-  // }
-
   const handleLink = (path: string) => {
     router.push({
       pathname: path,

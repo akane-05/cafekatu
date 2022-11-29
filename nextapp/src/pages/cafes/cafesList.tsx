@@ -14,10 +14,13 @@ import * as Dialog from '@/context/MessageDialog'
 import { path, strage } from '@/const/Consts'
 import PageButton from '@/components/elements/PageButton'
 import { Pagination } from '@mui/material'
+import { useSetRecoilState, RecoilRoot } from 'recoil'
+import { haveTokenState } from '@/globalStates/haveToken'
 
 export default function CafesList() {
   const router = useRouter()
   const [page, setPage] = React.useState(1)
+  const setHaveToken = useSetRecoilState(haveTokenState)
   const [parPage, setparPage] = React.useState(10)
   const { response, isLoading, isError } = useCafes(
     page,
@@ -25,24 +28,31 @@ export default function CafesList() {
     router.query.searchWord,
   )
 
-  // const Pagination = withStyles({
-  //   root: {
-  //     display: 'inline-block', //中央寄せのためインラインブロックに変更
-  //   },
-  // })(MuiPagination)
-
   const handleLink = (path: string) => {
     router.push(path)
   }
 
   if (isLoading) {
-    return <span>読み込み中...</span>
+    return (
+      <Grid
+        container
+        alignItems="center"
+        justifyContent="center"
+        direction="column"
+      >
+        <Grid item xs={12}>
+          <Typography variant="body1">読み込み中...</Typography>
+        </Grid>
+      </Grid>
+    )
   }
 
   if (isError && isError?.response?.status == 401) {
+    setHaveToken(false)
+
     return (
       <>
-        <span>
+        {/* <span>
           ログイン情報を取得できませんでした。再度ログインしてください。
         </span>
         <Button
@@ -51,7 +61,27 @@ export default function CafesList() {
           onClick={() => handleLink(path.top)}
         >
           Top画面に戻る
-        </Button>
+        </Button> */}
+
+        <Grid
+          container
+          alignItems="center"
+          justifyContent="center"
+          direction="column"
+        >
+          <Grid item xs={12} p={2}>
+            <Typography variant="body1">
+              ログイン情報を取得できませんでした。再度ログインしてください。
+            </Typography>
+          </Grid>
+          <Button
+            variant="contained"
+            color="primary"
+            onClick={() => handleLink(path.top)}
+          >
+            Top画面に戻る
+          </Button>
+        </Grid>
       </>
     )
   }
@@ -59,14 +89,32 @@ export default function CafesList() {
   if (isError) {
     return (
       <>
-        <span>エラーが発生しました</span>
+        {/* <span>エラーが発生しました</span>
         <Button
           variant="contained"
           color="primary"
           onClick={() => handleLink(path.top)}
         >
           Top画面に戻る
-        </Button>
+        </Button> */}
+
+        <Grid
+          container
+          alignItems="center"
+          justifyContent="center"
+          direction="column"
+        >
+          <Grid item xs={12} p={2}>
+            <Typography variant="body1">エラーが発生しました</Typography>
+          </Grid>
+          <Button
+            variant="contained"
+            color="primary"
+            onClick={() => handleLink(path.top)}
+          >
+            Top画面に戻る
+          </Button>
+        </Grid>
       </>
     )
   }

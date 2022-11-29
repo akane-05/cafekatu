@@ -11,6 +11,7 @@ const requests = {
   login: '/login',
   cafes: '/cafes?',
   cafeDeatil: '/cafes/',
+  reviews: '/reviews/',
 }
 
 const path = {

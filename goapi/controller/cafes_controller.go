@@ -33,9 +33,8 @@ type CafesResponse struct {
 	PagesTotal int                   `json:"pages_total"`
 }
 
-type CafeInfo struct {
-	Cafe    repository.CafeInfo `json:"cafe"`
-	Reviews []entity.Reviews    `json:"reviews"`
+type CafeResponse struct {
+	Cafe repository.CafeInfo `json:"cafe"`
 }
 
 // demoControllerのコンストラクタ
@@ -174,22 +173,12 @@ func (dc *cafesController) GetCafe(c *gin.Context) {
 	}
 	cafe.IsFavorite = favorite
 
-	reviews, err := dc.dr.GetCafeReviews(&id, &query)
-	if err != nil {
-		log.Println(err.Error())
-		c.JSON(http.StatusInternalServerError, gin.H{
-			// "error": "サーバーでエラーが発生しました。 " + err.Error()
-			"error": err.Error(),
-		})
-		return
-	}
-
-	cafeInfo := CafeInfo{cafe, reviews}
+	cafeResponse := CafeResponse{cafe}
 
 	log.Println("フロントに返却")
 	c.JSON(http.StatusOK, gin.H{
 		"message": "ok",
-		"data":    cafeInfo,
+		"data":    cafeResponse,
 	})
 
 	log.Println("フロントに返却")
