@@ -13,6 +13,7 @@ import {
   SelectChangeEvent,
   InputLabel,
   FormControl,
+  Rating,
 } from '@mui/material'
 import React, { useRef } from 'react'
 import CafeCard from '@/components/elements/CafeCard'
@@ -211,6 +212,20 @@ export default function ReviewsList(props: Props) {
                       </Typography>
                     </Grid>
 
+                    <Grid item xs={6} pt={2} pl={1}>
+                      <Rating
+                        name="star-rating"
+                        value={values.rating}
+                        precision={0.1}
+                        onChange={(event, newValue) => {
+                          setValues({
+                            ...values,
+                            ['rating']: newValue ? newValue : 0,
+                          })
+                        }}
+                      />
+                    </Grid>
+
                     <Grid item xs={6}>
                       <FormControl sx={{ m: 1, minWidth: 100 }}>
                         <InputLabel>評価</InputLabel>
@@ -235,16 +250,6 @@ export default function ReviewsList(props: Props) {
                             ))}
                         </Select>
                       </FormControl>
-                    </Grid>
-
-                    <Grid item xs={6}>
-                      <Typography
-                        variant="subtitle1"
-                        color="text.secondary"
-                        sx={{ mr: 3 }}
-                      >
-                        ☆☆☆
-                      </Typography>
                     </Grid>
 
                     <Grid item xs={12} p={1}>

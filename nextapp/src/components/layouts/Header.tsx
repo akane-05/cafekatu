@@ -31,8 +31,6 @@ export default function Header() {
   const router = useRouter()
   const dialog = Dialog.useDialogContext()
   const setHaveToken = useSetRecoilState(haveTokenState)
-  const { haveToken, isAuthChecking } = useHaveToken()
-  const visibility = haveToken ? 'visible' : 'hidden'
 
   const handleOpenUserMenu = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorElUser(event.currentTarget)
@@ -45,7 +43,7 @@ export default function Header() {
   const handleClickUserMenu = async (setting: string) => {
     if (setting == settings[0]) {
       setAnchorElUser(null)
-      handleLink('マイページ')
+      handleLink(path.mypage)
     } else if (setting == settings[1]) {
       await dialog
         .confirm(Dialog.confirmDialog('ログアウトしますか？'))

@@ -12,6 +12,7 @@ import {
   Typography,
   CardActions,
   Hidden,
+  Rating,
 } from '@mui/material'
 import React from 'react'
 import { ReviewInfo } from '@/features/reviews/types/index'
@@ -21,6 +22,7 @@ type Props = {
 }
 
 export default function ReviewCard(props: Props) {
+  const [value, setValue] = React.useState<number | null>(2)
   // const handleLink = (path: string) => {
   //   Router.push(path)
   // }
@@ -53,13 +55,12 @@ export default function ReviewCard(props: Props) {
 
             <Grid container>
               <Grid item xs={6} sm={3}>
-                <Typography
-                  variant="subtitle1"
-                  color="text.secondary"
-                  sx={{ mr: 3 }}
-                >
-                  ☆☆☆
-                </Typography>
+                <Rating
+                  name="star-rating"
+                  readOnly
+                  value={review.rating}
+                  precision={0.1}
+                />
               </Grid>
               <Grid item xs={6} sm={3}>
                 <Typography

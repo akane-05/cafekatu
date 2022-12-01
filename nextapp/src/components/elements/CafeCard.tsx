@@ -13,6 +13,7 @@ import {
   CardActions,
   Hidden,
   IconButton,
+  Rating,
 } from '@mui/material'
 import React, { useState } from 'react'
 import FavoriteIcon from '@mui/icons-material/Favorite'
@@ -122,13 +123,12 @@ export default function CafeCard(props: Props) {
 
             <Grid container>
               <Grid item xs={6} sm={3}>
-                <Typography
-                  variant="subtitle1"
-                  color="text.secondary"
-                  sx={{ mr: 3 }}
-                >
-                  ☆☆☆
-                </Typography>
+                <Rating
+                  name="star-rating"
+                  readOnly
+                  value={cafeInfo.rating}
+                  precision={0.1}
+                />
               </Grid>
               <Grid item xs={6} sm={3}>
                 <Typography

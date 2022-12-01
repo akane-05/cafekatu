@@ -19,6 +19,7 @@ const path = {
   register: '/users/registerForm',
   cafesList: '/cafes/cafesList',
   cafeDatail: '/cafes/cafeDetail',
+  mypage: '/users/mypage',
 }
 
 const strage = {
