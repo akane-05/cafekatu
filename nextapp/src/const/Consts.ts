@@ -1,16 +1,10 @@
-const validPattern = {
-  nickname: '^.{2,20}$',
-  email:
-    '^[a-zA-Z0-9_+-]+(.[a-zA-Z0-9_+-]+)*@([a-zA-Z0-9][a-zA-Z0-9-]*[a-zA-Z0-9]*.)+[a-zA-Z]{2,}$',
-  password: '^([a-zA-Z0-9]{8})$',
-}
-
 const requests = {
   base: 'http://localhost:8080',
   register: '/register',
   login: '/login',
   cafes: '/cafes',
   reviews: '/reviews',
+  usersFavorites: '/users/favorites',
 }
 
 const path = {
@@ -20,6 +14,8 @@ const path = {
   cafesList: '/cafes/cafesList',
   cafeDatail: '/cafes/cafeDetail',
   mypage: '/users/mypage',
+  favorites: '/users/favorites',
+  pastPosts: '/users/pastPosts',
 }
 
 const strage = {
@@ -33,4 +29,4 @@ const ratingList: number[] = [
   4.6, 4.7, 4.8, 4.9, 5.0,
 ]
 
-export { validPattern, requests, path, strage, ratingList }
+export { requests, path, strage, ratingList }

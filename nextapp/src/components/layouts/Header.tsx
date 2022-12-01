@@ -40,20 +40,35 @@ export default function Header() {
     setAnchorElUser(null)
   }
 
+  const handleLink = (path: string) => {
+    router.push(path)
+  }
+
   const handleClickUserMenu = async (setting: string) => {
-    if (setting == settings[0]) {
-      setAnchorElUser(null)
-      handleLink(path.mypage)
-    } else if (setting == settings[1]) {
-      await dialog
-        .confirm(Dialog.confirmDialog('ログアウトしますか？'))
-        .then(() => {
-          setAnchorElUser(null)
-          logout()
-          setHaveToken(false)
-          dialog.confirm(Dialog.apiOKDialog('ログアウトしました！'))
-          handleLink(path.top)
-        })
+    switch (setting) {
+      case settings[0]:
+        setAnchorElUser(null)
+        handleLink(path.mypage)
+        break
+      case settings[1]:
+        setAnchorElUser(null)
+        handleLink(path.favorites)
+        break
+      case settings[2]:
+        setAnchorElUser(null)
+        handleLink(path.pastPosts)
+        break
+      case settings[3]:
+        await dialog
+          .confirm(Dialog.confirmDialog('ログアウトしますか？'))
+          .then(() => {
+            setAnchorElUser(null)
+            logout()
+            setHaveToken(false)
+            dialog.confirm(Dialog.apiOKDialog('ログアウトしました！'))
+            handleLink(path.top)
+          })
+        break
     }
   }
 
@@ -63,10 +78,6 @@ export default function Header() {
       pathname: path.cafesList,
       query: { searchWord: searchWord },
     })
-  }
-
-  const handleLink = (path: string) => {
-    router.push(path)
   }
 
   let searchWord: string

@@ -58,7 +58,7 @@ type CafeQuery struct {
 func (tr *cafesRepository) GetCafes(cafeQuery *CafeQuery) (cafeInfos []CafeInfo, err error) {
 	log.Println("リポジトリ")
 
-	query := `
+	column := `
 	cafes.id,cafes.name,
 	cafes.zipcode,cafes.prefecture_id,prefectures.prefecture,cafes.city,cafes.street,
 	cafes.business_hours,
@@ -71,11 +71,11 @@ func (tr *cafesRepository) GetCafes(cafeQuery *CafeQuery) (cafeInfos []CafeInfo,
 	if cafeQuery.SearchWord != "" {
 		shWord := "%" + cafeQuery.SearchWord + "%"
 		where = where + " AND (cafes.name LIKE ? OR prefectures.prefecture LIKE ? OR cafes.city LIKE ? OR cafes.street LIKE ? )"
-		if err = Db.Debug().Table("cafes").Order("cafes.id").Where(where, shWord, shWord, shWord, shWord).Limit(cafeQuery.PerPage).Offset(cafeQuery.PerPage * (cafeQuery.Page - 1)).Select(query).Joins(join).Group("cafes.id").Find(&cafeInfos).Error; err != nil {
+		if err = Db.Debug().Table("cafes").Order("cafes.id").Where(where, shWord, shWord, shWord, shWord).Limit(cafeQuery.PerPage).Offset(cafeQuery.PerPage * (cafeQuery.Page - 1)).Select(column).Joins(join).Group("cafes.id").Find(&cafeInfos).Error; err != nil {
 			return
 		}
 	} else {
-		if err = Db.Debug().Table("cafes").Order("cafes.id").Where(where).Limit(cafeQuery.PerPage).Offset(cafeQuery.PerPage * (cafeQuery.Page - 1)).Select(query).Joins(join).Group("cafes.id").Find(&cafeInfos).Error; err != nil {
+		if err = Db.Debug().Table("cafes").Order("cafes.id").Where(where).Limit(cafeQuery.PerPage).Offset(cafeQuery.PerPage * (cafeQuery.Page - 1)).Select(column).Joins(join).Group("cafes.id").Find(&cafeInfos).Error; err != nil {
 			return
 		}
 	}

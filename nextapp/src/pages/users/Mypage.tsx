@@ -19,7 +19,6 @@ import Review from '@/components/elements/ReviewCard'
 import CustomPaper from '@/components/layouts/CustomPaper'
 import Visibility from '@mui/icons-material/Visibility'
 import VisibilityOff from '@mui/icons-material/VisibilityOff'
-import { validPattern } from '@/const/Consts'
 import { path, strage, requests } from '@/const/Consts'
 import { useRouter } from 'next/router'
 
@@ -67,18 +66,7 @@ export default function Mypage(props: Props) {
     newPasswordConfirm: '',
   })
 
-  const [errors, setErrors] = React.useState<Error>({
-    nickname: false,
-    email: false,
-    password: false,
-    newPassword: false,
-    newPasswordConfirm: false,
-  })
-
-  const nicknameRef = useRef<HTMLInputElement>(null)
-  const emailRef = useRef<HTMLInputElement>(null)
-  const passwordRef = useRef<HTMLInputElement>(null)
-  const newPasswordRef = useRef<HTMLInputElement>(null)
+  const [errors, setErrors] = React.useState<any>({})
 
   const handleLink = (path: string) => {
     router.push(path)
@@ -110,33 +98,6 @@ export default function Mypage(props: Props) {
 
   const handleChange =
     (prop: keyof State) => (event: React.ChangeEvent<HTMLInputElement>) => {
-      let ref = null
-      if (prop == 'newPassword') {
-        ref = newPasswordRef.current
-        setErrors({
-          ...errors,
-          newPassword: !ref?.validity.valid,
-          newPasswordConfirm: event.target.value != values.newPasswordConfirm,
-        })
-      } else if (prop == 'newPasswordConfirm') {
-        setErrors({
-          ...errors,
-          newPasswordConfirm: values.newPassword != event.target.value,
-        })
-      } else {
-        switch (prop) {
-          case 'email':
-            ref = emailRef.current
-            break
-          case 'nickname':
-            ref = nicknameRef.current
-            break
-          case 'password':
-            ref = passwordRef.current
-            break
-        }
-        setErrors({ ...errors, [prop]: !ref?.validity.valid })
-      }
       setValues({ ...values, [prop]: event.target.value })
     }
 
@@ -237,9 +198,7 @@ export default function Mypage(props: Props) {
                     value={values.nickname}
                     onChange={handleChange('nickname')}
                     label="nickname"
-                    error={errors.nickname}
-                    inputProps={{ pattern: validPattern.nickname }}
-                    inputRef={nicknameRef}
+                    error={!!errors.nickname}
                   />
                 </FormControl>
                 {errors.nickname && (
@@ -264,9 +223,7 @@ export default function Mypage(props: Props) {
                     value={values.email}
                     onChange={handleChange('email')}
                     label="email"
-                    error={errors.email}
-                    inputProps={{ pattern: validPattern.email }}
-                    inputRef={emailRef}
+                    error={!!errors.email}
                   />
                   {errors.email && (
                     <FormHelperText error id="email-error">
@@ -304,9 +261,7 @@ export default function Mypage(props: Props) {
                     }
                     label="現在のPassword"
                     required={true}
-                    error={errors.password}
-                    inputProps={{ pattern: validPattern.password }}
-                    inputRef={passwordRef}
+                    error={!!errors.password}
                   />
                 </FormControl>
               </Grid>
@@ -336,9 +291,7 @@ export default function Mypage(props: Props) {
                       </InputAdornment>
                     }
                     label="新しいPassword"
-                    error={errors.newPassword}
-                    inputProps={{ pattern: validPattern.password }}
-                    inputRef={newPasswordRef}
+                    error={!!errors.newPassword}
                   />
                   {errors.newPassword && (
                     <FormHelperText error id="newPassword-error">

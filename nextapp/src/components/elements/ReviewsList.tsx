@@ -14,7 +14,6 @@ import {
   InputLabel,
   FormControl,
   Rating,
-  FormHelperText,
 } from '@mui/material'
 import React, { useRef } from 'react'
 import CafeCard from '@/components/elements/CafeCard'

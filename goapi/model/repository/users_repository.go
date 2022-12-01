@@ -1,6 +1,7 @@
 package repository
 
 import (
+	"fmt"
 	"log"
 
 	"github.com/akane-05/cafekatu/goapi/model/entity"
@@ -12,6 +13,8 @@ import (
 // インターフェースで実装すべきメソッドを決める
 type UsersRepository interface {
 	GetUser(id *int) (user entity.Users, err error)
+	GetUserFavorites(query *UserQuery) (cafeInfos []CafeInfo, err error)
+	GetCafesTotal(query *UserQuery) (cafesTotal int64, err error)
 	UpdateUser(patchUserInfo PatchUserInfo) (err error)
 	DeleteUser(user *entity.Users) (err error)
 	GetUserReviews(id *int, query *UserQuery) (reviews []entity.Reviews, err error)
@@ -36,6 +39,7 @@ type PatchUserInfo struct {
 type UserQuery struct {
 	PerPage int `form:"per_page" binding:"required"`
 	Page    int `form:"page" binding:"required"`
+	User_id int `form:"user_id" `
 }
 
 // ポインタレシーバ(*demoRepository)にメソッドを追加
@@ -48,6 +52,43 @@ func (tr *usersRepository) GetUser(id *int) (user entity.Users, err error) {
 		return
 	}
 	//名前付き変数でreturn
+	return
+}
+
+func (tr *usersRepository) GetUserFavorites(query *UserQuery) (cafeInfos []CafeInfo, err error) {
+	log.Println("リポジトリ")
+
+	column := `
+	cafes.id,cafes.name,
+	cafes.zipcode,cafes.prefecture_id,prefectures.prefecture,cafes.city,cafes.street,
+	cafes.business_hours,
+	cafes.created_at,cafes.updated_at,
+	AVG(reviews.rating) as rating
+	`
+
+	inquiry := fmt.Sprintf("join (select * from favorites where user_id = %v ) as userFavorites on userFavorites.cafe_id = cafes.id ", query.User_id)
+
+	join := `join prefectures on cafes.prefecture_id = prefectures.id left join reviews on cafes.id = reviews.cafe_id`
+
+	where := "cafes.approved = 1"
+
+	if err = Db.Debug().Table("cafes").Order("cafes.id").Where(where).Limit(query.PerPage).Offset(query.PerPage * (query.Page - 1)).Select(column).Joins(inquiry + join).Group("cafes.id").Find(&cafeInfos).Error; err != nil {
+		return
+	}
+
+	return
+
+}
+
+func (tr *usersRepository) GetCafesTotal(query *UserQuery) (cafesTotal int64, err error) {
+
+	where := "cafes.approved = 1"
+	inquiry := fmt.Sprintf("join (select * from favorites where user_id = %v ) as userFavorites on userFavorites.cafe_id = cafes.id ", query.User_id)
+
+	if err = Db.Debug().Model(&entity.Cafes{}).Joins(inquiry).Where(where).Count(&cafesTotal).Error; err != nil {
+		return
+	}
+
 	return
 }
 
