@@ -14,6 +14,7 @@ import {
   InputLabel,
   FormControl,
   Rating,
+  FormHelperText,
 } from '@mui/material'
 import React, { useRef } from 'react'
 import CafeCard from '@/components/elements/CafeCard'
@@ -36,15 +37,11 @@ import { useSetRecoilState, RecoilRoot } from 'recoil'
 import { haveTokenState } from '@/globalStates/haveToken'
 import { postReview } from '@/features/reviews/api/postReview'
 import useSWR, { useSWRConfig } from 'swr'
+import * as yup from 'yup'
+import { validate } from '@/lib/validate'
 
 type Props = {
   id: any
-}
-
-type Error = {
-  rating: boolean
-  comment: boolean
-  [key: string]: boolean
 }
 
 export default function ReviewsList(props: Props) {
@@ -71,14 +68,16 @@ export default function ReviewsList(props: Props) {
     comment: '',
   })
 
-  const [errors, setErrors] = React.useState<Error>({
-    rating: false,
-    comment: false,
-  })
+  const [errors, setErrors] = useState<any>({})
 
-  const commentVaildPattern = '^.{1,10}$'
-  const commentRef = useRef<HTMLInputElement>(null)
-  const ratingRef = useRef<HTMLInputElement>(null)
+  // バリデーションルール
+  const scheme = yup.object({
+    rating: yup.string().required('必須項目です'),
+    comment: yup
+      .string()
+      .required('必須項目です')
+      .matches(/^.{1,250}$/, '必須項目です。250字以内で入力してください。'),
+  })
 
   const handleCommentPost = async () => {
     if (isCommentPost) {
@@ -106,6 +105,8 @@ export default function ReviewsList(props: Props) {
   }
 
   const handlePostReview = async () => {
+    const errors = validate({ ...values }, scheme)
+    setErrors(errors)
     let error = false
     for (const key of Object.keys(errors)) {
       if (errors[key]) {
@@ -236,7 +237,6 @@ export default function ReviewsList(props: Props) {
                           value={values.rating}
                           required={true}
                           onChange={handleSelect}
-                          inputRef={ratingRef}
                           inputProps={{
                             required: true,
                           }}
@@ -265,17 +265,8 @@ export default function ReviewsList(props: Props) {
                         sx={{ mb: 1 }}
                         onChange={handleChange('comment')}
                         // required={true}
-                        error={errors.comment}
-                        inputProps={{
-                          maxLength: 250,
-                          required: true,
-                          //pattern: commentVaildPattern,
-                        }}
-                        inputRef={commentRef}
-                        helperText={
-                          errors.comment &&
-                          '必須項目です。250字以内で入力してください。'
-                        }
+                        error={!!errors.comment}
+                        helperText={errors.comment?.message}
                       />
                     </Grid>
                   </Grid>

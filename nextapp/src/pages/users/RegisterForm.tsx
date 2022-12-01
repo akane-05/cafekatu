@@ -24,6 +24,8 @@ import { validPattern, path } from '@/const/Consts'
 import { useSetRecoilState, RecoilRoot } from 'recoil'
 import { haveTokenState } from '@/globalStates/haveToken'
 import { userInfoState } from '@/globalStates/userInfo'
+import * as yup from 'yup'
+import { validate } from '@/lib/validate'
 
 type ComfirmValue = {
   passwordConfirm: string
@@ -31,14 +33,6 @@ type ComfirmValue = {
 }
 
 type InputValue = RegisterInfo & ComfirmValue
-
-type Error = {
-  nickname: boolean
-  email: boolean
-  password: boolean
-  passwordConfirm: boolean
-  [key: string]: boolean
-}
 
 export default function RegisterForm() {
   const dialog = Dialog.useDialogContext()
@@ -53,16 +47,28 @@ export default function RegisterForm() {
     showPassword: false,
   })
 
-  const [errors, setErrors] = React.useState<Error>({
-    nickname: false,
-    email: false,
-    password: false,
-    passwordConfirm: false,
-  })
+  const [errors, setErrors] = React.useState<any>({})
 
-  const nicknameRef = useRef<HTMLInputElement>(null)
-  const emailRef = useRef<HTMLInputElement>(null)
-  const passwordRef = useRef<HTMLInputElement>(null)
+  // バリデーションルール
+  const scheme = yup.object({
+    nickname: yup
+      .string()
+      .required('必須項目です')
+      .matches(/^.{2,20}$/, '半角英数字8桁で入力してください。'),
+    email: yup
+      .string()
+      .required('必須項目です')
+      .email('正しいメールアドレスを入力してください。'),
+    password: yup
+      .string()
+      .required('必須項目です')
+      .matches(/^([a-zA-Z0-9]{8})$/, '半角英数字8桁で入力してください。'),
+    passwordConfirm: yup
+      .string()
+      .required('必須項目です')
+      .matches(/^([a-zA-Z0-9]{8})$/, '半角英数字8桁で入力してください。')
+      .oneOf([yup.ref('password'), null], '確認用パスワードが一致していません'),
+  })
 
   const handleClickShowPassword = () => {
     setValues({
@@ -90,34 +96,12 @@ export default function RegisterForm() {
   const handleChange =
     (prop: keyof InputValue) =>
     (event: React.ChangeEvent<HTMLInputElement>) => {
-      let ref = null
-      if (prop == 'password') {
-        ref = passwordRef.current
-        setErrors({
-          ...errors,
-          password: !ref?.validity.valid,
-          passwordConfirm: event.target.value != values.passwordConfirm,
-        })
-      } else if (prop == 'passwordConfirm') {
-        setErrors({
-          ...errors,
-          passwordConfirm: values.password != event.target.value,
-        })
-      } else {
-        switch (prop) {
-          case 'email':
-            ref = emailRef.current
-            break
-          case 'nickname':
-            ref = nicknameRef.current
-            break
-        }
-        setErrors({ ...errors, [prop]: !ref?.validity.valid })
-      }
       setValues({ ...values, [prop]: event.target.value })
     }
 
   const register = async () => {
+    const errors = validate({ ...values }, scheme)
+    setErrors(errors)
     let error = false
     for (const key of Object.keys(errors)) {
       if (errors[key]) {
@@ -159,16 +143,12 @@ export default function RegisterForm() {
               onChange={handleChange('nickname')}
               label="nickname"
               required={true}
-              error={errors.nickname}
-              inputProps={{ pattern: validPattern.nickname }}
-              inputRef={nicknameRef}
+              error={!!errors.nickname}
             />
           </FormControl>
-          {errors.nickname && (
-            <FormHelperText error id="nickname-error">
-              2文字以上20文字以下で入力してください。
-            </FormHelperText>
-          )}
+          <FormHelperText error id="nickname-error">
+            {errors.nickname?.message}
+          </FormHelperText>
         </Grid>
 
         <Grid item xs={12}>
@@ -181,15 +161,12 @@ export default function RegisterForm() {
               onChange={handleChange('email')}
               label="email"
               required={true}
-              error={errors.email}
-              inputProps={{ pattern: validPattern.email }}
-              inputRef={emailRef}
+              error={!!errors.email}
             />
-            {errors.email && (
-              <FormHelperText error id="email-error">
-                メールアドレスを入力してください。
-              </FormHelperText>
-            )}
+
+            <FormHelperText error id="email-error">
+              {errors.email?.message}
+            </FormHelperText>
           </FormControl>
         </Grid>
 
@@ -215,15 +192,11 @@ export default function RegisterForm() {
               }
               label="password"
               required={true}
-              error={errors.password}
-              inputProps={{ pattern: validPattern.password }}
-              inputRef={passwordRef}
+              error={!!errors.password}
             />
-            {errors.password && (
-              <FormHelperText error id="password-error">
-                半角英数字8桁で入力してください。
-              </FormHelperText>
-            )}
+            <FormHelperText error id="password-error">
+              {errors.password?.message}
+            </FormHelperText>
           </FormControl>
         </Grid>
 
@@ -249,13 +222,11 @@ export default function RegisterForm() {
               }
               label="passwordConfirm"
               required={true}
-              error={errors.passwordConfirm}
+              error={!!errors.passwordConfirm}
             />
-            {errors.passwordConfirm && (
-              <FormHelperText error id="passwordConfirm-error">
-                パスワードが一致しません。
-              </FormHelperText>
-            )}
+            <FormHelperText error id="passwordConfirm-error">
+              {errors.passwordConfirm?.message}
+            </FormHelperText>
           </FormControl>
         </Grid>
 

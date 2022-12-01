@@ -24,12 +24,8 @@ import * as Dialog from '@/context/MessageDialog'
 import { useSetRecoilState, RecoilRoot } from 'recoil'
 import { haveTokenState } from '@/globalStates/haveToken'
 import { userInfoState } from '@/globalStates/userInfo'
-
-type Error = {
-  email: boolean
-  password: boolean
-  [key: string]: boolean
-}
+import * as yup from 'yup'
+import { validate } from '@/lib/validate'
 
 export default function LoginForm() {
   const setHaveToken = useSetRecoilState(haveTokenState)
@@ -41,14 +37,19 @@ export default function LoginForm() {
   })
 
   const [showPassword, setShowPassword] = React.useState<boolean>(false)
+  const [errors, setErrors] = useState<any>({})
 
-  const [errors, setErrors] = React.useState<Error>({
-    email: false,
-    password: false,
+  // バリデーションルール
+  const scheme = yup.object({
+    email: yup
+      .string()
+      .required('必須項目です')
+      .email('正しいメールアドレスを入力してください。'),
+    password: yup
+      .string()
+      .required('必須項目です')
+      .matches(/^([a-zA-Z0-9]{8})$/, '半角英数字8桁で入力してください。'),
   })
-
-  const emailRef = useRef<HTMLInputElement>(null)
-  const passwordRef = useRef<HTMLInputElement>(null)
 
   const handleClickShowPassword = () => {
     setShowPassword(!showPassword)
@@ -62,14 +63,6 @@ export default function LoginForm() {
 
   const handleChange =
     (prop: keyof LoginInfo) => (event: React.ChangeEvent<HTMLInputElement>) => {
-      let ref = null
-      if (prop == 'email') {
-        ref = emailRef.current
-      } else if (prop == 'password') {
-        ref = passwordRef.current
-      }
-      setErrors({ ...errors, [prop]: !ref?.validity.valid })
-
       setValues({ ...values, [prop]: event.target.value })
     }
 
@@ -79,6 +72,8 @@ export default function LoginForm() {
 
   const dialog = Dialog.useDialogContext()
   const handleLogin = async () => {
+    const errors = validate({ ...values }, scheme)
+    setErrors(errors)
     let error = false
     for (const key of Object.keys(errors)) {
       if (errors[key]) {
@@ -126,15 +121,11 @@ export default function LoginForm() {
               onChange={handleChange('email')}
               label="email"
               required={true}
-              error={errors.email}
-              inputProps={{ pattern: validPattern.email }}
-              inputRef={emailRef}
+              error={!!errors.email}
             />
-            {errors.email && (
-              <FormHelperText error id="email-error">
-                メールアドレスを入力してください。
-              </FormHelperText>
-            )}
+            <FormHelperText error id="email-error">
+              {errors.email?.message}
+            </FormHelperText>
           </FormControl>
         </Grid>
 
@@ -160,15 +151,11 @@ export default function LoginForm() {
               }
               label="password"
               required={true}
-              error={errors.password}
-              inputProps={{ pattern: validPattern.password }}
-              inputRef={passwordRef}
+              error={!!errors.password}
             />
-            {errors.password && (
-              <FormHelperText error id="password-error">
-                半角英数字8桁で入力してください。
-              </FormHelperText>
-            )}
+            <FormHelperText error id="password-error">
+              {errors.password?.message}
+            </FormHelperText>
           </FormControl>
         </Grid>
 
