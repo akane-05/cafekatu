@@ -85,8 +85,8 @@ func GetRouter() *gin.Engine {
 		group.DELETE("/users", usersC.DeleteUser)
 
 		//group.GET("/reviews", reviewsC.GetUserReviews) //いらないかも
-		group.GET("/reviews/:id", reviewsC.GetCafesReviews)
 		group.POST("/reviews", reviewsC.PostReview)
+		group.GET("/reviews/:id", reviewsC.GetCafesReviews)
 		group.DELETE("/reviews/:id", reviewsC.DeleteReview)
 
 	}

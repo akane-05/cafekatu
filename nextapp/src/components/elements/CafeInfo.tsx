@@ -33,7 +33,7 @@ type Props = {
 // }
 
 export default function cafeInfo(props: Props) {
-  const [cafeInfo] = useState(props.cafeInfo)
+  const cafeInfo = props.cafeInfo
   const setHaveToken = useSetRecoilState(haveTokenState)
 
   const dialog = Dialog.useDialogContext()
@@ -144,7 +144,7 @@ export default function cafeInfo(props: Props) {
               color="text.secondary"
               component="div"
             >
-              {cafeInfo.prefecture_id}
+              {cafeInfo.prefecture}
               {cafeInfo.city}
               {cafeInfo.street}
             </Typography>

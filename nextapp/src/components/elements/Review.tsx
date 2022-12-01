@@ -14,7 +14,7 @@ import {
   Hidden,
 } from '@mui/material'
 import React from 'react'
-import { Review } from '@/features/cafes/types/index'
+import { Review } from '@/features/reviews/types/index'
 
 type Props = {
   review: Review
@@ -47,12 +47,7 @@ export default function ReviewCard(props: Props) {
 
         <Grid item xs={12} sm={12}>
           <CardContent sx={{ alignSelf: 'stretch' }}>
-            <Typography
-              component="div"
-              variant="h6"
-              sx={{ mb: 1 }}
-              // color="text.secondary"
-            >
+            <Typography component="div" variant="h6" sx={{ mb: 1 }}>
               {review.nickname}
             </Typography>
 

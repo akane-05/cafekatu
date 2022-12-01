@@ -4,7 +4,7 @@ export type RegisterInfo = {
   nickname: string
 }
 
-export type Response = {
+export type RegisterRes = {
   status: number
   message: string
   token: string

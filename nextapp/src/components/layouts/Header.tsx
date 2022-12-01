@@ -123,72 +123,94 @@ export default function Header() {
   return (
     <AppBar position="static" style={{ backgroundColor: '#CC74AB' }}>
       <Toolbar>
-        <>
+        {router.pathname == path.login || router.pathname == path.register ? (
           <Box sx={{ m: 0 }}>
             <Button
               size="medium"
               color="inherit"
-              onClick={() => handleLink(path.top)}
+              //onClick={() => handleLink(path.top)}
             >
               Cafe活
             </Button>
           </Box>
-          <form onSubmit={handleSubmit}>
-            <Search sx={{ mr: 'auto', ml: 'auto', visibility: visibility }}>
-              <SearchIconWrapper>
-                <SearchIcon />
-              </SearchIconWrapper>
-              <StyledInputBase
-                id="searchWord"
-                placeholder="店舗名、住所..."
-                inputProps={{ 'aria-label': 'search' }}
-                onChange={handleChange}
-                //value={values.searchWord}
-                type="text"
-              />
-            </Search>
-          </form>
-          <Box sx={{ flexGrow: 1 }} />
-          <Box sx={{ flexGrow: 0, visibility: visibility }} textAlign="right">
-            <Tooltip title="設定を開く">
-              <IconButton
-                size="large"
-                aria-label="account of current user"
-                aria-controls="menu-appbar"
-                aria-haspopup="true"
-                onClick={handleOpenUserMenu}
-                sx={{ p: 0 }}
+        ) : (
+          <>
+            <Box sx={{ m: 0 }}>
+              <Button
+                size="medium"
+                color="inherit"
+                onClick={() => handleLink(path.top)}
               >
-                <AccountCircle />
-              </IconButton>
-            </Tooltip>
-            <Menu
-              sx={{ mt: '45px' }}
-              id="menu-appbar"
-              anchorEl={anchorElUser}
-              anchorOrigin={{
-                vertical: 'top',
-                horizontal: 'right',
-              }}
-              keepMounted
-              transformOrigin={{
-                vertical: 'top',
-                horizontal: 'right',
-              }}
-              open={Boolean(anchorElUser)}
-              onClose={handleCloseUserMenu}
+                Cafe活
+              </Button>
+            </Box>
+            <form onSubmit={handleSubmit}>
+              <Search
+                sx={{
+                  mr: 'auto',
+                  ml: 'auto',
+                  //visibility: haveToken ? 'visible' : 'hidden',
+                }}
+              >
+                <SearchIconWrapper>
+                  <SearchIcon />
+                </SearchIconWrapper>
+                <StyledInputBase
+                  id="searchWord"
+                  placeholder="店舗名、住所..."
+                  inputProps={{ 'aria-label': 'search' }}
+                  onChange={handleChange}
+                  //value={values.searchWord}
+                  type="text"
+                />
+              </Search>
+            </form>
+            <Box sx={{ flexGrow: 1 }} />
+            <Box
+              sx={{ flexGrow: 0 }}
+              //sx={{ flexGrow: 0, visibility: haveToken ? 'visible' : 'hidden' }}
+              textAlign="right"
             >
-              {settings.map((setting) => (
-                <MenuItem
-                  key={setting}
-                  onClick={() => handleClickUserMenu(setting)}
+              <Tooltip title="設定を開く">
+                <IconButton
+                  size="large"
+                  aria-label="account of current user"
+                  aria-controls="menu-appbar"
+                  aria-haspopup="true"
+                  onClick={handleOpenUserMenu}
+                  sx={{ p: 0 }}
                 >
-                  <Typography textAlign="center">{setting}</Typography>
-                </MenuItem>
-              ))}
-            </Menu>
-          </Box>
-        </>
+                  <AccountCircle />
+                </IconButton>
+              </Tooltip>
+              <Menu
+                sx={{ mt: '45px' }}
+                id="menu-appbar"
+                anchorEl={anchorElUser}
+                anchorOrigin={{
+                  vertical: 'top',
+                  horizontal: 'right',
+                }}
+                keepMounted
+                transformOrigin={{
+                  vertical: 'top',
+                  horizontal: 'right',
+                }}
+                open={Boolean(anchorElUser)}
+                onClose={handleCloseUserMenu}
+              >
+                {settings.map((setting) => (
+                  <MenuItem
+                    key={setting}
+                    onClick={() => handleClickUserMenu(setting)}
+                  >
+                    <Typography textAlign="center">{setting}</Typography>
+                  </MenuItem>
+                ))}
+              </Menu>
+            </Box>
+          </>
+        )}
       </Toolbar>
     </AppBar>
   )

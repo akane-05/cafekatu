@@ -4,20 +4,15 @@ import { Button, Grid, Typography } from '@mui/material'
 import React, { useState, useEffect } from 'react'
 import CafeInfo from '@/components/elements/CafeInfo'
 import ReviewCard from '@/components/elements/Review'
-import ReviewPost from '@/components/elements/ReviewPost'
 import CustomPaper from '@/components/layouts/CustomPaper'
 import { useCafe } from '@/features/cafes/api/useCafe'
 import { useRouter } from 'next/router'
-import { path, strage } from '@/const/Consts'
-import { Review } from '@/features/cafes/types/index'
+import { path, strage, requests } from '@/const/Consts'
 import PageButton from '@/components/elements/PageButton'
 import { useSetRecoilState, RecoilRoot } from 'recoil'
 import { haveTokenState } from '@/globalStates/haveToken'
 import ReviewsList from '@/components/elements/ReviewsList'
-
-type State = {
-  isCommentPost: boolean
-}
+import useSWR, { useSWRConfig } from 'swr'
 
 export default function CafeDetail() {
   const router = useRouter()

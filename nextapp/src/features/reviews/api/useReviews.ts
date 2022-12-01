@@ -16,25 +16,9 @@ export type fetchPostReturnType = {
   }
 }
 
-export function useReviews(
-  page: number,
-  perPage: number,
-  param?: string | string[],
-) {
+export function useReviews(page: number, perPage: number, id: any) {
   const setHaveToken = useSetRecoilState(haveTokenState)
 
-  let id = ''
-  if (typeof param === undefined) {
-    return {
-      response: null,
-      isLoading: null,
-      isError: 'パラメータが不適切です',
-    }
-  } else if (typeof param === 'string') {
-    id = param
-  } else if (Array.isArray(param)) {
-    id = param[0]
-  }
   const fetcher = (url: string) =>
     apiClient
       .get(url, {
@@ -46,6 +30,7 @@ export function useReviews(
 
   const { data: data, error } = useSWR(
     requests.reviews +
+      '/' +
       id +
       '?' +
       new URLSearchParams({

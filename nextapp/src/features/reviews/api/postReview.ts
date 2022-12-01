@@ -1,23 +1,27 @@
+import { Review, ReviewsRes } from '@/features/reviews/types'
 import apiClient from '@/lib/axios'
-import { CafesRes } from '@/features/cafes/types'
+import { requests } from '@/const/Consts'
 import { strage } from '@/const/Consts'
 
-export async function postFavorite(id: number): Promise<CafesRes> {
+export async function postReview(review: Review, id: any): Promise<ReviewsRes> {
+  const cafe_id = parseInt(id)
+  review.cafe_id = cafe_id
+
   return apiClient
-    .post(`/cafes/${id}/favorite`, null, {
+    .post(requests.reviews, JSON.stringify(review), {
       headers: {
         Authorization: `Bearer ${localStorage.getItem(strage.Token)}`,
       },
     })
     .then((res) => {
       const { data, status } = res
-      const response = JSON.parse(JSON.stringify(data)) as CafesRes
+      const response = JSON.parse(JSON.stringify(data)) as ReviewsRes
       response.status = status
       return response
     })
     .catch((error) => {
       const { data, status } = error.response
-      const response = JSON.parse(JSON.stringify(data)) as CafesRes
+      const response = JSON.parse(JSON.stringify(data)) as ReviewsRes
       response.status = status
 
       if (status == 401) {

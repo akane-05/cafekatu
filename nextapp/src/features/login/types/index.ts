@@ -3,7 +3,7 @@ export type LoginInfo = {
   password?: string
 }
 
-export type Response = {
+export type LoginRes = {
   status: number
   message: string
   token: string

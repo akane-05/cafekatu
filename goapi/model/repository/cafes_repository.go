@@ -86,10 +86,12 @@ func (tr *cafesRepository) GetCafes(cafeQuery *CafeQuery) (cafeInfos []CafeInfo,
 func (tr *cafesRepository) GetCafesTotal(cafeQuery *CafeQuery) (cafesTotal int64, err error) {
 
 	where := "cafes.approved = 1"
+	join := `join prefectures on cafes.prefecture_id = prefectures.id`
+
 	if cafeQuery.SearchWord != "" {
 		shWord := "%" + cafeQuery.SearchWord + "%"
 		where = where + " AND (cafes.name LIKE ? OR prefectures.prefecture LIKE ? OR cafes.city LIKE ? OR cafes.street LIKE ? )"
-		if err = Db.Debug().Model(&entity.Cafes{}).Where(where, shWord, shWord, shWord, shWord).Count(&cafesTotal).Error; err != nil {
+		if err = Db.Debug().Table("cafes").Joins(join).Where(where, shWord, shWord, shWord, shWord).Count(&cafesTotal).Error; err != nil {
 			return
 		}
 	} else {
