@@ -9,8 +9,7 @@ const requests = {
   base: 'http://localhost:8080',
   register: '/register',
   login: '/login',
-  cafes: '/cafes?',
-  cafeDeatil: '/cafes/',
+  cafes: '/cafes',
   reviews: '/reviews',
 }
 

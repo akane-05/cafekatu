@@ -29,14 +29,16 @@ export function useReviews(page: number, perPage: number, id: any) {
       .then((res) => res.data)
 
   const { data: data, error } = useSWR(
-    requests.reviews +
-      '/' +
-      id +
-      '?' +
-      new URLSearchParams({
-        per_page: `${perPage}`,
-        page: `${page}`,
-      }),
+    id
+      ? requests.reviews +
+          '/' +
+          id +
+          '?' +
+          new URLSearchParams({
+            per_page: `${perPage}`,
+            page: `${page}`,
+          })
+      : null,
     fetcher,
     {
       onErrorRetry: (error) => {

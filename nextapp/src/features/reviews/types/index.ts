@@ -1,4 +1,4 @@
-export type Review = {
+export type ReviewInfo = {
   id?: number
   user_id?: number
   nickname?: string

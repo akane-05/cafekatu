@@ -15,7 +15,7 @@ import {
   FormHelperText,
 } from '@mui/material'
 import React, { useState, useRef } from 'react'
-import Review from '@/components/elements/Review'
+import Review from '@/components/elements/ReviewCard'
 import CustomPaper from '@/components/layouts/CustomPaper'
 import Visibility from '@mui/icons-material/Visibility'
 import VisibilityOff from '@mui/icons-material/VisibilityOff'

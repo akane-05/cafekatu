@@ -27,8 +27,8 @@ import * as Dialog from '@/context/MessageDialog'
 import { path, strage, ratingList, requests } from '@/const/Consts'
 import PageButton from '@/components/elements/PageButton'
 import { Pagination } from '@mui/material'
-import { Review } from '@/features/reviews/types/index'
-import ReviewCard from '@/components/elements/Review'
+import { ReviewInfo } from '@/features/reviews/types/index'
+import ReviewCard from '@/components/elements/ReviewCard'
 // import ReviewPost from '@/components/elements/ReviewPost'
 import { useUserInfo } from '@/hooks/useUserInfo'
 import { useSetRecoilState, RecoilRoot } from 'recoil'
@@ -58,13 +58,13 @@ export default function ReviewsList(props: Props) {
   const { nickname } = useUserInfo()
   const setHaveToken = useSetRecoilState(haveTokenState)
 
-  const defaultReview: Review = {
+  const defaultReview: ReviewInfo = {
     cafe_id: 0,
     rating: 0,
     comment: '',
   }
   //const [values, setValues] = React.useState<Review>(defaultReview)
-  const [values, setValues] = React.useState<Review>({
+  const [values, setValues] = React.useState<ReviewInfo>({
     cafe_id: 0,
     rating: 0,
     comment: '',
@@ -93,7 +93,8 @@ export default function ReviewsList(props: Props) {
   }
 
   const handleChange =
-    (prop: keyof Review) => (event: React.ChangeEvent<HTMLInputElement>) => {
+    (prop: keyof ReviewInfo) =>
+    (event: React.ChangeEvent<HTMLInputElement>) => {
       setValues({ ...values, [prop]: event.target.value })
     }
 
@@ -127,15 +128,7 @@ export default function ReviewsList(props: Props) {
               page: `${1}`,
             }),
         )
-        mutate(
-          requests.cafeDeatil +
-            props.id +
-            '?' +
-            new URLSearchParams({
-              per_page: `${perPage}`,
-              page: `${page}`,
-            }),
-        )
+        mutate(requests.cafes + '/' + props.id)
         setIsCommentPost(!isCommentPost)
       } else {
         if (response.status == 401) {
@@ -318,7 +311,7 @@ export default function ReviewsList(props: Props) {
 
       {response.data?.reviews_total != 0 ? (
         <>
-          {response.data.reviews?.map((review: Review) => {
+          {response.data.reviews?.map((review: ReviewInfo) => {
             return <ReviewCard key={review.id} review={review} /> //keyを指定
           })}
 

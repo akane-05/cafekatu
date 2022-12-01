@@ -1,9 +1,12 @@
-import { Review, ReviewsRes } from '@/features/reviews/types'
+import { ReviewInfo, ReviewsRes } from '@/features/reviews/types'
 import apiClient from '@/lib/axios'
 import { requests } from '@/const/Consts'
 import { strage } from '@/const/Consts'
 
-export async function postReview(review: Review, id: any): Promise<ReviewsRes> {
+export async function postReview(
+  review: ReviewInfo,
+  id: any,
+): Promise<ReviewsRes> {
   const cafe_id = parseInt(id)
   review.cafe_id = cafe_id
 

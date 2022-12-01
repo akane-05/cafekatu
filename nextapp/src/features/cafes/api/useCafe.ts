@@ -16,7 +16,7 @@ export type fetchPostReturnType = {
   }
 }
 
-export function useCafe(page: number, perPage: number, id: any) {
+export function useCafe(id: any) {
   const setHaveToken = useSetRecoilState(haveTokenState)
   const fetcher = (url: string) =>
     apiClient
@@ -28,13 +28,7 @@ export function useCafe(page: number, perPage: number, id: any) {
       .then((res) => res.data)
 
   const { data: data, error } = useSWR(
-    requests.cafeDeatil +
-      id +
-      '?' +
-      new URLSearchParams({
-        per_page: `${perPage}`,
-        page: `${page}`,
-      }),
+    id ? requests.cafes + '/' + id : null,
     fetcher,
     {
       onErrorRetry: (error) => {

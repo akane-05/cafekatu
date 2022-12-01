@@ -3,7 +3,7 @@
 import { Button, Grid, Typography } from '@mui/material'
 import React, { useState, useEffect } from 'react'
 import CafeInfo from '@/components/elements/CafeInfo'
-import ReviewCard from '@/components/elements/Review'
+import ReviewCard from '@/components/elements/ReviewCard'
 import CustomPaper from '@/components/layouts/CustomPaper'
 import { useCafe } from '@/features/cafes/api/useCafe'
 import { useRouter } from 'next/router'
@@ -16,7 +16,7 @@ import useSWR, { useSWRConfig } from 'swr'
 
 export default function CafeDetail() {
   const router = useRouter()
-  const { response, isLoading, isError } = useCafe(1, 10, router.query.id)
+  const { response, isLoading, isError } = useCafe(router.query.id)
 
   const setHaveToken = useSetRecoilState(haveTokenState)
 
@@ -100,7 +100,7 @@ export default function CafeDetail() {
         <CafeInfo cafeInfo={response.data.cafe}></CafeInfo>
       </CustomPaper>
 
-      <ReviewsList id={router.query.id}></ReviewsList>
+      <ReviewsList id={router.query.id ? router.query.id : null}></ReviewsList>
     </>
   )
 }

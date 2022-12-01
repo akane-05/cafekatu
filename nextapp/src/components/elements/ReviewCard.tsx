@@ -14,10 +14,10 @@ import {
   Hidden,
 } from '@mui/material'
 import React from 'react'
-import { Review } from '@/features/reviews/types/index'
+import { ReviewInfo } from '@/features/reviews/types/index'
 
 type Props = {
-  review: Review
+  review: ReviewInfo
 }
 
 export default function ReviewCard(props: Props) {

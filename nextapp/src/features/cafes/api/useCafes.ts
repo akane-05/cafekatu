@@ -43,6 +43,7 @@ export function useCafes(
 
   const { data: data, error } = useSWR(
     requests.cafes +
+      '?' +
       new URLSearchParams({
         per_page: `${perPage}`,
         page: `${page}`,

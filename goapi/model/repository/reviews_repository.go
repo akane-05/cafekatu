@@ -64,7 +64,7 @@ func (tr *reviewsRepository) GetCafesReviews(id *int, query *ReviewQuery) (revie
 	users.nickname,reviews.created_at,reviews.updated_at
 	`
 
-	if err = Db.Debug().Table("reviews").Select(colume).Where("cafe_id = ?", id).Limit(query.PerPage).Offset(query.PerPage * (query.Page - 1)).Joins("left join users on reviews.user_id = users.id").Find(&reviews).Error; err != nil {
+	if err = Db.Debug().Table("reviews").Select(colume).Where("cafe_id = ?", id).Limit(query.PerPage).Offset(query.PerPage * (query.Page - 1)).Joins("left join users on reviews.user_id = users.id").Find(&reviews).Order("reviews.created_at desc").Error; err != nil {
 		return
 	}
 	//名前付き変数でreturn
