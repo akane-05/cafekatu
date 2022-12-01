@@ -20,6 +20,8 @@ import CustomPaper from '@/components/layouts/CustomPaper'
 import Visibility from '@mui/icons-material/Visibility'
 import VisibilityOff from '@mui/icons-material/VisibilityOff'
 import { validPattern } from '@/const/Consts'
+import { path, strage, requests } from '@/const/Consts'
+import { useRouter } from 'next/router'
 
 type Props = {
   num: number
@@ -49,6 +51,7 @@ type Error = {
 }
 
 export default function Mypage(props: Props) {
+  const router = useRouter()
   const current: Current = {
     nickname: '変更前のnick',
     email: '変更前のemail',
@@ -76,6 +79,10 @@ export default function Mypage(props: Props) {
   const emailRef = useRef<HTMLInputElement>(null)
   const passwordRef = useRef<HTMLInputElement>(null)
   const newPasswordRef = useRef<HTMLInputElement>(null)
+
+  const handleLink = (path: string) => {
+    router.push(path)
+  }
 
   const handleIsEdit = () => {
     setValues({
@@ -135,7 +142,7 @@ export default function Mypage(props: Props) {
 
   return (
     <>
-      <CustomPaper elevation={0} sx={{ backgroundColor: 'transparent' }}>
+      {/* <CustomPaper elevation={0} sx={{ backgroundColor: 'transparent' }}>
         <Grid
           container
           direction="row"
@@ -146,51 +153,56 @@ export default function Mypage(props: Props) {
             variant="contained"
             // onClick={() => handleLink('./search/searchResult')}
           >
-            店舗一覧に戻る
-          </Button>
-          <Button
-            variant="contained"
-            // onClick={() => handleLink('./search/searchResult')}
-          >
             お気に入り店舗
           </Button>
         </Grid>
-      </CustomPaper>
+      </CustomPaper> */}
 
+      {/* <CustomPaper sx={{ mt: 1 }}> */}
       <CustomPaper sx={{ mt: 1 }}>
-        <Typography variant="h5" gutterBottom color="primary">
-          ユーザー情報
-        </Typography>
+        <Button variant="contained" onClick={() => handleLink(path.cafesList)}>
+          店舗一覧に戻る
+        </Button>
 
-        {!values.isEdit ? (
-          <Paper sx={{ padding: 2 }}>
+        <Paper sx={{ p: 3, mt: 1 }}>
+          {!values.isEdit ? (
             <Grid
               container
-              spacing={2}
-              direction="column"
-              justifyContent="space-around"
-              alignItems="flex-start"
+              direction="row-reverse"
+              justifyContent="flex-end"
+              alignItems="center"
             >
+              <Typography variant="h5" gutterBottom color="secondary">
+                ユーザー情報
+              </Typography>
+
               <Grid item xs={12}>
-                <TextField
-                  id="nickName"
-                  label="nickName"
-                  defaultValue="ニックネーム"
-                  InputProps={{
-                    readOnly: true,
-                  }}
-                />
+                <FormControl sx={{ m: 1, width: 'auto' }} variant="filled">
+                  <TextField
+                    variant="standard"
+                    id="nickName"
+                    label="nickName"
+                    defaultValue="ニックネーム"
+                    InputProps={{
+                      readOnly: true,
+                    }}
+                  />
+                </FormControl>
               </Grid>
               <Grid item xs={12}>
-                <TextField
-                  id="email"
-                  label="email"
-                  defaultValue="email"
-                  InputProps={{
-                    readOnly: true,
-                  }}
-                />
+                <FormControl sx={{ m: 1, width: 'auto' }} variant="filled">
+                  <TextField
+                    variant="standard"
+                    id="email"
+                    label="email"
+                    defaultValue="email"
+                    InputProps={{
+                      readOnly: true,
+                    }}
+                  />
+                </FormControl>
               </Grid>
+
               <Grid
                 container
                 direction="row"
@@ -207,9 +219,7 @@ export default function Mypage(props: Props) {
                 </Button>
               </Grid>
             </Grid>
-          </Paper>
-        ) : (
-          <Paper sx={{ padding: 2 }}>
+          ) : (
             <Grid
               container
               spacing={2}
@@ -387,7 +397,7 @@ export default function Mypage(props: Props) {
                 <Grid item xs={12} sm={2}>
                   <Button
                     variant="contained"
-                    onClick={handleIsUpdate}
+                    onClick={handleIsEdit}
                     sx={{ mr: 2 }}
                   >
                     戻る
@@ -415,19 +425,20 @@ export default function Mypage(props: Props) {
                 </Grid>
               </Grid>
             </Grid>
-          </Paper>
-        )}
+          )}
+          {/* </Paper> */}
+        </Paper>
       </CustomPaper>
 
-      <CustomPaper sx={{ mt: 2 }}>
+      {/* <CustomPaper sx={{ mt: 2 }}>
         <Typography variant="h5" gutterBottom color="primary">
           過去の口コミ
         </Typography>
 
-        {/* {response.response.data.reviews?.map((review: Review) => {
+        {response.response.data.reviews?.map((review: Review) => {
           return <ReviewCard key={review.id} review={review} /> //keyを指定
-        })} */}
-      </CustomPaper>
+        })}
+      </CustomPaper> */}
     </>
   )
 }

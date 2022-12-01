@@ -27,7 +27,7 @@ export default function Header() {
   const [anchorElUser, setAnchorElUser] = React.useState<null | HTMLElement>(
     null,
   )
-  const settings = ['マイページ', 'ログアウト']
+  const settings = ['マイページ', 'お気に入り', '過去の投稿', 'ログアウト']
   const router = useRouter()
   const dialog = Dialog.useDialogContext()
   const setHaveToken = useSetRecoilState(haveTokenState)
