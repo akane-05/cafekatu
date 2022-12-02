@@ -1,10 +1,10 @@
 // import { NextPage } from 'next'
 // import Router from 'next/router'
-import { Button, Grid, Typography } from '@mui/material'
+import { Button, Grid, Typography, Link } from '@mui/material'
 import React, { useState, useEffect } from 'react'
 import CafeInfo from '@/components/elements/CafeInfo'
 import ReviewCard from '@/components/elements/ReviewCard'
-import CustomPaper from '@/components/layouts/CustomPaper'
+import CustomPaper, { LinkPaper } from '@/components/layouts/CustomPaper'
 import { useCafe } from '@/features/cafes/api/useCafe'
 import { useRouter } from 'next/router'
 import { path, strage, requests } from '@/const/Consts'
@@ -93,9 +93,6 @@ export default function CafeDetail() {
   return (
     <>
       <CustomPaper>
-        <Button variant="contained" onClick={() => handleLink(path.cafesList)}>
-          店舗一覧に戻る
-        </Button>
         <CafeInfo cafeInfo={response.data.cafe}></CafeInfo>
       </CustomPaper>
 

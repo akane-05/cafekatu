@@ -8,6 +8,8 @@ export type RegisterRes = {
   status: number
   message: string
   token: string
+  id: number
   nickname: string
+  email: string
   error: string
 }

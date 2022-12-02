@@ -52,7 +52,7 @@ export default function ReviewsList(props: Props) {
   const [isCommentPost, setIsCommentPost] = React.useState<boolean>(false)
   const { mutate } = useSWRConfig()
 
-  const { nickname } = useUserInfo()
+  const { userInfo } = useUserInfo()
   const setHaveToken = useSetRecoilState(haveTokenState)
 
   const defaultReview: ReviewInfo = {
@@ -208,7 +208,7 @@ export default function ReviewsList(props: Props) {
                         variant="h6"
                         sx={{ mb: 1, pl: 1 }}
                       >
-                        {nickname}
+                        {userInfo?.nickname}
                       </Typography>
                     </Grid>
 

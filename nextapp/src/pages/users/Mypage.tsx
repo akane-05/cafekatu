@@ -13,14 +13,16 @@ import {
   OutlinedInput,
   Hidden,
   FormHelperText,
+  Link,
 } from '@mui/material'
 import React, { useState, useRef } from 'react'
 import Review from '@/components/elements/ReviewCard'
-import CustomPaper from '@/components/layouts/CustomPaper'
+import CustomPaper, { LinkPaper } from '@/components/layouts/CustomPaper'
 import Visibility from '@mui/icons-material/Visibility'
 import VisibilityOff from '@mui/icons-material/VisibilityOff'
 import { path, strage, requests } from '@/const/Consts'
 import { useRouter } from 'next/router'
+import { useUserInfo } from '@/hooks/useUserInfo'
 
 type Props = {
   num: number
@@ -51,6 +53,7 @@ type Error = {
 
 export default function Mypage(props: Props) {
   const router = useRouter()
+  const { userInfo } = useUserInfo()
   const current: Current = {
     nickname: '変更前のnick',
     email: '変更前のemail',
@@ -103,66 +106,67 @@ export default function Mypage(props: Props) {
 
   return (
     <>
-      {/* <CustomPaper elevation={0} sx={{ backgroundColor: 'transparent' }}>
-        <Grid
-          container
-          direction="row"
-          justifyContent="space-between"
-          alignItems="center"
+      <LinkPaper elevation={0}>
+        <Link
+          onClick={() => handleLink(path.cafesList)}
+          component="button"
+          variant="body1"
         >
-          <Button
-            variant="contained"
-            // onClick={() => handleLink('./search/searchResult')}
-          >
-            お気に入り店舗
-          </Button>
-        </Grid>
-      </CustomPaper> */}
-
-      {/* <CustomPaper sx={{ mt: 1 }}> */}
-      <CustomPaper sx={{ mt: 1 }}>
-        <Button variant="contained" onClick={() => handleLink(path.cafesList)}>
           店舗一覧に戻る
-        </Button>
+        </Link>
+      </LinkPaper>
 
-        <Paper sx={{ p: 3, mt: 1 }}>
+      <CustomPaper>
+        <Paper sx={{ p: 2, m: 1 }}>
           {!values.isEdit ? (
             <Grid
               container
-              direction="row-reverse"
-              justifyContent="flex-end"
+              direction="row"
+              justifyContent="flex-start"
               alignItems="center"
             >
-              <Typography variant="h5" gutterBottom color="secondary">
-                ユーザー情報
-              </Typography>
+              <Grid item xs={12}>
+                <Typography
+                  variant="h5"
+                  gutterBottom
+                  color="secondary"
+                  sx={{ ml: 1 }}
+                >
+                  ユーザー情報
+                </Typography>
+              </Grid>
 
-              <Grid item xs={12}>
-                <FormControl sx={{ m: 1, width: 'auto' }} variant="filled">
-                  <TextField
-                    variant="standard"
-                    id="nickName"
-                    label="nickName"
-                    defaultValue="ニックネーム"
-                    InputProps={{
-                      readOnly: true,
-                    }}
-                  />
-                </FormControl>
+              <Grid item xs={12} md={6} sx={{ p: 1 }}>
+                <TextField
+                  fullWidth
+                  variant="standard"
+                  id="nickName"
+                  label="nickName"
+                  //defaultValue="ニックネーム"
+                  value={userInfo?.nickname}
+                  InputProps={{
+                    readOnly: true,
+                  }}
+                />
               </Grid>
-              <Grid item xs={12}>
-                <FormControl sx={{ m: 1, width: 'auto' }} variant="filled">
-                  <TextField
-                    variant="standard"
-                    id="email"
-                    label="email"
-                    defaultValue="email"
-                    InputProps={{
-                      readOnly: true,
-                    }}
-                  />
-                </FormControl>
+
+              <Grid item xs={0} md={6}></Grid>
+
+              <Grid item xs={12} md={6} sx={{ p: 1 }}>
+                <TextField
+                  fullWidth
+                  variant="standard"
+                  id="email"
+                  label="email"
+                  //defaultValue="email"
+                  value={userInfo?.email}
+                  InputProps={{
+                    readOnly: true,
+                  }}
+                />
               </Grid>
+
+              <Grid item xs={0} md={6}></Grid>
 
               <Grid
                 container

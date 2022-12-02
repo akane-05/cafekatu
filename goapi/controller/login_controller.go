@@ -84,6 +84,8 @@ func (dc *loginController) Login(c *gin.Context) {
 
 	c.JSON(http.StatusOK, gin.H{
 		"token":    tokenString,
+		"id":       user.Id,
+		"email":    user.Email,
 		"nickname": user.Nickname,
 		"message":  "ログインしました。",
 	})
@@ -143,6 +145,8 @@ func (dc *loginController) Register(c *gin.Context) {
 
 	c.JSON(http.StatusOK, gin.H{
 		"token":    tokenString,
+		"id":       id,
+		"email":    postUser.Email,
 		"nickname": postUser.Nickname,
 		"message":  "ユーザー登録が完了しました。",
 	})

@@ -9,4 +9,12 @@ const CustomPaper = styled(Paper)(() => ({
   padding: 8,
 }))
 
+export const LinkPaper = styled(Paper)(() => ({
+  elevation: 0,
+  margin: 'auto',
+  maxWidth: 800,
+  backgroundColor: 'transparent',
+  padding: 2,
+}))
+
 export default CustomPaper

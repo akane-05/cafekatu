@@ -7,9 +7,8 @@ export type LoginRes = {
   status: number
   message: string
   token: string
-  nickname: string
-  error: string
-
   id: number
+  nickname: string
   email: string
+  error: string
 }
