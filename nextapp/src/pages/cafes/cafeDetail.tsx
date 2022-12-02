@@ -92,6 +92,16 @@ export default function CafeDetail() {
 
   return (
     <>
+      <LinkPaper elevation={0}>
+        <Link
+          onClick={() => handleLink(path.cafesList)}
+          component="button"
+          variant="body1"
+        >
+          店舗一覧に戻る
+        </Link>
+      </LinkPaper>
+
       <CustomPaper>
         <CafeInfo cafeInfo={response.data.cafe}></CafeInfo>
       </CustomPaper>

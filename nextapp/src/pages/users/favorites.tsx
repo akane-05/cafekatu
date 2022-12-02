@@ -1,9 +1,9 @@
 // import { NextPage } from 'next'
 // import Router from 'next/router'
-import { Paper, Grid, Button, Typography } from '@mui/material'
+import { Paper, Grid, Button, Typography, Link } from '@mui/material'
 import React from 'react'
 import CafeCard from '@/components/elements/CafeCard'
-import CustomPaper from '@/components/layouts/CustomPaper'
+import CustomPaper, { LinkPaper } from '@/components/layouts/CustomPaper'
 import Router from 'next/router'
 import { CafeInfo } from '@/features/cafes/types'
 import { useRouter } from 'next/router'
@@ -97,21 +97,51 @@ export default function UserFavorites() {
   }
 
   return (
-    <CustomPaper>
-      <Button variant="contained" onClick={() => handleLink(path.cafesList)}>
-        店舗一覧に戻る
-      </Button>
+    <>
+      <LinkPaper elevation={0}>
+        <Link
+          onClick={() => handleLink(path.cafesList)}
+          component="button"
+          variant="body1"
+        >
+          店舗一覧に戻る
+        </Link>
+      </LinkPaper>
 
-      {response.data?.cafes_total != 0 ? (
-        <>
-          <Typography color="text.secondary">
-            {parPage * (page - 1) + 1}～
-            {parPage * (page - 1) + response.data?.cafes.length} 件を表示 ／ 全
-            {response.data?.cafes_total} 件
-          </Typography>
-          {response.data?.cafes.map((cafeInfo: CafeInfo) => {
-            return <CafeCard key={cafeInfo.id} cafeInfo={cafeInfo} /> //keyを指定
-          })}
+      <CustomPaper>
+        {response.data?.cafes_total != 0 ? (
+          <>
+            <Typography color="text.secondary">
+              {parPage * (page - 1) + 1}～
+              {parPage * (page - 1) + response.data?.cafes.length} 件を表示 ／
+              全{response.data?.cafes_total} 件
+            </Typography>
+            {response.data?.cafes.map((cafeInfo: CafeInfo) => {
+              return <CafeCard key={cafeInfo.id} cafeInfo={cafeInfo} /> //keyを指定
+            })}
+            <Grid
+              container
+              alignItems="center"
+              justifyContent="center"
+              direction="column"
+            >
+              <Grid item xs={12}>
+                <Pagination
+                  count={response.data?.pages_total}
+                  hideNextButton={
+                    page == response.data?.pages_total ? true : false
+                  }
+                  hidePrevButton={page == 1 ? true : false}
+                  defaultPage={1}
+                  siblingCount={3}
+                  color="primary" //ページネーションの色
+                  onChange={(e, page) => setPage(page)} //変更されたときに走る関数。第2引数にページ番号が入る
+                  page={page} //現在のページ番号
+                />
+              </Grid>
+            </Grid>
+          </>
+        ) : (
           <Grid
             container
             alignItems="center"
@@ -119,35 +149,13 @@ export default function UserFavorites() {
             direction="column"
           >
             <Grid item xs={12}>
-              <Pagination
-                count={response.data?.pages_total}
-                hideNextButton={
-                  page == response.data?.pages_total ? true : false
-                }
-                hidePrevButton={page == 1 ? true : false}
-                defaultPage={1}
-                siblingCount={3}
-                color="primary" //ページネーションの色
-                onChange={(e, page) => setPage(page)} //変更されたときに走る関数。第2引数にページ番号が入る
-                page={page} //現在のページ番号
-              />
+              <Typography variant="body1">
+                お気に入りに登録した店舗はありません。
+              </Typography>
             </Grid>
           </Grid>
-        </>
-      ) : (
-        <Grid
-          container
-          alignItems="center"
-          justifyContent="center"
-          direction="column"
-        >
-          <Grid item xs={12}>
-            <Typography variant="body1">
-              お気に入りに登録した店舗はありません。
-            </Typography>
-          </Grid>
-        </Grid>
-      )}
-    </CustomPaper>
+        )}
+      </CustomPaper>
+    </>
   )
 }
