@@ -14,7 +14,6 @@ import { ThemeProvider } from '@mui/material/styles'
 import Visibility from '@mui/icons-material/Visibility'
 import VisibilityOff from '@mui/icons-material/VisibilityOff'
 import React, { useState, useRef } from 'react'
-import { styled } from '@mui/system'
 import { RegisterInfo } from '@/features/register/types'
 import { registerUser } from '@/features/register/api/registerUser'
 import * as Dialog from '@/context/MessageDialog'
@@ -66,7 +65,10 @@ export default function RegisterForm() {
     passwordConfirm: yup
       .string()
       .required('必須項目です')
-      .matches(/^([a-zA-Z0-9]{8})$/, '半角英数字8桁で入力してください。')
+      .matches(
+        /^([a-zA-Z0-9]{8,20})$/,
+        '半角英数字8文字以上20文字以下で入力してください。',
+      )
       .oneOf([yup.ref('password'), null], '確認用パスワードが一致していません'),
   })
 
@@ -84,9 +86,22 @@ export default function RegisterForm() {
   }
 
   const handleDialog = async () => {
-    await dialog.confirm(Dialog.confirmDialog('登録しますか？')).then(() => {
-      register()
-    })
+    const errors = validate({ ...values }, scheme)
+    setErrors(errors)
+    let error = false
+    for (const key of Object.keys(errors)) {
+      if (errors[key]) {
+        error = true
+      }
+    }
+
+    if (!error) {
+      await dialog.confirm(Dialog.confirmDialog('登録しますか？')).then(() => {
+        register()
+      })
+    } else {
+      dialog.confirm(Dialog.errorDialog('エラーを修正してください。'))
+    }
   }
 
   const handleLink = (path: string) => {
@@ -100,32 +115,19 @@ export default function RegisterForm() {
     }
 
   const register = async () => {
-    const errors = validate({ ...values }, scheme)
-    setErrors(errors)
-    let error = false
-    for (const key of Object.keys(errors)) {
-      if (errors[key]) {
-        error = true
+    const response = await registerUser(values)
+    if (response.status == 200) {
+      dialog.confirm(Dialog.apiOKDialog(response.message))
+      setHaveToken(true)
+      const userInfo: UserInfo = {
+        id: response.id,
+        nickname: response.nickname,
+        email: response.email,
       }
-    }
-
-    if (!error) {
-      const response = await registerUser(values)
-      if (response.status == 200) {
-        dialog.confirm(Dialog.apiOKDialog(response.message))
-        setHaveToken(true)
-        const userInfo: UserInfo = {
-          id: response.id,
-          nickname: response.nickname,
-          email: response.email,
-        }
-        setUserInfo(userInfo)
-        handleLink(path.cafesList)
-      } else {
-        dialog.confirm(Dialog.apiErrorDialog(response.status, response.error))
-      }
+      setUserInfo(userInfo)
+      handleLink(path.cafesList)
     } else {
-      dialog.confirm(Dialog.errorDialog('エラーを修正してください。'))
+      dialog.confirm(Dialog.apiErrorDialog(response.status, response.error))
     }
   }
 

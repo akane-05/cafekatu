@@ -4,6 +4,7 @@ import { styled } from '@mui/system'
 const CustomPaper = styled(Paper)(() => ({
   elevation: 2,
   margin: 'auto',
+  margintop: 10,
   maxWidth: 800,
   backgroundColor: '#f6f1f3',
   padding: 8,

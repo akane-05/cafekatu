@@ -130,7 +130,7 @@ export default function Header() {
   }))
 
   return (
-    <AppBar position="static" style={{ backgroundColor: '#CC74AB' }}>
+    <AppBar style={{ backgroundColor: '#CC74AB' }} position="fixed">
       <Toolbar>
         {router.pathname == path.login || router.pathname == path.register ? (
           <Box sx={{ m: 0 }}>

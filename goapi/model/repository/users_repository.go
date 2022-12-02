@@ -123,6 +123,12 @@ func (tr *usersRepository) DeleteUser(user *entity.Users) (err error) {
 			return err
 		}
 
+		//お気に入り削除
+		if err = tx.Where("user_id= ?", user.Id).Delete(&entity.Favorites{}).Error; err != nil {
+			// エラーを返した場合はロールバックされる
+			return err
+		}
+
 		if err = tx.Delete(&user).Error; err != nil {
 			return err
 		}

@@ -48,7 +48,10 @@ export default function LoginForm() {
     password: yup
       .string()
       .required('必須項目です')
-      .matches(/^([a-zA-Z0-9]{8})$/, '半角英数字8桁で入力してください。'),
+      .matches(
+        /^([a-zA-Z0-9]{8,20})$/,
+        '半角英数字8文字以上20文字以下で入力してください。',
+      ),
   })
 
   const handleClickShowPassword = () => {

@@ -3,6 +3,7 @@ const requests = {
   register: '/register',
   login: '/login',
   cafes: '/cafes',
+  users: '/users',
   reviews: '/reviews',
   usersFavorites: '/users/favorites',
 }
@@ -16,6 +17,7 @@ const path = {
   mypage: '/users/mypage',
   favorites: '/users/favorites',
   pastPosts: '/users/pastPosts',
+  withdrawal: '/users/withdrawal',
 }
 
 const strage = {
