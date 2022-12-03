@@ -29,6 +29,8 @@ services:
       TZ: "UTC"
     ports:
       - "127.0.0.1:3307:3306"
+    healthcheck:
+      test: mysqladmin ping -h 127.0.0.1 -uroot -p$$MYSQL_ROOT_PASSWORD
   go-api-server:
     image: go-api-server
     container_name: go-api-server
@@ -39,7 +41,8 @@ services:
     ports:
       - "127.0.0.1:8080:8080"
     depends_on:
-      - cafekatu_db
+      cafekatu_db:
+        condition: service_healthy
   # test_db:
   #   image: test_db
   #   container_name: test_db
