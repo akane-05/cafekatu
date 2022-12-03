@@ -33,7 +33,7 @@ type Props = {
 //   isFavorite: boolean
 // }
 
-export default function cafeInfo(props: Props) {
+export default function CafeInfoCard(props: Props) {
   const cafeInfo = props.cafeInfo
   const setHaveToken = useSetRecoilState(haveTokenState)
 

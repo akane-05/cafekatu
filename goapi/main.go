@@ -82,6 +82,7 @@ func GetRouter() *gin.Engine {
 
 		group.GET("/users", usersC.GetUser)
 		group.GET("/users/favorites", usersC.GetUserFavorites)
+		group.GET("/users/pastPosts", usersC.GetUserPastPosts)
 		group.PATCH("/users", usersC.PatchUser)
 		group.DELETE("/users", usersC.DeleteUser)
 

@@ -2,7 +2,7 @@
 // import Router from 'next/router'
 import { Button, Grid, Typography, Link } from '@mui/material'
 import React, { useState, useEffect } from 'react'
-import CafeInfo from '@/components/elements/CafeInfo'
+import CafeInfoCard from '@/components/elements/CafeInfoCard'
 import ReviewCard from '@/components/elements/ReviewCard'
 import CustomPaper, { LinkPaper } from '@/components/layouts/CustomPaper'
 import { useCafe } from '@/features/cafes/api/useCafe'
@@ -103,7 +103,7 @@ export default function CafeDetail() {
       </LinkPaper>
 
       <CustomPaper>
-        <CafeInfo cafeInfo={response.data.cafe}></CafeInfo>
+        <CafeInfoCard cafeInfo={response.data.cafe}></CafeInfoCard>
       </CustomPaper>
 
       <ReviewsList id={router.query.id ? router.query.id : null}></ReviewsList>

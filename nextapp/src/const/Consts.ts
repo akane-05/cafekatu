@@ -14,6 +14,7 @@ const path = {
   register: '/users/registerForm',
   cafesList: '/cafes/cafesList',
   cafeDatail: '/cafes/cafeDetail',
+  cafeRegister: '/cafes/cafeRegister',
   mypage: '/users/mypage',
   favorites: '/users/favorites',
   pastPosts: '/users/pastPosts',

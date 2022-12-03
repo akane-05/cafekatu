@@ -14,7 +14,12 @@ import (
 type UsersRepository interface {
 	GetUser(id *int) (user entity.Users, err error)
 	GetUserFavorites(query *UserQuery) (cafeInfos []CafeInfo, err error)
-	GetCafesTotal(query *UserQuery) (cafesTotal int64, err error)
+	GetUserFavoTotal(query *UserQuery) (cafesTotal int64, err error)
+	GetUserPastPosts(query *UserQuery) (cafeInfos []CafeInfo, err error)
+	GetUserPostCafesTotal(query *UserQuery) (cafesTotal int64, err error)
+	//GetFavoirtes(userId *int, cafes *[]CafeInfo) (cafeIds []int, err error)
+	GetFavoirtes(userId *int) (cafeIds []int, err error)
+	GetReviews(userId *int) (reviews *[]entity.Reviews, err error)
 	UpdateUser(patchUserInfo PatchUserInfo) (err error)
 	DeleteUser(user *entity.Users) (err error)
 	GetUserReviews(id *int, query *UserQuery) (reviews []entity.Reviews, err error)
@@ -80,7 +85,7 @@ func (tr *usersRepository) GetUserFavorites(query *UserQuery) (cafeInfos []CafeI
 
 }
 
-func (tr *usersRepository) GetCafesTotal(query *UserQuery) (cafesTotal int64, err error) {
+func (tr *usersRepository) GetUserFavoTotal(query *UserQuery) (cafesTotal int64, err error) {
 
 	where := "cafes.approved = 1"
 	inquiry := fmt.Sprintf("join (select * from favorites where user_id = %v ) as userFavorites on userFavorites.cafe_id = cafes.id ", query.User_id)
@@ -89,6 +94,79 @@ func (tr *usersRepository) GetCafesTotal(query *UserQuery) (cafesTotal int64, er
 		return
 	}
 
+	return
+}
+
+func (tr *usersRepository) GetUserPastPosts(query *UserQuery) (cafeInfos []CafeInfo, err error) {
+	log.Println("GetUserPastPosts リポジトリ")
+
+	column := `
+	cafes.id,cafes.name,
+	cafes.zipcode,cafes.prefecture_id,prefectures.prefecture,cafes.city,cafes.street,
+	cafes.business_hours,
+	cafes.created_at,cafes.updated_at,
+	AVG(reviews.rating) as rating
+	`
+
+	inquiry := fmt.Sprintf("join (select distinct user_id,cafe_id from reviews where user_id = %v ) as userReviews on userReviews.cafe_id = cafes.id ", query.User_id)
+
+	join := `join prefectures on cafes.prefecture_id = prefectures.id left join reviews on cafes.id = reviews.cafe_id`
+
+	where := "cafes.approved = 1"
+
+	if err = Db.Debug().Table("cafes").Order("cafes.id").Where(where).Limit(query.PerPage).Offset(query.PerPage * (query.Page - 1)).Select(column).Joins(inquiry + join).Group("cafes.id").Find(&cafeInfos).Error; err != nil {
+		return
+	}
+
+	return
+
+}
+
+func (tr *usersRepository) GetUserPostCafesTotal(query *UserQuery) (cafesTotal int64, err error) {
+
+	where := "cafes.approved = 1"
+	join := fmt.Sprintf("join (select distinct user_id,cafe_id from reviews where user_id = %v ) as userReviews on userReviews.cafe_id = cafes.id ", query.User_id)
+
+	if err = Db.Debug().Model(&entity.Cafes{}).Joins(join).Where(where).Count(&cafesTotal).Error; err != nil {
+		return
+	}
+
+	return
+}
+
+// func (tr *usersRepository) GetFavoirtes(userId *int, cafes *[]CafeInfo) (cafeIds []int, err error) {
+func (tr *usersRepository) GetFavoirtes(userId *int) (cafeIds []int, err error) {
+
+	// subQuery1 := Db.Where("user_id = ?", userId).Model(&entity.Favorites{})
+
+	// var shCafes []CafeInfo = *cafes
+	// var conditions []string
+	// for _, cafe := range shCafes {
+	// 	condition := fmt.Sprintf("cafe_id = %v", cafe.Id)
+	// 	conditions = append(conditions, condition)
+	// }
+
+	// where := strings.Join(conditions, " OR ")
+
+	// if err = Db.Debug().Table("(?) as userFavo", subQuery1).Where(where).Select("cafe_id").Find(&cafeIds).Error; err != nil {
+	// 	return
+	// }
+
+	if err = Db.Debug().Table("favorites").Where("user_id = ?", userId).Select("cafe_id").Find(&cafeIds).Error; err != nil {
+		return
+	}
+
+	//名前付き変数でreturn
+	return
+}
+
+func (tr *usersRepository) GetReviews(userId *int) (reviews *[]entity.Reviews, err error) {
+
+	if err = Db.Debug().Where("user_id = ?", userId).Find(&reviews).Error; err != nil {
+		return
+	}
+
+	//名前付き変数でreturn
 	return
 }
 

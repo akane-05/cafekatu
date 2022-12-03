@@ -16,6 +16,7 @@ import (
 type UsersController interface {
 	GetUser(c *gin.Context)
 	GetUserFavorites(c *gin.Context)
+	GetUserPastPosts(c *gin.Context)
 	PatchUser(c *gin.Context)
 	DeleteUser(c *gin.Context)
 }
@@ -26,8 +27,19 @@ type usersController struct {
 }
 
 type UserInfo struct {
-	User    entity.Users     `json:"user"`
-	Reviews []entity.Reviews `json:"reviews"`
+	User entity.Users `json:"user"`
+	//Reviews []entity.Reviews `json:"reviews"`
+}
+
+type PastPost struct {
+	CafeInfo repository.CafeInfo `json:"cafeInfo"`
+	Reviews  []entity.Reviews    `json:"reviews"`
+}
+
+type PastPostRes struct {
+	PastPosts  []PastPost `json:"pastPosts"`
+	CafesTotal int        `json:"cafes_total"`
+	PagesTotal int        `json:"pages_total"`
 }
 
 // demoControllerのコンストラクタ
@@ -45,15 +57,15 @@ func (dc *usersController) GetUser(c *gin.Context) {
 		return
 	}
 
-	var query repository.UserQuery
+	// var query repository.UserQuery
 
-	if err := c.BindQuery(&query); err != nil {
-		log.Println("クエリパラメータに不正な値が含まれています。")
-		c.JSON(http.StatusBadRequest, gin.H{
-			"error": "クエリパラメータに不正な値が含まれています。",
-		})
-		return
-	}
+	// if err := c.BindQuery(&query); err != nil {
+	// 	log.Println("クエリパラメータに不正な値が含まれています。")
+	// 	c.JSON(http.StatusBadRequest, gin.H{
+	// 		"error": "クエリパラメータに不正な値が含まれています。",
+	// 	})
+	// 	return
+	// }
 
 	user, err := dc.dr.GetUser(&jwtInfo.Id)
 	if err != nil {
@@ -64,21 +76,22 @@ func (dc *usersController) GetUser(c *gin.Context) {
 		return
 	}
 
-	reviews, err := dc.dr.GetUserReviews(&jwtInfo.Id, &query)
-	if err != nil {
-		log.Println(err.Error())
-		c.JSON(http.StatusInternalServerError, gin.H{
-			"error": "サーバーでエラーが発生しました。",
-		})
-		return
-	}
+	// reviews, err := dc.dr.GetUserReviews(&jwtInfo.Id, &query)
+	// if err != nil {
+	// 	log.Println(err.Error())
+	// 	c.JSON(http.StatusInternalServerError, gin.H{
+	// 		"error": "サーバーでエラーが発生しました。",
+	// 	})
+	// 	return
+	// }
 
-	userInfo := UserInfo{user, reviews}
+	//userInfo := UserInfo{user, reviews}
 
 	log.Println("フロントに返却")
 	c.JSON(http.StatusOK, gin.H{
 		"message": "ok",
-		"data":    userInfo,
+		// "data":    userInfo,
+		"data": user,
 	})
 
 	log.Println("フロントに返却")
@@ -152,7 +165,7 @@ func (dc *usersController) GetUserFavorites(c *gin.Context) {
 	}
 
 	//件数
-	cafesTotal, err := dc.dr.GetCafesTotal(&query)
+	cafesTotal, err := dc.dr.GetUserFavoTotal(&query)
 	if err != nil {
 		log.Println(err.Error())
 		c.JSON(http.StatusInternalServerError, gin.H{
@@ -184,6 +197,113 @@ func (dc *usersController) GetUserFavorites(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{
 		"message": "ok",
 		"data":    cafesResponse,
+	})
+
+}
+
+func (dc *usersController) GetUserPastPosts(c *gin.Context) {
+	log.Println("GetUserPastPosts")
+
+	jwtInfo, err := unit.GetJwtToken(c)
+	if err != nil {
+		log.Println(err)
+		c.JSON(http.StatusUnauthorized, gin.H{
+			"error": "ログイン情報を取得できませんでした。再度ログインしてください。",
+		})
+		return
+	}
+
+	var query repository.UserQuery
+
+	if err := c.BindQuery(&query); err != nil {
+		log.Println("クエリパラメータに不正な値が含まれています。")
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error": "クエリパラメータに不正な値が含まれています。",
+		})
+		return
+	}
+
+	query.User_id = jwtInfo.Id
+
+	//レビューを投稿したことがあるカフェ情報を取得
+	cafes, err := dc.dr.GetUserPastPosts(&query)
+	if err != nil {
+		log.Println(err.Error())
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"error": "サーバーでエラーが発生しました。",
+		})
+		return
+	}
+
+	log.Println(cafes)
+
+	//一件もなかったら終了
+	if len(cafes) == 0 {
+		pastPostRes := PastPostRes{nil, 0, 0}
+		c.JSON(http.StatusOK, gin.H{
+			"message": "ok",
+			"data":    pastPostRes,
+		})
+		return
+	}
+
+	//件数
+	cafesTotal, err := dc.dr.GetUserPostCafesTotal(&query)
+	if err != nil {
+		log.Println(err.Error())
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"error": "サーバーでエラーが発生しました。",
+		})
+		return
+	}
+
+	log.Println(cafesTotal)
+
+	//ページ数
+	pageTotals := cafesTotal/int64(query.PerPage) + 1
+
+	//取得したカフェのお気に入り情報を取得
+	// favoCafesId, err := dc.dr.GetFavoirtes(&jwtInfo.Id, &cafes)
+	favoCafesId, err := dc.dr.GetFavoirtes(&jwtInfo.Id)
+	if err != nil {
+
+		log.Println(err.Error())
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"error": "サーバーでエラーが発生しました。",
+		})
+		return
+	}
+
+	const baseNum = 10
+	for i, cafe := range cafes {
+		result := unit.Include(favoCafesId, cafe.Id)
+		cafes[i].IsFavorite = result
+		cafes[i].Rating = (math.Floor(cafe.Rating*baseNum) / baseNum)
+	}
+
+	//レビューを取得
+	reviews, err := dc.dr.GetReviews(&jwtInfo.Id)
+	if err != nil {
+		log.Println(err.Error())
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"error": "サーバーでエラーが発生しました。",
+		})
+		return
+	}
+
+	//レビューをカフェごとに分ける
+	var pastPosts []PastPost
+	for _, cafe := range cafes {
+		cafesReviews := unit.ExReviews(reviews, cafe.Id)
+		pastPost := PastPost{cafe, cafesReviews}
+		pastPosts = append(pastPosts, pastPost)
+	}
+
+	pastPostRes := PastPostRes{pastPosts, int(cafesTotal), int(pageTotals)}
+	log.Println("フロントに返却")
+	c.JSON(http.StatusOK, gin.H{
+		"message": "ok",
+		"data":    pastPostRes,
 	})
 
 }

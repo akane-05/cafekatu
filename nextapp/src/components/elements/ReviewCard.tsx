@@ -23,10 +23,6 @@ type Props = {
 
 export default function ReviewCard(props: Props) {
   const [value, setValue] = React.useState<number | null>(2)
-  // const handleLink = (path: string) => {
-  //   Router.push(path)
-  // }
-  //const mypage = props.Review ? true : false
   const review = props.review
 
   return (
@@ -49,9 +45,16 @@ export default function ReviewCard(props: Props) {
 
         <Grid item xs={12} sm={12}>
           <CardContent sx={{ alignSelf: 'stretch' }}>
-            <Typography component="div" variant="h6" sx={{ mb: 1 }}>
+            {review.nickname != '' ? (
+              <Typography component="div" variant="h6" sx={{ mb: 1 }}>
+                {review.nickname}
+              </Typography>
+            ) : (
+              <></>
+            )}
+            {/* <Typography component="div" variant="h6" sx={{ mb: 1 }}>
               {review.nickname}
-            </Typography>
+            </Typography> */}
 
             <Grid container>
               <Grid item xs={6} sm={3}>
@@ -90,7 +93,6 @@ export default function ReviewCard(props: Props) {
               justifyContent="flex-end"
               alignItems="flex-end"
             >
-              {props.mypage ? <Button variant="contained">削除</Button> : <></>}
             </Grid> */}
           </CardContent>
         </Grid>
