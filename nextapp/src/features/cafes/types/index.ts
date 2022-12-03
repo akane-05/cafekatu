@@ -1,14 +1,15 @@
 export type Cafe = {
-  id: number
+  id?: number
   name: string
+  zipcode: string
   prefecture_id: number
   city: string
   street: string
   business_hours: string
-  approved: number
-  deleted: number
-  created_at: string
-  updated_at: string
+  approved?: number
+  deleted?: number
+  created_at?: string
+  updated_at?: string
 }
 
 export type CafeInfo = {

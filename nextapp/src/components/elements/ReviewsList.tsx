@@ -38,10 +38,18 @@ import { postReview } from '@/features/reviews/api/postReview'
 import useSWR, { useSWRConfig } from 'swr'
 import * as yup from 'yup'
 import { validate } from '@/lib/validate'
+import { makeStyles } from '@mui/styles'
 
 type Props = {
   id: any
 }
+
+const useStyles = makeStyles((theme) => ({
+  menuPaper: {
+    mixHeight: 100,
+    maxHeight: 200,
+  },
+}))
 
 export default function ReviewsList(props: Props) {
   const router = useRouter()
@@ -50,6 +58,8 @@ export default function ReviewsList(props: Props) {
   const { response, isLoading, isError } = useReviews(page, perPage, props.id)
   const dialog = Dialog.useDialogContext()
   const [isCommentPost, setIsCommentPost] = React.useState<boolean>(false)
+
+  const classes = useStyles()
   const { mutate } = useSWRConfig()
 
   const { userInfo } = useUserInfo()
@@ -97,7 +107,7 @@ export default function ReviewsList(props: Props) {
       setValues({ ...values, [prop]: event.target.value })
     }
 
-  const handleSelect = (event: SelectChangeEvent<number>) => {
+  const handleSelect = (event: SelectChangeEvent<any>) => {
     const value = event.target.value as number
 
     setValues({ ...values, ['rating']: value })
@@ -227,7 +237,7 @@ export default function ReviewsList(props: Props) {
                     </Grid>
 
                     <Grid item xs={6}>
-                      <FormControl sx={{ m: 1, minWidth: 100 }}>
+                      <FormControl sx={{ m: 1, minWidth: 100 }} size="small">
                         <InputLabel>評価</InputLabel>
                         <Select
                           labelId="rating"
@@ -239,6 +249,7 @@ export default function ReviewsList(props: Props) {
                           inputProps={{
                             required: true,
                           }}
+                          MenuProps={{ classes: { paper: classes.menuPaper } }}
                         >
                           {ratingList
                             .sort((a, b) => (a > b ? -1 : 1))

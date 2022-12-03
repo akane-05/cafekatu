@@ -199,7 +199,7 @@ export default function Mypage() {
       </LinkPaper>
 
       <CustomPaper>
-        <Paper sx={{ p: 2, m: 1 }}>
+        <Paper sx={{ p: 2 }}>
           {!isEdit ? (
             <Grid
               container

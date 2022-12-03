@@ -17,7 +17,6 @@ import React, { useState, useRef } from 'react'
 import { RegisterInfo } from '@/features/register/types'
 import { registerUser } from '@/features/register/api/registerUser'
 import * as Dialog from '@/context/MessageDialog'
-
 import CustomButton from '@/components/elements/CustomButton'
 import { path } from '@/const/Consts'
 import { useSetRecoilState, RecoilRoot } from 'recoil'
@@ -53,7 +52,7 @@ export default function RegisterForm() {
     nickname: yup
       .string()
       .required('必須項目です')
-      .matches(/^.{2,20}$/, '半角英数字8桁で入力してください。'),
+      .matches(/^.{2,20}$/, '2文字以上20文字以下で入力してください。'),
     email: yup
       .string()
       .required('必須項目です')

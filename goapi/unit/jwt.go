@@ -49,6 +49,7 @@ func CheckJwtToken(c *gin.Context) {
 		c.JSON(http.StatusUnauthorized, gin.H{
 			"error": "ログイン情報を取得できませんでした。再度ログインしてください。",
 		})
+		c.Abort()
 		return
 	}
 	log.Println("ミドルウェア ヘッダーにトークンが設定されていることを確認")
@@ -58,6 +59,7 @@ func CheckJwtToken(c *gin.Context) {
 		c.JSON(http.StatusUnauthorized, gin.H{
 			"error": "ログイン情報を取得できませんでした。再度ログインしてください。",
 		})
+		c.Abort()
 		return
 	}
 	log.Println("ミドルウェア トークンを取得")
@@ -67,6 +69,7 @@ func CheckJwtToken(c *gin.Context) {
 		c.JSON(http.StatusUnauthorized, gin.H{
 			"error": "ログイン情報を取得できませんでした。再度ログインしてください。",
 		})
+		c.Abort()
 		return
 	}
 	log.Println("ミドルウェア トークンの情報を取得が完了")

@@ -205,7 +205,7 @@ func (dc *cafesController) PostCafe(c *gin.Context) {
 
 	log.Println("登録完了　フロントに返却")
 	c.JSON(http.StatusOK, gin.H{
-		"message": "登録処理が完了しました。管理人が確認するまでお待ちください。",
+		"message": "店舗情報を登録しました。管理人が確認後、店舗情報が反映されます。",
 	})
 
 }

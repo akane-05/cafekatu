@@ -6,6 +6,7 @@ const requests = {
   users: '/users',
   reviews: '/reviews',
   usersFavorites: '/users/favorites',
+  prefectures: '/prefectures',
 }
 
 const path = {
