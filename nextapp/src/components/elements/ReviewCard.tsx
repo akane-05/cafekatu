@@ -12,18 +12,46 @@ import {
   Typography,
   CardActions,
   Hidden,
+  Link,
   Rating,
 } from '@mui/material'
 import React from 'react'
 import { ReviewInfo } from '@/features/reviews/types/index'
+import * as Dialog from '@/context/MessageDialog'
+import { deleteReview } from '@/features/reviews/api/deleteReview'
+import { haveTokenState } from '@/globalStates/haveToken'
+import { useSetRecoilState, RecoilRoot } from 'recoil'
 
 type Props = {
   review: ReviewInfo
+  pastPost?: boolean
 }
 
 export default function ReviewCard(props: Props) {
-  const [value, setValue] = React.useState<number | null>(2)
+  const setHaveToken = useSetRecoilState(haveTokenState)
+  const dialog = Dialog.useDialogContext()
   const review = props.review
+  const pastPost = props.pastPost
+
+  const handleDialog = async (id: number) => {
+    await dialog
+      .confirm(Dialog.confirmDialog('選択した投稿を削除しますか？'))
+      .then(() => {
+        handleDeleteReview(id)
+      })
+  }
+
+  const handleDeleteReview = async (id: number) => {
+    const res = await deleteReview(id)
+    if (res.status == 200) {
+      dialog.confirm(Dialog.apiOKDialog(res.message))
+    } else {
+      if (res.status == 401) {
+        setHaveToken(false)
+      }
+      dialog.confirm(Dialog.apiErrorDialog(res.status, res.error))
+    }
+  }
 
   return (
     <Card sx={{ mt: 1, mb: 1 }}>
@@ -45,16 +73,13 @@ export default function ReviewCard(props: Props) {
 
         <Grid item xs={12} sm={12}>
           <CardContent sx={{ alignSelf: 'stretch' }}>
-            {review.nickname != '' ? (
+            {pastPost ? (
+              <></>
+            ) : (
               <Typography component="div" variant="h6" sx={{ mb: 1 }}>
                 {review.nickname}
               </Typography>
-            ) : (
-              <></>
             )}
-            {/* <Typography component="div" variant="h6" sx={{ mb: 1 }}>
-              {review.nickname}
-            </Typography> */}
 
             <Grid container>
               <Grid item xs={6} sm={3}>
@@ -77,23 +102,41 @@ export default function ReviewCard(props: Props) {
               <Grid item xs={0} sm={6}>
                 <Hidden></Hidden>
               </Grid>
-            </Grid>
 
-            <Typography
-              variant="subtitle1"
-              color="text.secondary"
-              component="div"
-              sx={{ mb: 1 }}
-            >
-              {review.comment}
-            </Typography>
-            {/* <Grid
-              container
-              direction="row"
-              justifyContent="flex-end"
-              alignItems="flex-end"
-            >
-            </Grid> */}
+              <Grid item xs={12}>
+                <Typography
+                  variant="subtitle1"
+                  color="text.secondary"
+                  component="div"
+                  sx={{ mb: 1 }}
+                >
+                  {review.comment}
+                </Typography>
+              </Grid>
+
+              <Grid item xs={12}>
+                {pastPost ? (
+                  <>
+                    <Grid
+                      container
+                      direction="row"
+                      justifyContent="flex-end"
+                      alignItems="center"
+                    >
+                      <Link
+                        component="button"
+                        variant="body1"
+                        onClick={() => handleDialog(review.id ? review.id : 0)}
+                      >
+                        削除
+                      </Link>
+                    </Grid>
+                  </>
+                ) : (
+                  <></>
+                )}
+              </Grid>
+            </Grid>
           </CardContent>
         </Grid>
       </Grid>

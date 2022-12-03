@@ -29,6 +29,7 @@ export default function withdrawal() {
       handleLink(path.top)
     } else {
       dialog.confirm(Dialog.apiErrorDialog(response.status, response.error))
+      setHaveToken(false)
     }
   }
 

@@ -14,7 +14,7 @@ export default function PastPostPaper(props: Props) {
     <CustomPaper>
       <CafeCard cafeInfo={props.pastPost.cafeInfo}></CafeCard>
       {props.pastPost.reviews.map((review: Review) => {
-        return <ReviewCard key={review.id} review={review} /> //keyを指定
+        return <ReviewCard key={review.id} review={review} pastPost={true} /> //keyを指定
       })}
     </CustomPaper>
   )

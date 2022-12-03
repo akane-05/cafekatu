@@ -48,6 +48,7 @@ export default function CafeCard(props: Props) {
     } else {
       res = await deleteFavorite(cafeInfo.id)
     }
+
     if (res.status == 200) {
       setIsFavorite(!isFavorite)
     } else {

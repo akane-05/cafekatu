@@ -205,6 +205,6 @@ func (dc *reviewsController) DeleteReview(c *gin.Context) {
 
 	log.Println("削除完了　フロントに返却")
 	c.JSON(http.StatusOK, gin.H{
-		"message": "お気に入りから削除しました。",
+		"message": "レビューを削除しました。",
 	})
 }
