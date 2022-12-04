@@ -13,86 +13,118 @@ import {
   OutlinedInput,
   Hidden,
   FormHelperText,
+  Link,
+  Input,
 } from '@mui/material'
-import React, { useState, useRef } from 'react'
-import Comment from '@/components/elements/Comment'
-import CustomPaper from '@/components/layouts/CustomPaper'
+import React, { useState, useRef, useEffect } from 'react'
+import Review from '@/components/elements/ReviewCard'
+import CustomPaper, { LinkPaper } from '@/components/layouts/CustomPaper'
 import Visibility from '@mui/icons-material/Visibility'
 import VisibilityOff from '@mui/icons-material/VisibilityOff'
-import { validPattern } from '@/const/Consts'
+import { path, strage, requests } from '@/const/Consts'
+import { useRouter } from 'next/router'
+import { useUserInfo } from '@/hooks/useUserInfo'
+import * as yup from 'yup'
+import { ThemeProvider } from '@mui/material/styles'
+import theme from '@/styles/theme'
+import { useUser } from '@/features/users/api/useUser'
+import { updateUser } from '@/features/users/api/updateUser'
+import { UpdateInfo } from '@/features/users/types'
+import { useSetRecoilState, RecoilRoot } from 'recoil'
+import { haveTokenState } from '@/globalStates/haveToken'
+import { validate } from '@/lib/validate'
+import * as Dialog from '@/context/MessageDialog'
+import { userInfoState, UserInfo } from '@/globalStates/userInfo'
 
-type Props = {
-  num: number
-}
+export default function Mypage() {
+  const router = useRouter()
+  const setHaveToken = useSetRecoilState(haveTokenState)
+  const dialog = Dialog.useDialogContext()
+  const { response, isLoading, isError } = useUser()
+  const setUserInfo = useSetRecoilState(userInfoState)
 
-type Current = {
-  nickname: string
-  email: string
-}
-
-type State = {
-  isEdit: boolean
-  showPassword: boolean
-  nickname: string
-  email: string
-  password: string
-  newPassword: string
-  newPasswordConfirm: string
-}
-
-type Error = {
-  nickname: boolean
-  email: boolean
-  password: boolean
-  newPassword: boolean
-  newPasswordConfirm: boolean
-}
-
-export default function Mypage(props: Props) {
-  const current: Current = {
-    nickname: '変更前のnick',
-    email: '変更前のemail',
-  }
-
-  const [values, setValues] = React.useState<State>({
-    isEdit: false,
-    showPassword: false,
+  const [values, setValues] = React.useState<UpdateInfo>({
     nickname: '',
     email: '',
     password: '',
-    newPassword: '',
-    newPasswordConfirm: '',
+    // newPassword: '',
+    // newPasswordConfirm: '',
   })
 
-  const [errors, setErrors] = React.useState<Error>({
-    nickname: false,
-    email: false,
-    password: false,
-    newPassword: false,
-    newPasswordConfirm: false,
-  })
+  const [errors, setErrors] = React.useState<any>({})
 
-  const nicknameRef = useRef<HTMLInputElement>(null)
-  const emailRef = useRef<HTMLInputElement>(null)
-  const passwordRef = useRef<HTMLInputElement>(null)
-  const newPasswordRef = useRef<HTMLInputElement>(null)
+  const [isEdit, setIsEdit] = React.useState<boolean>(false)
+  const [showPassword, setShowPassword] = React.useState<boolean>(false)
 
-  const handleIsEdit = () => {
-    setValues({
-      ...values,
-      isEdit: !values.isEdit,
-    })
+  // バリデーションルール
+  const validScheme = () => {
+    return yup.object().shape(
+      {
+        nickname: yup
+          .string()
+          .nullable()
+          .matches(/^.{2,20}$/, {
+            message: '2文字以上20文字以下で入力してください。',
+            excludeEmptyString: true,
+          })
+          .when('email', (email, scheme) => {
+            if (email) {
+              return scheme.nullable()
+            } else {
+              return scheme.required(
+                'nicknameまたはemailのどちらかは必須です。',
+              )
+            }
+          }),
+        email: yup
+          .string()
+          .email('正しいメールアドレスを入力してください。')
+          .when('nickname', (nickname, scheme) => {
+            if (nickname) {
+              return scheme.nullable()
+            } else {
+              return scheme.required(
+                'nicknameまたはemailのどちらかは必須です。',
+              )
+            }
+          }),
+        password: yup
+          .string()
+          .required('必須項目です')
+          .matches(
+            /^([a-zA-Z0-9]{8,20})$/,
+            '半角英数字8文字以上20文字以下で入力してください。',
+          ),
+      },
+      [['nickname', 'email']],
+    )
   }
 
-  const handleWithdrawal = () => {}
+  const scheme = validScheme()
+  // newPassword: yup
+  //   .string()
+  //   .matches(
+  //     /^([a-zA-Z0-9]{8,20})$/,
+  //     '半角英数字8文字以上20文字以下で入力してください。',
+  //   ),
+  // newPasswordConfirm: yup
+  //   .string()
+  //   .matches(
+  //     /^([a-zA-Z0-9]{8,20})$/,
+  //     '半角英数字8文字以上20文字以下で入力してください。',
+  //   )
+  //   .oneOf(
+  //     [yup.ref('newPassword'), null],
+  //     '確認用パスワードが一致していません',
+  //   ),
+  // })
 
-  const handleIsUpdate = () => {}
+  const handleLink = (path: string) => {
+    router.push(path)
+  }
 
   const handleClickShowPassword = () => {
-    setValues({
-      ...values,
-      showPassword: !values.showPassword,
-    })
+    setShowPassword(!showPassword)
   }
 
   const handleMouseDownPassword = (
@@ -101,96 +133,180 @@ export default function Mypage(props: Props) {
     event.preventDefault()
   }
 
+  const handleIsEdit = () => {
+    setIsEdit(!isEdit)
+  }
+
   const handleChange =
-    (prop: keyof State) => (event: React.ChangeEvent<HTMLInputElement>) => {
-      let ref = null
-      if (prop == 'newPassword') {
-        ref = newPasswordRef.current
-        setErrors({
-          ...errors,
-          newPassword: !ref?.validity.valid,
-          newPasswordConfirm: event.target.value != values.newPasswordConfirm,
-        })
-      } else if (prop == 'newPasswordConfirm') {
-        setErrors({
-          ...errors,
-          newPasswordConfirm: values.newPassword != event.target.value,
-        })
-      } else {
-        switch (prop) {
-          case 'email':
-            ref = emailRef.current
-            break
-          case 'nickname':
-            ref = nicknameRef.current
-            break
-          case 'password':
-            ref = passwordRef.current
-            break
-        }
-        setErrors({ ...errors, [prop]: !ref?.validity.valid })
-      }
+    (prop: keyof UpdateInfo) =>
+    (event: React.ChangeEvent<HTMLInputElement>) => {
       setValues({ ...values, [prop]: event.target.value })
     }
 
-  return (
-    <>
-      <CustomPaper elevation={0} sx={{ backgroundColor: 'transparent' }}>
+  const handleDialog = async () => {
+    const errors = validate({ ...values }, scheme)
+
+    console.log(errors)
+    setErrors(errors)
+    let error = false
+    for (const key of Object.keys(errors)) {
+      if (errors[key]) {
+        error = true
+      }
+    }
+
+    if (!error) {
+      await dialog
+        .confirm(Dialog.confirmDialog('ユーザー情報を更新しますか？'))
+        .then(() => {
+          update()
+        })
+    } else {
+      dialog.confirm(Dialog.errorDialog('エラーを修正してください。'))
+    }
+  }
+
+  const update = async () => {
+    const response = await updateUser(values)
+    if (response.status == 200) {
+      dialog.confirm(Dialog.apiOKDialog(response.message))
+      setHaveToken(true)
+      const userInfo: UserInfo = {
+        id: response.id,
+        nickname: response.nickname,
+        email: response.email,
+      }
+      console.log(userInfo)
+      setUserInfo(userInfo)
+      handleLink(path.cafesList)
+    } else {
+      if (response.status == 401) {
+        setHaveToken(false)
+        handleLink(path.top)
+      }
+      dialog.confirm(Dialog.apiErrorDialog(response.status, response.error))
+    }
+  }
+
+  if (isLoading) {
+    return <span>読み込み中...</span>
+  }
+
+  if (isError && isError?.response?.status == 401) {
+    setHaveToken(false)
+
+    return (
+      <>
         <Grid
           container
-          direction="row"
-          justifyContent="space-between"
           alignItems="center"
+          justifyContent="center"
+          direction="column"
         >
+          <Grid item xs={12} p={2}>
+            <Typography variant="body1">
+              ログイン情報を取得できませんでした。再度ログインしてください。
+            </Typography>
+          </Grid>
           <Button
             variant="contained"
-            // onClick={() => handleLink('./search/searchResult')}
+            color="primary"
+            onClick={() => handleLink(path.top)}
           >
-            店舗一覧に戻る
-          </Button>
-          <Button
-            variant="contained"
-            // onClick={() => handleLink('./search/searchResult')}
-          >
-            お気に入り店舗
+            Top画面に戻る
           </Button>
         </Grid>
-      </CustomPaper>
+      </>
+    )
+  }
 
-      <CustomPaper sx={{ mt: 1 }}>
-        <Typography variant="h5" gutterBottom color="primary">
-          ユーザー情報
-        </Typography>
+  if (isError) {
+    return (
+      <>
+        <CustomPaper sx={{ mt: 2 }}>
+          <Grid
+            container
+            alignItems="center"
+            justifyContent="center"
+            direction="column"
+          >
+            <Grid item xs={12} p={2}>
+              <Typography variant="body1">
+                ユーザー情報を取得できませんでした。
+              </Typography>
+            </Grid>
+          </Grid>
+        </CustomPaper>
+      </>
+    )
+  }
 
-        {!values.isEdit ? (
-          <Paper sx={{ padding: 2 }}>
+  return (
+    <ThemeProvider theme={theme}>
+      <LinkPaper elevation={0}>
+        <Link
+          onClick={() => handleLink(path.cafesList)}
+          component="button"
+          variant="body1"
+        >
+          店舗一覧に戻る
+        </Link>
+      </LinkPaper>
+
+      <CustomPaper>
+        <Paper sx={{ p: 2 }}>
+          {!isEdit ? (
             <Grid
               container
-              spacing={2}
-              direction="column"
-              justifyContent="space-around"
-              alignItems="flex-start"
+              direction="row"
+              justifyContent="flex-start"
+              alignItems="center"
             >
               <Grid item xs={12}>
+                <Typography
+                  variant="h5"
+                  gutterBottom
+                  color="secondary"
+                  sx={{ ml: 1 }}
+                >
+                  ユーザー情報
+                </Typography>
+              </Grid>
+
+              <Grid item xs={12} md={6} sx={{ p: 1 }}>
                 <TextField
+                  InputLabelProps={{ shrink: true }}
+                  fullWidth
+                  variant="standard"
                   id="nickName"
                   label="nickName"
-                  defaultValue="ニックネーム"
+                  //defaultValue="ニックネーム"
+                  value={response.data?.nickname}
                   InputProps={{
                     readOnly: true,
                   }}
                 />
               </Grid>
-              <Grid item xs={12}>
+
+              <Grid item xs={0} md={6}></Grid>
+
+              <Grid item xs={12} md={6} sx={{ p: 1 }}>
                 <TextField
+                  fullWidth
+                  InputLabelProps={{ shrink: true }}
+                  variant="standard"
                   id="email"
                   label="email"
-                  defaultValue="email"
+                  //defaultValue="email"
+                  value={response.data?.email}
                   InputProps={{
                     readOnly: true,
                   }}
                 />
               </Grid>
+
+              <Grid item xs={0} md={6}></Grid>
+
               <Grid
                 container
                 direction="row"
@@ -201,180 +317,145 @@ export default function Mypage(props: Props) {
                 <Button
                   variant="contained"
                   onClick={handleIsEdit}
-                  sx={{ mr: 2 }}
+                  sx={{ mr: 1 }}
                 >
                   編集
                 </Button>
               </Grid>
             </Grid>
-          </Paper>
-        ) : (
-          <Paper sx={{ padding: 2 }}>
+          ) : (
             <Grid
               container
-              spacing={2}
               direction="row"
-              justifyContent="space-around"
-              alignItems="flex-start"
+              justifyContent="flex-start"
+              alignItems="center"
             >
-              <Grid item xs={12}>
-                <FormControl sx={{ m: 1, width: '25ch' }} variant="outlined">
-                  <InputLabel htmlFor="nickname">ニックネーム</InputLabel>
-                  <OutlinedInput
-                    id="nickname"
-                    type="text"
-                    defaultValue={current.nickname}
-                    value={values.nickname}
-                    onChange={handleChange('nickname')}
-                    label="nickname"
-                    error={errors.nickname}
-                    inputProps={{ pattern: validPattern.nickname }}
-                    inputRef={nicknameRef}
-                  />
-                </FormControl>
-                {errors.nickname && (
-                  <FormHelperText error id="nickname-error">
-                    2文字以上20文字以下で入力してください。
-                  </FormHelperText>
-                )}
-                {/*
-                 <TextField
-                  id="nickName"
-                  label="nickName"
-                  defaultValue="ニックネーム"
-                /> */}
+              <Grid item xs={12} md={6} sx={{ p: 1 }}>
+                <TextField
+                  fullWidth
+                  variant="standard"
+                  id="nickname"
+                  label="nickname"
+                  onChange={handleChange('nickname')}
+                  //defaultValue={response.data?.email}
+                  error={!!errors.nickname}
+                  //error={true}
+                  helperText={errors.nickname?.message}
+                  value={values.nickname}
+                />
               </Grid>
-              <Grid item xs={12}>
-                <FormControl sx={{ m: 1, width: '25ch' }} variant="outlined">
-                  <InputLabel htmlFor="email">email</InputLabel>
-                  <OutlinedInput
-                    id="email"
-                    type="text"
-                    defaultValue={current.email}
-                    value={values.email}
-                    onChange={handleChange('email')}
-                    label="email"
-                    error={errors.email}
-                    inputProps={{ pattern: validPattern.email }}
-                    inputRef={emailRef}
-                  />
-                  {errors.email && (
-                    <FormHelperText error id="email-error">
-                      メールアドレスを入力してください。
-                    </FormHelperText>
-                  )}
-                </FormControl>
+              <Grid item xs={0} md={6}></Grid>
 
-                {/* <TextField id="email" label="email" defaultValue="email" /> */}
+              <Grid item xs={12} md={6} sx={{ p: 1 }}>
+                <TextField
+                  fullWidth
+                  variant="standard"
+                  id="email"
+                  label="email"
+                  onChange={handleChange('email')}
+                  // defaultValue={response.data?.email}
+                  error={!!errors.email}
+                  helperText={errors.email?.message}
+                  value={values.email}
+                />
               </Grid>
+              <Grid item xs={0} md={6}></Grid>
 
-              <Grid item xs={12}>
-                <FormControl sx={{ width: '25ch' }} variant="outlined">
-                  <InputLabel htmlFor="password">現在のPassword</InputLabel>
-                  <OutlinedInput
-                    id="password"
-                    type={values.showPassword ? 'text' : 'password'}
-                    value={values.password}
-                    onChange={handleChange('password')}
-                    endAdornment={
-                      <InputAdornment position="end">
-                        <IconButton
-                          aria-label="toggle password visibility"
-                          onClick={handleClickShowPassword}
-                          onMouseDown={handleMouseDownPassword}
-                          edge="end"
-                        >
-                          {values.showPassword ? (
-                            <VisibilityOff />
-                          ) : (
-                            <Visibility />
-                          )}
-                        </IconButton>
-                      </InputAdornment>
-                    }
-                    label="現在のPassword"
-                    required={true}
-                    error={errors.password}
-                    inputProps={{ pattern: validPattern.password }}
-                    inputRef={passwordRef}
-                  />
-                </FormControl>
+              <Grid item xs={12} md={6} sx={{ p: 1 }}>
+                <InputLabel htmlFor="password" shrink={true}>
+                  現在のPassword
+                </InputLabel>
+                <Input
+                  fullWidth
+                  id="password"
+                  type={showPassword ? 'text' : 'password'}
+                  value={values.password}
+                  onChange={handleChange('password')}
+                  endAdornment={
+                    <InputAdornment position="end">
+                      <IconButton
+                        aria-label="toggle password visibility"
+                        onClick={handleClickShowPassword}
+                        onMouseDown={handleMouseDownPassword}
+                        edge="end"
+                      >
+                        {showPassword ? <VisibilityOff /> : <Visibility />}
+                      </IconButton>
+                    </InputAdornment>
+                  }
+                  required={true}
+                  error={!!errors.password}
+                />
+                <FormHelperText error id="password-error">
+                  {errors.password?.message}
+                </FormHelperText>
               </Grid>
+              <Grid item xs={0} md={6}></Grid>
 
-              <Grid item xs={12}>
-                <FormControl sx={{ width: '25ch' }} variant="outlined">
-                  <InputLabel htmlFor="newPassword">新しいPassword</InputLabel>
-                  <OutlinedInput
-                    id="newPassword"
-                    type={values.showPassword ? 'text' : 'password'}
-                    value={values.newPassword}
-                    onChange={handleChange('newPassword')}
-                    endAdornment={
-                      <InputAdornment position="end">
-                        <IconButton
-                          aria-label="toggle password visibility"
-                          onClick={handleClickShowPassword}
-                          onMouseDown={handleMouseDownPassword}
-                          edge="end"
-                        >
-                          {values.showPassword ? (
-                            <VisibilityOff />
-                          ) : (
-                            <Visibility />
-                          )}
-                        </IconButton>
-                      </InputAdornment>
-                    }
-                    label="新しいPassword"
-                    error={errors.newPassword}
-                    inputProps={{ pattern: validPattern.password }}
-                    inputRef={newPasswordRef}
-                  />
-                  {errors.newPassword && (
-                    <FormHelperText error id="newPassword-error">
-                      半角英数字8桁で入力してください。
-                    </FormHelperText>
-                  )}
-                </FormControl>
+              {/* <Grid item xs={12} md={6} sx={{ p: 1 }}>
+                <InputLabel htmlFor="newPassword" shrink={true}>
+                  新しいPassword
+                </InputLabel>
+                <Input
+                  fullWidth
+                  id="newPassword"
+                  type={showPassword ? 'text' : 'password'}
+                  value={values.newPassword}
+                  onChange={handleChange('newPassword')}
+                  endAdornment={
+                    <InputAdornment position="end">
+                      <IconButton
+                        aria-label="toggle newPassword visibility"
+                        onClick={handleClickShowPassword}
+                        onMouseDown={handleMouseDownPassword}
+                        edge="end"
+                      >
+                        {showPassword ? <VisibilityOff /> : <Visibility />}
+                      </IconButton>
+                    </InputAdornment>
+                  }
+                  error={errors.newPassword}
+                />
+                <FormHelperText error id="newPassword-error">
+                  {errors.newPassword ? valideteErr.newPassword?.message : ''}
+                </FormHelperText>
               </Grid>
 
-              <Grid item xs={12}>
-                <FormControl sx={{ width: '25ch' }} variant="outlined">
-                  <InputLabel htmlFor="newPasswordConfirm">
-                    Password確認
-                  </InputLabel>
-                  <OutlinedInput
-                    id="newPasswordConfirm"
-                    type={values.showPassword ? 'text' : 'password'}
-                    value={values.newPasswordConfirm}
-                    onChange={handleChange('newPasswordConfirm')}
-                    endAdornment={
-                      <InputAdornment position="end">
-                        <IconButton
-                          aria-label="toggle password visibility"
-                          onClick={handleClickShowPassword}
-                          onMouseDown={handleMouseDownPassword}
-                          edge="end"
-                        >
-                          {values.showPassword ? (
-                            <VisibilityOff />
-                          ) : (
-                            <Visibility />
-                          )}
-                        </IconButton>
-                      </InputAdornment>
-                    }
-                    label="Password確認"
-                    required={values.newPassword != '' ? true : false}
-                    error={errors.newPasswordConfirm}
-                  />
-                  {errors.newPasswordConfirm && (
-                    <FormHelperText error id="newPasswordConfirm-error">
-                      パスワードが一致しません。
-                    </FormHelperText>
-                  )}
-                </FormControl>
+              <Grid item xs={0} md={6}></Grid>
+
+              <Grid item xs={12} md={6} sx={{ p: 1 }}>
+                <InputLabel htmlFor="newPasswordConfirm" shrink={true}>
+                  Password確認
+                </InputLabel>
+                <Input
+                  fullWidth
+                  id="newPasswordConfirm"
+                  type={showPassword ? 'text' : 'password'}
+                  value={values.newPasswordConfirm}
+                  onChange={handleChange('newPasswordConfirm')}
+                  endAdornment={
+                    <InputAdornment position="end">
+                      <IconButton
+                        aria-label="toggle newPasswordConfirm visibility"
+                        onClick={handleClickShowPassword}
+                        onMouseDown={handleMouseDownPassword}
+                        edge="end"
+                      >
+                        {showPassword ? <VisibilityOff /> : <Visibility />}
+                      </IconButton>
+                    </InputAdornment>
+                  }
+                  required={values.newPassword != '' ? true : false}
+                  error={errors.newPasswordConfirm}
+                />
+                <FormHelperText error id="newPasswordConfirm-error">
+                  {errors.newPasswordConfirm
+                    ? valideteErr.newPasswordConfirm?.message
+                    : ''}
+                </FormHelperText>
               </Grid>
+
+              <Grid item xs={0} md={6}></Grid> */}
 
               <Grid
                 container
@@ -387,7 +468,7 @@ export default function Mypage(props: Props) {
                 <Grid item xs={12} sm={2}>
                   <Button
                     variant="contained"
-                    onClick={handleIsUpdate}
+                    onClick={handleIsEdit}
                     sx={{ mr: 2 }}
                   >
                     戻る
@@ -401,31 +482,21 @@ export default function Mypage(props: Props) {
                 <Grid item xs={12} sm={3}>
                   <Button
                     variant="contained"
-                    onClick={handleIsUpdate}
+                    onClick={handleDialog}
                     sx={{ mr: 2 }}
                   >
                     変更
                   </Button>
-                  <Button
-                    //   variant="contained"
-                    onClick={handleWithdrawal}
-                  >
+                  <Button onClick={() => handleLink(path.withdrawal)}>
                     退会
                   </Button>
                 </Grid>
               </Grid>
             </Grid>
-          </Paper>
-        )}
+          )}
+          {/* </Paper> */}
+        </Paper>
       </CustomPaper>
-
-      <CustomPaper sx={{ mt: 2 }}>
-        <Typography variant="h5" gutterBottom color="primary">
-          過去の口コミ
-        </Typography>
-
-        <Comment mypage={true}></Comment>
-      </CustomPaper>
-    </>
+    </ThemeProvider>
   )
 }

@@ -51,7 +51,6 @@ func (dc *loginController) Login(c *gin.Context) {
 		return
 	}
 
-	//emailが登録済みのものか検証
 	user, err := dc.dr.GetUser(&loginInfo.Email)
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
@@ -83,12 +82,12 @@ func (dc *loginController) Login(c *gin.Context) {
 	log.Println("tokenString:", tokenString)
 
 	c.JSON(http.StatusOK, gin.H{
-		"token":   tokenString,
-		"message": "ログインしました。",
+		"token":    tokenString,
+		"id":       user.Id,
+		"email":    user.Email,
+		"nickname": user.Nickname,
+		"message":  "ログインしました。",
 	})
-
-	log.Println("フロントに返却")
-	return
 
 }
 
@@ -144,10 +143,10 @@ func (dc *loginController) Register(c *gin.Context) {
 	log.Println("tokenString:", tokenString)
 
 	c.JSON(http.StatusOK, gin.H{
-		"token":   tokenString,
-		"message": "ユーザー登録が完了しました。",
+		"token":    tokenString,
+		"id":       id,
+		"email":    postUser.Email,
+		"nickname": postUser.Nickname,
+		"message":  "ユーザー登録が完了しました。",
 	})
-
-	log.Println("フロントに返却")
-	return
 }

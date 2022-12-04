@@ -11,95 +11,191 @@ import {
   Paper,
   TextField,
   FormHelperText,
+  Box,
+  Select,
+  MenuItem,
+  SelectChangeEvent,
+  Link,
 } from '@mui/material'
 import theme from '@/styles/theme'
 import { ThemeProvider } from '@mui/material/styles'
-import CustomPaper from '@/components/layouts/CustomPaper'
+import CustomPaper, { LinkPaper } from '@/components/layouts/CustomPaper'
+import { Cafe } from '@/features/cafes/types'
+import * as yup from 'yup'
+import { validate } from '@/lib/validate'
+import * as Dialog from '@/context/MessageDialog'
+import { useSetRecoilState, RecoilRoot } from 'recoil'
+import { haveTokenState } from '@/globalStates/haveToken'
+import { path } from '@/const/Consts'
+import { useRouter } from 'next/router'
+import { postCafe } from '@/features/cafes/api/postCafe'
+import { usePrefecture } from '@/features/unit/api/usePrefecture'
+import { makeStyles } from '@mui/styles'
+import { Prefectures } from '@/features/unit/types/index'
 
-type Props = {
-  num: number
-}
+const useStyles = makeStyles((theme) => ({
+  menuPaper: {
+    mixHeight: 100,
+    maxHeight: 200,
+  },
+}))
 
-type State = {
-  name: string
-  postCode: string
-  prefectureId: number
-  city: string
-  street: string
-  businessHours: string
-}
-
-type Error = {
-  name: boolean
-  postCode: boolean
-  prefectureId: boolean
-  city: boolean
-  street: boolean
-  businessHours: boolean
-}
-
-export default function CafeRegister(props: Props) {
-  const [values, setValues] = React.useState<State>({
+export default function CafeRegister() {
+  const { response, isLoading, isError } = usePrefecture()
+  const router = useRouter()
+  const dialog = Dialog.useDialogContext()
+  const classes = useStyles()
+  const setHaveToken = useSetRecoilState(haveTokenState)
+  const [values, setValues] = React.useState<Cafe>({
     name: '',
-    postCode: '',
-    prefectureId: 0,
+    zipcode: '',
+    prefecture_id: 1,
     city: '',
     street: '',
-    businessHours: '',
+    business_hours: '',
   })
 
-  const [errors, setErrors] = React.useState<Error>({
-    name: false,
-    postCode: false,
-    prefectureId: false,
-    city: false,
-    street: false,
-    businessHours: false,
+  const [errors, setErrors] = React.useState<any>({})
+
+  // バリデーションルール
+  const scheme = yup.object({
+    name: yup
+      .string()
+      .required('必須項目です')
+      .matches(/^.{1,250}$/, '250文字以下で入力してください。'),
+    zipcode: yup
+      .string()
+      .required('必須項目です')
+      .matches(/^([0-9]{7})$/, '半角数字7桁で入力してください。'),
+    city: yup
+      .string()
+      .required('必須項目です')
+      .matches(/^.{1,250}$/, '20文字以下で入力してください。'),
+    street: yup
+      .string()
+      .required('必須項目です')
+      .matches(/^.{1,250}$/, '250文字以下で入力してください。'),
+    business_hours: yup
+      .string()
+      .required('必須項目です')
+      .matches(/^.{1,250}$/, '250文字以下で入力してください。'),
   })
-
-  const nameRef = useRef<HTMLInputElement>(null)
-  const postCodeRef = useRef<HTMLInputElement>(null)
-  const prefectureRef = useRef<HTMLInputElement>(null)
-  const cityRef = useRef<HTMLInputElement>(null)
-  const streetRef = useRef<HTMLInputElement>(null)
-  const businessHoursRef = useRef<HTMLInputElement>(null)
-
-  const cafeVaildPattern = '^.{1,250}$'
-  const postCodeVaildPattern = '[0-9]{7}'
-  const cityVaildPattern = '^.{1,20}$'
-  const streetVaildPattern = '^.{1,250}$'
-  const businessHoursVaildPattern = '^.{1,250}$'
 
   const handleChange =
-    (prop: keyof State) => (event: React.ChangeEvent<HTMLInputElement>) => {
-      let ref = null
-      switch (prop) {
-        case 'name':
-          ref = nameRef.current
-          break
-        case 'postCode':
-          ref = postCodeRef.current
-          break
-        case 'prefectureId':
-          ref = prefectureRef.current
-          break
-        case 'city':
-          ref = cityRef.current
-          break
-        case 'street':
-          ref = streetRef.current
-          break
-        case 'businessHours':
-          ref = businessHoursRef.current
-          break
-      }
-      setErrors({ ...errors, [prop]: !ref?.validity.valid })
-
+    (prop: keyof Cafe) => (event: React.ChangeEvent<HTMLInputElement>) => {
       setValues({ ...values, [prop]: event.target.value })
     }
 
+  const handleLink = (path: string) => {
+    router.push(path)
+  }
+
+  const handleSelect = (event: SelectChangeEvent<any>) => {
+    const value = event.target.value as number
+
+    setValues({ ...values, ['prefecture_id']: value })
+  }
+
+  const handleDialog = async () => {
+    const errors = validate({ ...values }, scheme)
+    setErrors(errors)
+    let error = false
+    for (const key of Object.keys(errors)) {
+      if (errors[key]) {
+        error = true
+      }
+    }
+
+    if (!error) {
+      await dialog
+        .confirm(Dialog.confirmDialog('店舗登録しますか？'))
+        .then(() => {
+          register()
+        })
+    } else {
+      dialog.confirm(Dialog.errorDialog('エラーを修正してください。'))
+    }
+  }
+
+  const register = async () => {
+    const response = await postCafe(values)
+    if (response.status == 200) {
+      dialog.confirm(Dialog.apiOKDialog(response.message))
+      setHaveToken(true)
+      handleLink(path.cafesList)
+    } else {
+      if (response.status == 401) {
+        setHaveToken(false)
+        handleLink(path.top)
+      }
+      dialog.confirm(Dialog.apiErrorDialog(response.status, response.error))
+    }
+  }
+
+  if (isLoading) {
+    return <span>読み込み中...</span>
+  }
+  if (isError) {
+    return (
+      <>
+        <CustomPaper sx={{ mt: 2 }}>
+          <Grid
+            container
+            alignItems="center"
+            justifyContent="center"
+            direction="column"
+          >
+            <Grid item xs={12} p={2}>
+              <Typography variant="body1">
+                都道府県情報を取得できませんでした。
+              </Typography>
+            </Grid>
+          </Grid>
+        </CustomPaper>
+      </>
+    )
+  }
+
+  if (isError && isError?.response?.status == 401) {
+    setHaveToken(false)
+
+    return (
+      <>
+        <Grid
+          container
+          alignItems="center"
+          justifyContent="center"
+          direction="column"
+        >
+          <Grid item xs={12} p={2}>
+            <Typography variant="body1">
+              ログイン情報を取得できませんでした。再度ログインしてください。
+            </Typography>
+          </Grid>
+          <Button
+            variant="contained"
+            color="primary"
+            onClick={() => handleLink(path.top)}
+          >
+            Top画面に戻る
+          </Button>
+        </Grid>
+      </>
+    )
+  }
+
   return (
     <ThemeProvider theme={theme}>
+      <LinkPaper elevation={0}>
+        <Link
+          onClick={() => handleLink(path.cafesList)}
+          component="button"
+          variant="body1"
+        >
+          店舗一覧に戻る
+        </Link>
+      </LinkPaper>
+
       <CustomPaper>
         <Paper
           elevation={2}
@@ -115,7 +211,25 @@ export default function CafeRegister(props: Props) {
             //   direction="column"
           >
             <Grid item xs={12}>
-              <Typography variant="h5">店舗名</Typography>
+              <Typography
+                variant="h5"
+                gutterBottom
+                color="secondary"
+                sx={{ ml: 1 }}
+              >
+                店舗登録
+              </Typography>
+            </Grid>
+
+            <Grid item xs={12}>
+              <Typography
+                variant="h6"
+                gutterBottom
+                color="secondary"
+                sx={{ ml: 1 }}
+              >
+                ＜店名＞
+              </Typography>
             </Grid>
 
             <Grid item xs={12}>
@@ -125,7 +239,7 @@ export default function CafeRegister(props: Props) {
                 fullWidth={true}
                 variant="outlined"
               >
-                <InputLabel htmlFor="name">店舗名</InputLabel>
+                <InputLabel htmlFor="name">店名</InputLabel>
                 <OutlinedInput
                   id="name"
                   type="text"
@@ -133,66 +247,73 @@ export default function CafeRegister(props: Props) {
                   onChange={handleChange('name')}
                   label="name"
                   required={true}
-                  error={errors.name}
-                  inputProps={{ required: true, pattern: cafeVaildPattern }}
-                  inputRef={nameRef}
+                  error={!!errors.name}
                 />
-                {errors.name && (
-                  <FormHelperText error id="name-error">
-                    必須項目です。
-                  </FormHelperText>
-                )}
+                <FormHelperText error id="name-error">
+                  {errors.name?.message}
+                </FormHelperText>
               </FormControl>
-            </Grid>
-            <Grid item xs={12}>
-              <Typography variant="h5">住所</Typography>
             </Grid>
 
             <Grid item xs={12}>
-              <FormControl sx={{ m: 1, width: '25ch' }} variant="outlined">
+              <Box sx={{ m: 1 }}></Box>
+            </Grid>
+
+            <Grid item xs={12}>
+              <Typography
+                variant="h6"
+                gutterBottom
+                color="secondary"
+                sx={{ ml: 1 }}
+              >
+                ＜住所＞
+              </Typography>
+            </Grid>
+
+            <Grid item xs={12}>
+              <FormControl sx={{ width: '25ch' }} variant="outlined">
                 <InputLabel htmlFor="postCode">郵便番号</InputLabel>
                 <OutlinedInput
                   id="postCode"
                   type="text"
-                  value={values.postCode}
-                  onChange={handleChange('postCode')}
-                  label="postCode"
+                  value={values.zipcode}
+                  onChange={handleChange('zipcode')}
+                  label="zipcode"
                   required={true}
-                  error={errors.postCode}
-                  inputProps={{ required: true, pattern: postCodeVaildPattern }}
-                  inputRef={postCodeRef}
+                  error={!!errors.postCode}
                 />
-                {errors.postCode && (
-                  <FormHelperText error id="postCode-error">
-                    必須項目です。半角数字7桁で入力してください。
-                  </FormHelperText>
-                )}
+                <FormHelperText error id="zipcpde-error">
+                  {errors.zipcode?.message}
+                </FormHelperText>
               </FormControl>
             </Grid>
-            <Grid item xs={12} sm={6}>
-              <FormControl sx={{ m: 1, width: '25ch' }} variant="outlined">
-                <InputLabel htmlFor="prefectureId">都道府県</InputLabel>
-                <OutlinedInput
-                  id="prefectureId"
-                  type="text"
-                  value={values.prefectureId}
-                  onChange={handleChange('prefectureId')}
-                  label="prefectureId"
+
+            <Grid item xs={6}>
+              <FormControl sx={{ width: '25ch' }} variant="outlined">
+                <InputLabel htmlFor="prefecture_id">都道府県</InputLabel>
+                <Select
+                  labelId="prefecture_id"
+                  id="prefecture_id"
+                  label="都道府県"
+                  value={values.prefecture_id}
                   required={true}
-                  error={errors.prefectureId}
-                  inputProps={{ required: true }}
-                  inputRef={prefectureRef}
-                />
-                {errors.prefectureId && (
-                  <FormHelperText error id="prefectureId-error">
-                    必須項目です。
-                  </FormHelperText>
-                )}
+                  onChange={handleSelect}
+                  inputProps={{
+                    required: true,
+                  }}
+                  MenuProps={{ classes: { paper: classes.menuPaper } }}
+                >
+                  {response.data?.map((prefecture: Prefectures) => (
+                    <MenuItem key={prefecture.id} value={prefecture.id}>
+                      {prefecture.prefecture}
+                    </MenuItem>
+                  ))}
+                </Select>
               </FormControl>
             </Grid>
 
             <Grid item xs={12} sm={6}>
-              <FormControl sx={{ m: 1, width: '25ch' }} variant="outlined">
+              <FormControl sx={{ width: '25ch' }} variant="outlined">
                 <InputLabel htmlFor="city">市区町村</InputLabel>
                 <OutlinedInput
                   id="city"
@@ -201,15 +322,11 @@ export default function CafeRegister(props: Props) {
                   onChange={handleChange('city')}
                   label="city"
                   required={true}
-                  error={errors.city}
-                  inputProps={{ required: true, pattern: cityVaildPattern }}
-                  inputRef={cityRef}
+                  error={!!errors.city}
                 />
-                {errors.city && (
-                  <FormHelperText error id="city-error">
-                    必須項目です。
-                  </FormHelperText>
-                )}
+                <FormHelperText error id="city-error">
+                  {errors.city?.message}
+                </FormHelperText>
               </FormControl>
             </Grid>
 
@@ -227,43 +344,42 @@ export default function CafeRegister(props: Props) {
                   onChange={handleChange('street')}
                   label="street"
                   required={true}
-                  error={errors.street}
-                  inputProps={{ required: true, pattern: streetVaildPattern }}
-                  inputRef={streetRef}
+                  error={!!errors.street}
                 />
-                {errors.street && (
-                  <FormHelperText error id="street-error">
-                    必須項目です。
-                  </FormHelperText>
-                )}
+                <FormHelperText error id="street-error">
+                  {errors.street?.message}
+                </FormHelperText>
               </FormControl>
             </Grid>
 
             <Grid item xs={12}>
-              <Typography variant="h5">営業時間</Typography>
+              <Typography
+                variant="h6"
+                gutterBottom
+                color="secondary"
+                sx={{ ml: 1 }}
+              >
+                ＜営業時間＞
+              </Typography>
+            </Grid>
+            <Grid item xs={12}>
+              <TextField
+                id="business_hours"
+                label="営業時間"
+                multiline
+                fullWidth
+                rows={10}
+                //sx={{ mt: 1, mb: 1 }}
+                onChange={handleChange('business_hours')}
+                required={true}
+                error={!!errors.business_hours}
+                helperText={errors.business_hours?.message}
+              />
             </Grid>
 
-            <TextField
-              id="businessHours"
-              label="営業時間"
-              multiline
-              fullWidth
-              rows={10}
-              defaultValue="営業時間"
-              sx={{ mt: 1, mb: 1 }}
-              onChange={handleChange('businessHours')}
-              required={true}
-              error={errors.businessHours}
-              inputProps={{
-                required: true,
-                pattern: businessHoursVaildPattern,
-              }}
-              inputRef={businessHoursRef}
-              helperText={
-                errors.businessHours &&
-                '必須項目です。250字以内で入力してください。'
-              }
-            />
+            <Grid item xs={12}>
+              <Box sx={{ m: 1 }}></Box>
+            </Grid>
 
             <Grid
               container
@@ -271,7 +387,9 @@ export default function CafeRegister(props: Props) {
               justifyContent="flex-end"
               alignItems="flex-end"
             >
-              <Button variant="contained">投稿</Button>
+              <Button variant="contained" onClick={handleDialog}>
+                投稿
+              </Button>
             </Grid>
           </Grid>
         </Paper>

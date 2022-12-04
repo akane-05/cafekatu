@@ -1,7 +1,9 @@
 package repository
 
 import (
+	"fmt"
 	"log"
+	"strings"
 	"time"
 
 	"github.com/akane-05/cafekatu/goapi/model/entity"
@@ -13,11 +15,13 @@ import (
 // インターフェースで実装すべきメソッドを決める
 type CafesRepository interface {
 	GetCafes(cafeQuery *CafeQuery) (cafeInfos []CafeInfo, err error)
+	GetFavoirtes(userId *int, cafes *[]CafeInfo) (cafeIds []int, err error)
+	GetCafesTotal(cafeQuery *CafeQuery) (cafesTotal int64, err error)
 	GetCafe(id *int) (cafeInfo CafeInfo, err error)
+	GetFavoirte(userId *int, cafeId *int) (exist bool, err error)
 	InsertCafe(cafe *entity.Cafes) (err error)
 	InsertFavorite(favo *entity.Favorites) (err error)
 	DeleteFavorite(favo *entity.Favorites) (err error)
-	GetCafeReviews(id *int, query *CafeQuery) (reviews []entity.Reviews, err error)
 }
 
 // 構造体の宣言
@@ -41,6 +45,7 @@ type CafeInfo struct {
 	CreatedAt     time.Time `json:"created_at"`
 	UpdatedAt     time.Time `json:"updated_at"`
 	Rating        float64   `json:"rating"`
+	IsFavorite    bool      `json:"is_favorite"`
 }
 
 type CafeQuery struct {
@@ -53,25 +58,69 @@ type CafeQuery struct {
 func (tr *cafesRepository) GetCafes(cafeQuery *CafeQuery) (cafeInfos []CafeInfo, err error) {
 	log.Println("リポジトリ")
 
-	query := `
-	cafes.id,cafes.name,cafes.zipcode,cafes.prefecture_id,prefectures.prefecture,cafes.city,cafes.street,cafes.business_hours,
+	column := `
+	cafes.id,cafes.name,
+	cafes.zipcode,cafes.prefecture_id,prefectures.prefecture,cafes.city,cafes.street,
+	cafes.business_hours,
 	cafes.created_at,cafes.updated_at,
 	AVG(reviews.rating) as rating
 	`
 	join := `join prefectures on cafes.prefecture_id = prefectures.id left join reviews on cafes.id = reviews.cafe_id`
 
 	where := "cafes.approved = 1"
-	shWord := ""
 	if cafeQuery.SearchWord != "" {
-		shWord = "%" + cafeQuery.SearchWord + "%"
+		shWord := "%" + cafeQuery.SearchWord + "%"
 		where = where + " AND (cafes.name LIKE ? OR prefectures.prefecture LIKE ? OR cafes.city LIKE ? OR cafes.street LIKE ? )"
+		if err = Db.Debug().Table("cafes").Order("cafes.id").Where(where, shWord, shWord, shWord, shWord).Limit(cafeQuery.PerPage).Offset(cafeQuery.PerPage * (cafeQuery.Page - 1)).Select(column).Joins(join).Group("cafes.id").Find(&cafeInfos).Error; err != nil {
+			return
+		}
+	} else {
+		if err = Db.Debug().Table("cafes").Order("cafes.id").Where(where).Limit(cafeQuery.PerPage).Offset(cafeQuery.PerPage * (cafeQuery.Page - 1)).Select(column).Joins(join).Group("cafes.id").Find(&cafeInfos).Error; err != nil {
+			return
+		}
+	}
+	//名前付き変数でreturn
+	return
+}
+
+func (tr *cafesRepository) GetCafesTotal(cafeQuery *CafeQuery) (cafesTotal int64, err error) {
+
+	where := "cafes.approved = 1"
+	join := `join prefectures on cafes.prefecture_id = prefectures.id`
+
+	if cafeQuery.SearchWord != "" {
+		shWord := "%" + cafeQuery.SearchWord + "%"
+		where = where + " AND (cafes.name LIKE ? OR prefectures.prefecture LIKE ? OR cafes.city LIKE ? OR cafes.street LIKE ? )"
+		if err = Db.Debug().Table("cafes").Joins(join).Where(where, shWord, shWord, shWord, shWord).Count(&cafesTotal).Error; err != nil {
+			return
+		}
+	} else {
+		if err = Db.Debug().Model(&entity.Cafes{}).Where(where).Count(&cafesTotal).Error; err != nil {
+			return
+		}
+
 	}
 
-	//名前付き変数
-	if err = Db.Debug().Table("cafes").Order("cafes.id").Where(where, shWord, shWord, shWord, shWord).Limit(cafeQuery.PerPage).Offset(cafeQuery.PerPage * (cafeQuery.Page - 1)).Select(query).Joins(join).Group("cafes.id").Find(&cafeInfos).Error; err != nil {
+	return
+}
+
+// ポインタレシーバ(*demoRepository)にメソッドを追加
+func (tr *cafesRepository) GetFavoirtes(userId *int, cafes *[]CafeInfo) (cafeIds []int, err error) {
+
+	subQuery1 := Db.Where("user_id = ?", userId).Model(&entity.Favorites{})
+
+	var shCafes []CafeInfo = *cafes
+	var conditions []string
+	for _, cafe := range shCafes {
+		condition := fmt.Sprintf("cafe_id = %v", cafe.Id)
+		conditions = append(conditions, condition)
+	}
+
+	where := strings.Join(conditions, " OR ")
+
+	if err = Db.Debug().Table("(?) as userFavo", subQuery1).Where(where).Select("cafe_id").Find(&cafeIds).Error; err != nil {
 		return
 	}
-
 	//名前付き変数でreturn
 	return
 }
@@ -91,6 +140,22 @@ func (tr *cafesRepository) GetCafe(id *int) (cafeInfo CafeInfo, err error) {
 		return
 	}
 
+	//名前付き変数でreturn
+	return
+}
+
+// ポインタレシーバ(*demoRepository)にメソッドを追加
+func (tr *cafesRepository) GetFavoirte(userId *int, cafeId *int) (exist bool, err error) {
+
+	exist = false
+	var count int64
+	if err = Db.Debug().Model(&entity.Favorites{}).Where("user_id = ? AND cafe_id = ?", userId, cafeId).Count(&count).Error; err != nil {
+		return
+	}
+
+	if count == 1 {
+		exist = true
+	}
 	//名前付き変数でreturn
 	return
 }
@@ -154,15 +219,4 @@ func (tr *cafesRepository) DeleteFavorite(favo *entity.Favorites) (err error) {
 	log.Println("トランザクションが正常に終了しました")
 	return
 
-}
-
-// ポインタレシーバ(*demoRepository)にメソッドを追加
-func (tr *cafesRepository) GetCafeReviews(id *int, query *CafeQuery) (reviews []entity.Reviews, err error) {
-	log.Println("リポジトリ GetCafesReviews")
-
-	if err = Db.Debug().Table("reviews").Where("cafe_id = ?", id).Limit(query.PerPage).Offset(query.PerPage * (query.Page - 1)).Find(&reviews).Error; err != nil {
-		return
-	}
-	//名前付き変数でreturn
-	return
 }

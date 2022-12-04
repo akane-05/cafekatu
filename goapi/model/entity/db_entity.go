@@ -17,10 +17,10 @@ type Cafes struct {
 }
 
 type Users struct {
-	Id             int       `json:"id" gorm:"column:id"`
-	Email          string    `json:"email" binding:"required"`
+	Id             int       `json:"id"`
+	Email          string    `json:"email"`
 	PasswordDigest string    `json:"password_digest" `
-	Nickname       string    `json:"nickname" binding:"required"`
+	Nickname       string    `json:"nickname"`
 	CreatedAt      time.Time `json:"created_at"`
 	UpdatedAt      time.Time `json:"updated_at"`
 }
@@ -30,7 +30,7 @@ type Reviews struct {
 	User_id   int       `json:"user_id"`
 	Cafe_id   int       `json:"cafe_id" binding:"required"`
 	Comment   string    `json:"comment" binding:"required"`
-	Rating    float64   `json:"rating" binding:"required"`
+	Rating    float64   `json:"rating"`
 	CreatedAt time.Time `json:"created_at"`
 	UpdatedAt time.Time `json:"updated_at"`
 }

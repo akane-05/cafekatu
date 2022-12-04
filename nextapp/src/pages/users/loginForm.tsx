@@ -11,45 +11,48 @@ import {
   IconButton,
   FormHelperText,
 } from '@mui/material'
-import theme from '@/styles/theme'
-import { ThemeProvider } from '@mui/material/styles'
 import Visibility from '@mui/icons-material/Visibility'
 import VisibilityOff from '@mui/icons-material/VisibilityOff'
+import theme from '@/styles/theme'
+import { ThemeProvider } from '@mui/material/styles'
 import React, { useState, useRef } from 'react'
-import { styled } from '@mui/system'
-import { truncate } from 'fs'
 import CustomButton from '@/components/elements/CustomButton'
-import { validPattern, path } from '@/const/Consts'
 import { LoginInfo } from '@/features/login/types'
+import { path } from '@/const/Consts'
 import { login } from '@/features/login/api/login'
 import * as Dialog from '@/context/MessageDialog'
-//import path from '@/const/Consts'
-//import useToken from '@/hooks/useToken'
+import { useSetRecoilState, RecoilRoot } from 'recoil'
+import { haveTokenState } from '@/globalStates/haveToken'
+import { userInfoState, UserInfo } from '@/globalStates/userInfo'
+import * as yup from 'yup'
+import { validate } from '@/lib/validate'
 
-import { signIn } from 'next-auth/react'
+export default function LoginForm() {
+  const setHaveToken = useSetRecoilState(haveTokenState)
+  const setUserInfo = useSetRecoilState(userInfoState)
 
-type Error = {
-  email: boolean
-  password: boolean
-  [key: string]: boolean
-}
-
-export default function RegisterForm() {
-  // const token = useToken()
   const [values, setValues] = React.useState<LoginInfo>({
     email: '',
     password: '',
   })
 
   const [showPassword, setShowPassword] = React.useState<boolean>(false)
+  const [errors, setErrors] = useState<any>({})
 
-  const [errors, setErrors] = React.useState<Error>({
-    email: false,
-    password: false,
+  // バリデーションルール
+  const scheme = yup.object({
+    email: yup
+      .string()
+      .required('必須項目です')
+      .email('正しいメールアドレスを入力してください。'),
+    password: yup
+      .string()
+      .required('必須項目です')
+      .matches(
+        /^([a-zA-Z0-9]{8,20})$/,
+        '半角英数字8文字以上20文字以下で入力してください。',
+      ),
   })
-
-  const emailRef = useRef<HTMLInputElement>(null)
-  const passwordRef = useRef<HTMLInputElement>(null)
 
   const handleClickShowPassword = () => {
     setShowPassword(!showPassword)
@@ -61,26 +64,19 @@ export default function RegisterForm() {
     event.preventDefault()
   }
 
+  const handleChange =
+    (prop: keyof LoginInfo) => (event: React.ChangeEvent<HTMLInputElement>) => {
+      setValues({ ...values, [prop]: event.target.value })
+    }
+
   const handleLink = (path: string) => {
     Router.push(path)
   }
 
   const dialog = Dialog.useDialogContext()
-
-  const handleChange =
-    (prop: keyof LoginInfo) => (event: React.ChangeEvent<HTMLInputElement>) => {
-      let ref = null
-      if (prop == 'email') {
-        ref = emailRef.current
-      } else if (prop == 'password') {
-        ref = passwordRef.current
-      }
-      setErrors({ ...errors, [prop]: !ref?.validity.valid })
-
-      setValues({ ...values, [prop]: event.target.value })
-    }
-
   const handleLogin = async () => {
+    const errors = validate({ ...values }, scheme)
+    setErrors(errors)
     let error = false
     for (const key of Object.keys(errors)) {
       if (errors[key]) {
@@ -91,12 +87,14 @@ export default function RegisterForm() {
     if (!error) {
       const response = await login(values)
       if (response.status == 200) {
-        // await dialog
-        //   .confirm(Dialog.apiOKDialog(response.message))
-        //   .then(() => {
-        //     handleLink(path.cafesList)
-        //   })
         dialog.confirm(Dialog.apiOKDialog(response.message))
+        setHaveToken(true)
+        const userInfo: UserInfo = {
+          id: response.id,
+          nickname: response.nickname,
+          email: response.email,
+        }
+        setUserInfo(userInfo)
         handleLink(path.cafesList)
       } else {
         dialog.confirm(Dialog.apiErrorDialog(response.status, response.error))
@@ -116,6 +114,12 @@ export default function RegisterForm() {
         direction="column"
       >
         <Grid item xs={12}>
+          <Typography variant="h2" color="primary">
+            Cafe活
+          </Typography>
+        </Grid>
+
+        <Grid item xs={12}>
           <FormControl sx={{ m: 1, width: '25ch' }} variant="outlined">
             <InputLabel htmlFor="email">email</InputLabel>
             <OutlinedInput
@@ -125,15 +129,11 @@ export default function RegisterForm() {
               onChange={handleChange('email')}
               label="email"
               required={true}
-              error={errors.email}
-              inputProps={{ pattern: validPattern.email }}
-              inputRef={emailRef}
+              error={!!errors.email}
             />
-            {errors.email && (
-              <FormHelperText error id="email-error">
-                メールアドレスを入力してください。
-              </FormHelperText>
-            )}
+            <FormHelperText error id="email-error">
+              {errors.email?.message}
+            </FormHelperText>
           </FormControl>
         </Grid>
 
@@ -159,15 +159,11 @@ export default function RegisterForm() {
               }
               label="password"
               required={true}
-              error={errors.password}
-              inputProps={{ pattern: validPattern.password }}
-              inputRef={passwordRef}
+              error={!!errors.password}
             />
-            {errors.password && (
-              <FormHelperText error id="password-error">
-                半角英数字8桁で入力してください。
-              </FormHelperText>
-            )}
+            <FormHelperText error id="password-error">
+              {errors.password?.message}
+            </FormHelperText>
           </FormControl>
         </Grid>
 
@@ -175,15 +171,15 @@ export default function RegisterForm() {
           <CustomButton variant="contained" onClick={() => handleLogin()}>
             ログイン
           </CustomButton>
-          {/*
+        </Grid>
+
+        <Grid item xs={12}>
           <CustomButton
             variant="contained"
-            onClick={() =>
-              signIn('google', { callbackUrl: 'http://localhost:3000/bar' })
-            }
+            onClick={() => handleLink(path.register)}
           >
-            ログイン
-          </CustomButton> */}
+            新規会員登録
+          </CustomButton>
         </Grid>
       </Grid>
     </ThemeProvider>

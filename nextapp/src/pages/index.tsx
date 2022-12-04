@@ -1,51 +1,55 @@
 import { NextPage } from 'next'
 import Router from 'next/router'
-import { Typography, Grid } from '@mui/material'
+import {
+  Typography,
+  Grid,
+  Button,
+  FormControl,
+  InputLabel,
+  OutlinedInput,
+  InputAdornment,
+  IconButton,
+  FormHelperText,
+} from '@mui/material'
+import Visibility from '@mui/icons-material/Visibility'
+import VisibilityOff from '@mui/icons-material/VisibilityOff'
 import theme from '../styles/theme'
 import { ThemeProvider } from '@mui/material/styles'
-import React, { useState, useRef } from 'react'
+import React, { useState, useRef, useEffect } from 'react'
+import { useRouter } from 'next/router'
 import CustomButton from '@/components/elements/CustomButton'
+import { LoginInfo } from '@/features/login/types'
+import { validPattern, path, strage } from '@/const/Consts'
+import * as Dialog from '@/context/MessageDialog'
+import { useHaveToken } from '@/hooks/useHaveToken'
 
 function Home() {
-  const handleLink = (path: string) => {
-    Router.push(path)
-  }
+  const router = useRouter()
+  const { haveToken, isAuthChecking } = useHaveToken()
 
-  return (
-    <ThemeProvider theme={theme}>
+  if (isAuthChecking) {
+    // return <div>ログイン情報を確認中…</div>
+    return (
       <Grid
         container
-        rowSpacing={1}
         alignItems="center"
         justifyContent="center"
         direction="column"
       >
         <Grid item xs={12}>
-          <Typography variant="h2" color="primary">
-            Cafe活
-          </Typography>
-        </Grid>
-
-        <Grid item xs={12}>
-          <CustomButton
-            variant="contained"
-            onClick={() => handleLink('./users/loginForm')}
-          >
-            ログイン
-          </CustomButton>
-        </Grid>
-
-        <Grid item xs={12}>
-          <CustomButton
-            variant="contained"
-            onClick={() => handleLink('./users/registerForm')}
-          >
-            新規会員登録
-          </CustomButton>
+          <Typography variant="body1">読み込み中...</Typography>
         </Grid>
       </Grid>
-    </ThemeProvider>
-  )
+    )
+  }
+
+  if (haveToken) {
+    router.push(path.cafesList)
+  } else {
+    router.push(path.login)
+  }
+
+  return <></>
 }
 
 export default Home

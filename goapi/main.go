@@ -52,7 +52,7 @@ func GetRouter() *gin.Engine {
 			"POST",
 			"GET",
 			"DELETE",
-			"PUT",
+			"PATCH",
 			"OPTIONS",
 		},
 		// 許可したいHTTPリクエストヘッダ
@@ -81,11 +81,14 @@ func GetRouter() *gin.Engine {
 		group.DELETE("/cafes/:id/favorite", cafesC.DeleteFavorite)
 
 		group.GET("/users", usersC.GetUser)
+		group.GET("/users/favorites", usersC.GetUserFavorites)
+		group.GET("/users/pastPosts", usersC.GetUserPastPosts)
 		group.PATCH("/users", usersC.PatchUser)
 		group.DELETE("/users", usersC.DeleteUser)
 
-		// group.GET("/reviews", reviewsC.GetUserReviews) //いらないかも
+		//group.GET("/reviews", reviewsC.GetUserReviews) //いらないかも
 		group.POST("/reviews", reviewsC.PostReview)
+		group.GET("/reviews/:id", reviewsC.GetCafesReviews)
 		group.DELETE("/reviews/:id", reviewsC.DeleteReview)
 
 	}

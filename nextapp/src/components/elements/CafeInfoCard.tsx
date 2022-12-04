@@ -13,35 +13,51 @@ import {
   CardActions,
   Hidden,
   IconButton,
+  Rating,
 } from '@mui/material'
 import React, { useState } from 'react'
 import FavoriteIcon from '@mui/icons-material/Favorite'
 import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder'
-
 import { CafeInfo } from '@/features/cafes/types'
+import * as Dialog from '@/context/MessageDialog'
+import { postFavorite } from '@/features/cafes/api/postFavorite'
+import { deleteFavorite } from '@/features/cafes/api/deleteFavorite'
+import { useSetRecoilState, RecoilRoot } from 'recoil'
+import { haveTokenState } from '@/globalStates/haveToken'
 
 type Props = {
   cafeInfo: CafeInfo
 }
 
-type State = {
-  isFavorite: boolean
-}
+// type State = {
+//   isFavorite: boolean
+// }
 
-export default function cafeInfo(props: Props) {
-  const [cafeInfo] = useState(props.cafeInfo)
+export default function CafeInfoCard(props: Props) {
+  const cafeInfo = props.cafeInfo
+  const setHaveToken = useSetRecoilState(haveTokenState)
 
-  console.log(cafeInfo)
+  const dialog = Dialog.useDialogContext()
 
-  const [values, setValues] = React.useState<State>({
-    isFavorite: false,
-  })
+  const [isFavorite, setIsFavorite] = React.useState<boolean>(
+    props.cafeInfo.is_favorite,
+  )
 
-  const handleClickFavorite = () => {
-    setValues({
-      ...values,
-      isFavorite: !values.isFavorite,
-    })
+  const handleClickFavorite = async () => {
+    let res
+    if (!isFavorite) {
+      res = await postFavorite(cafeInfo.id)
+    } else {
+      res = await deleteFavorite(cafeInfo.id)
+    }
+    if (res.status == 200) {
+      setIsFavorite(!isFavorite)
+    } else {
+      if (res.status == 401) {
+        setHaveToken(false)
+      }
+      dialog.confirm(Dialog.apiErrorDialog(res.status, res.error))
+    }
   }
 
   const handleMouseDownFavorite = (
@@ -85,7 +101,7 @@ export default function cafeInfo(props: Props) {
                     edge="end"
                     sx={{ mr: 1 }}
                   >
-                    {values.isFavorite ? (
+                    {isFavorite ? (
                       <FavoriteIcon color="primary" />
                     ) : (
                       <FavoriteBorderIcon color="primary" />
@@ -102,13 +118,12 @@ export default function cafeInfo(props: Props) {
 
             <Grid container>
               <Grid item xs={6} sm={3}>
-                <Typography
-                  variant="subtitle1"
-                  color="text.secondary"
-                  sx={{ mr: 3 }}
-                >
-                  ☆☆☆
-                </Typography>
+                <Rating
+                  name="star-rating"
+                  readOnly
+                  value={cafeInfo.rating}
+                  precision={0.1}
+                />
               </Grid>
               <Grid item xs={6} sm={3}>
                 <Typography
@@ -129,7 +144,7 @@ export default function cafeInfo(props: Props) {
               color="text.secondary"
               component="div"
             >
-              {cafeInfo.prefecture_id}
+              {cafeInfo.prefecture}
               {cafeInfo.city}
               {cafeInfo.street}
             </Typography>

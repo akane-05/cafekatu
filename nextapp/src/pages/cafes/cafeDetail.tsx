@@ -1,59 +1,112 @@
 // import { NextPage } from 'next'
 // import Router from 'next/router'
-import { Button, Paper } from '@mui/material'
+import { Button, Grid, Typography, Link } from '@mui/material'
 import React, { useState, useEffect } from 'react'
-import CafeInfo from '@/components/elements/CafeInfo'
-import Comment from '@/components/elements/Comment'
-import CommentPost from '@/components/elements/CommentPost'
-import CustomPaper from '@/components/layouts/CustomPaper'
-import { useCafes } from '@/features/cafes/api/getCafes'
+import CafeInfoCard from '@/components/elements/CafeInfoCard'
+import ReviewCard from '@/components/elements/ReviewCard'
+import CustomPaper, { LinkPaper } from '@/components/layouts/CustomPaper'
+import { useCafe } from '@/features/cafes/api/useCafe'
 import { useRouter } from 'next/router'
-
-type State = {
-  isCommentPost: boolean
-}
+import { path, strage, requests } from '@/const/Consts'
+import { useSetRecoilState, RecoilRoot } from 'recoil'
+import { haveTokenState } from '@/globalStates/haveToken'
+import ReviewsList from '@/components/elements/ReviewsList'
+import useSWR, { useSWRConfig } from 'swr'
 
 export default function CafeDetail() {
-  //   const [cafeInfo, setCafeInfo] = useState()
   const router = useRouter()
-  const id = router.query.id === undefined ? '' : router.query.id[0]
-  // console.log('CafeDetail' + id)
-  const cafeQuery = useCafe(id)
+  const { response, isLoading, isError } = useCafe(router.query.id)
 
-  // console.log('CafeDetail' + cafeQuery.data)
+  const setHaveToken = useSetRecoilState(haveTokenState)
 
-  const [values, setValues] = React.useState<State>({
-    isCommentPost: false,
-  })
-
-  const handleCommentPost = () => {
-    setValues({
-      ...values,
-      isCommentPost: !values.isCommentPost,
-    })
+  const handleLink = (path: string) => {
+    router.push(path)
   }
 
-  if (cafeQuery.isLoading) {
-    return <span>Loading...</span>
+  if (isLoading) {
+    return (
+      <Grid
+        container
+        alignItems="center"
+        justifyContent="center"
+        direction="column"
+      >
+        <Grid item xs={12}>
+          <Typography variant="body1">読み込み中...</Typography>
+        </Grid>
+      </Grid>
+    )
+  }
+
+  if (isError && isError?.response?.status == 401) {
+    setHaveToken(false)
+
+    return (
+      <>
+        <Grid
+          container
+          alignItems="center"
+          justifyContent="center"
+          direction="column"
+        >
+          <Grid item xs={12} p={2}>
+            <Typography variant="body1">
+              ログイン情報を取得できませんでした。再度ログインしてください。
+            </Typography>
+          </Grid>
+          <Button
+            variant="contained"
+            color="primary"
+            onClick={() => handleLink(path.top)}
+          >
+            Top画面に戻る
+          </Button>
+        </Grid>
+      </>
+    )
+  }
+
+  if (isError) {
+    return (
+      <>
+        <Grid
+          container
+          alignItems="center"
+          justifyContent="center"
+          direction="column"
+        >
+          <Grid item xs={12} p={2}>
+            <Typography variant="body1">エラーが発生しました</Typography>
+          </Grid>
+          <Button
+            variant="contained"
+            color="primary"
+            onClick={() => handleLink(path.top)}
+          >
+            Top画面に戻る
+          </Button>
+        </Grid>
+      </>
+    )
   }
 
   return (
     <>
-      <CustomPaper>
-        <Button variant="contained" onClick={() => router.back()}>
+      <LinkPaper elevation={0}>
+        <Link
+          onClick={() => handleLink(path.cafesList)}
+          component="button"
+          variant="body1"
+        >
           店舗一覧に戻る
-        </Button>
-        <CafeInfo cafeInfo={cafeQuery.data}></CafeInfo>
+        </Link>
+      </LinkPaper>
+
+      <CustomPaper>
+        <CafeInfoCard cafeInfo={response.data.cafe}></CafeInfoCard>
       </CustomPaper>
 
-      <CustomPaper sx={{ mt: 2 }}>
-        <Button variant="contained" onClick={handleCommentPost}>
-          口コミを投稿する
-        </Button>
-
-        {values.isCommentPost ? <CommentPost num={1}></CommentPost> : <></>}
-        <Comment mypage={true}></Comment>
-      </CustomPaper>
+      <ReviewsList id={router.query.id ? router.query.id : null}></ReviewsList>
     </>
   )
 }

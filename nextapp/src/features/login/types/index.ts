@@ -1,14 +1,14 @@
 export type LoginInfo = {
-    email?: string
-    password?: string
-  }
+  email?: string
+  password?: string
+}
 
-export type Response = {
-  status:number
-  message:string
-  token:string
+export type LoginRes = {
+  status: number
+  message: string
+  token: string
+  id: number
+  nickname: string
+  email: string
   error: string
-
-  id :number
-  email:string
-  }
+}

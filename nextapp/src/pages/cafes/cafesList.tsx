@@ -1,71 +1,182 @@
 // import { NextPage } from 'next'
 // import Router from 'next/router'
-import { Paper, Grid, Button } from '@mui/material'
+import { Paper, Grid, Button, Typography, Link } from '@mui/material'
 import React from 'react'
 import CafeCard from '@/components/elements/CafeCard'
-import CustomPaper from '@/components/layouts/CustomPaper'
+import CustomPaper, { LinkPaper } from '@/components/layouts/CustomPaper'
 import Router from 'next/router'
 import { CafeInfo } from '@/features/cafes/types'
 import { useRouter } from 'next/router'
 import { useState, useEffect } from 'react'
 //import { getCafes } from '@/features/cafes/api/getCafes'
-import { useCafes } from '@/features/cafes/api/getCafes'
+import { useCafes } from '@/features/cafes/api/useCafes'
 import * as Dialog from '@/context/MessageDialog'
-import { path } from '@/const/Consts'
-import { ContactMailOutlined } from '@mui/icons-material'
+import { path, strage } from '@/const/Consts'
+import PageButton from '@/components/elements/PageButton'
+import { Pagination } from '@mui/material'
+import { useSetRecoilState, RecoilRoot } from 'recoil'
+import { haveTokenState } from '@/globalStates/haveToken'
 
-// import { info } from 'console'
-
-export default function CafesList(search: string) {
-  const { response, isLoading, isError } = useCafes()
-
-  // const [cafes, setCafes] = useState<CafeInfo[]>([])
-  // const dialog = Dialog.useDialogContext()
-
-  // //初回レンダリングのみ実行
-  // useEffect(() => {
-  //   ;(async () => {
-  //     const response = await getCafes()
-  //     if (response.status == 200) {
-  //       setCafes(response.data)
-  //     } else {
-  //       await dialog
-  //         .confirm(Dialog.apiErrorDialog(response.status, response.error))
-  //         .then(() => {
-  //           handleLink(path.top)
-  //         })
-  //     }
-  //   })()
-  // }, [])
+export default function CafesList() {
+  const router = useRouter()
+  const [page, setPage] = React.useState(1)
+  const setHaveToken = useSetRecoilState(haveTokenState)
+  const [parPage, setparPage] = React.useState(10)
+  const { response, isLoading, isError } = useCafes(
+    page,
+    parPage,
+    router.query.searchWord,
+  )
 
   const handleLink = (path: string) => {
-    Router.push(path)
+    router.push(path)
   }
 
   if (isLoading) {
-    return <span>読み込み中...</span>
+    return (
+      <Grid
+        container
+        alignItems="center"
+        justifyContent="center"
+        direction="column"
+      >
+        <Grid item xs={12}>
+          <Typography variant="body1">読み込み中...</Typography>
+        </Grid>
+      </Grid>
+    )
+  }
+
+  if (isError && isError?.response?.status == 401) {
+    setHaveToken(false)
+
+    return (
+      <>
+        <Grid
+          container
+          alignItems="center"
+          justifyContent="center"
+          direction="column"
+        >
+          <Grid item xs={12} p={2}>
+            <Typography variant="body1">
+              ログイン情報を取得できませんでした。再度ログインしてください。
+            </Typography>
+          </Grid>
+          <Button
+            variant="contained"
+            color="primary"
+            onClick={() => handleLink(path.top)}
+          >
+            Top画面に戻る
+          </Button>
+        </Grid>
+      </>
+    )
   }
 
   if (isError) {
     return (
       <>
-        <span>エラーが発生しました</span>
-        <Button
-          variant="contained"
-          color="primary"
-          onClick={() => handleLink('/')}
+        <Grid
+          container
+          alignItems="center"
+          justifyContent="center"
+          direction="column"
         >
-          Top画面に戻る
-        </Button>
+          <Grid item xs={12} p={2}>
+            <Typography variant="body1">エラーが発生しました</Typography>
+          </Grid>
+          <Button
+            variant="contained"
+            color="primary"
+            onClick={() => handleLink(path.top)}
+          >
+            Top画面に戻る
+          </Button>
+        </Grid>
       </>
     )
   }
 
   return (
-    <CustomPaper>
-      {response.data?.map((cafeInfo: CafeInfo) => {
-        return <CafeCard key={cafeInfo.id} cafeInfo={cafeInfo} /> //keyを指定
-      })}
-    </CustomPaper>
+    <>
+      <LinkPaper elevation={0}>
+        <Grid
+          container
+          alignItems="center"
+          justifyContent="flex-end"
+          direction="row"
+        >
+          {/* <Button
+            variant="contained"
+            //onClick={() => setIsEdit(false)}
+            //s sx={{ mr: 2 }}
+          >
+            店舗登録
+          </Button> */}
+          <Link
+            onClick={() => handleLink(path.cafeRegister)}
+            component="button"
+            variant="body1"
+          >
+            店舗登録
+          </Link>
+        </Grid>
+      </LinkPaper>
+      <CustomPaper>
+        {response.data?.cafes_total != 0 ? (
+          <>
+            <Typography color="text.secondary">
+              {parPage * (page - 1) + 1}～
+              {parPage * (page - 1) + response.data?.cafes.length} 件を表示 ／
+              全{response.data?.cafes_total} 件
+            </Typography>
+            {response.data?.cafes.map((cafeInfo: CafeInfo) => {
+              return <CafeCard key={cafeInfo.id} cafeInfo={cafeInfo} /> //keyを指定
+            })}
+            <Grid
+              container
+              alignItems="center"
+              justifyContent="center"
+              direction="column"
+            >
+              <Grid item xs={12}>
+                <Pagination
+                  count={response.data?.pages_total}
+                  hideNextButton={
+                    page == response.data?.pages_total ? true : false
+                  }
+                  hidePrevButton={page == 1 ? true : false}
+                  defaultPage={1}
+                  siblingCount={3}
+                  color="primary" //ページネーションの色
+                  onChange={(e, page) => setPage(page)} //変更されたときに走る関数。第2引数にページ番号が入る
+                  page={page} //現在のページ番号
+                />
+              </Grid>
+            </Grid>
+          </>
+        ) : (
+          <Grid
+            container
+            alignItems="center"
+            justifyContent="center"
+            direction="column"
+          >
+            <Grid item xs={12}>
+              <Typography variant="body1">
+                条件に該当するお店は見つかりませんでした。
+              </Typography>
+            </Grid>
+            <Grid item xs={12}>
+              <Typography color="text.secondary" variant="body2">
+                検索条件を変更してください。
+              </Typography>
+            </Grid>
+          </Grid>
+        )}
+      </CustomPaper>
+    </>
   )
 }

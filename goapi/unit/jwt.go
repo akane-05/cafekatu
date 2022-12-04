@@ -42,30 +42,37 @@ func CreateToken(jwtInfo *JwtInfo) (tokenString string) {
 
 // Parse は jwt トークンから元になった認証情報を取り出す。
 func CheckJwtToken(c *gin.Context) {
+	log.Println("ミドルウェア トークン確認開始")
 
 	jwtToken, err := ExtractBearerToken(c.GetHeader("Authorization"))
 	if err != nil {
-		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{
-			"message": err.Error(),
+		c.JSON(http.StatusUnauthorized, gin.H{
+			"error": "ログイン情報を取得できませんでした。再度ログインしてください。",
 		})
+		c.Abort()
 		return
 	}
+	log.Println("ミドルウェア ヘッダーにトークンが設定されていることを確認")
 
 	token, err := ParseToken(jwtToken)
 	if err != nil {
-		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{
-			"message": err.Error(),
+		c.JSON(http.StatusUnauthorized, gin.H{
+			"error": "ログイン情報を取得できませんでした。再度ログインしてください。",
 		})
+		c.Abort()
 		return
 	}
+	log.Println("ミドルウェア トークンを取得")
 
 	_, OK := token.Claims.(jwt.MapClaims)
 	if !OK {
-		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{
-			"message": err.Error(),
+		c.JSON(http.StatusUnauthorized, gin.H{
+			"error": "ログイン情報を取得できませんでした。再度ログインしてください。",
 		})
+		c.Abort()
 		return
 	}
+	log.Println("ミドルウェア トークンの情報を取得が完了")
 
 }
 
@@ -113,16 +120,20 @@ func ExtractBearerToken(header string) (string, error) {
 }
 
 func ParseToken(jwtToken string) (*jwt.Token, error) {
+	log.Println(1)
 
 	secret := os.Getenv("SECRET_KEY")
 
+	log.Println(2)
 	// jwtの検証
 	token, err := jwt.Parse(jwtToken, func(token *jwt.Token) (interface{}, error) {
+		log.Println(3)
 		return []byte(secret), nil // CreateTokenにて指定した文字列を使います
 	})
 	if err != nil {
+		log.Println(4)
 		return token, err
 	}
-
+	log.Println(5)
 	return token, nil
 }
