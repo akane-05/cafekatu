@@ -11,7 +11,7 @@ import { createContext, useContext } from 'react'
 
 export type DialogOptions = {
   title: string
-  message: string
+  message?: string
   open: boolean
   choice?: boolean
 }
@@ -25,8 +25,8 @@ const DEFAULT_OPTIONS: DialogOptions = {
 }
 
 export const apiErrorDialog = (
-  status: number,
-  message: string,
+  status?: number,
+  message?: string,
 ): DialogOptions => {
   const dialogOptions: DialogOptions = {
     title: 'エラーコード:' + status,
@@ -36,7 +36,7 @@ export const apiErrorDialog = (
   return dialogOptions
 }
 
-export const errorDialog = (message: string): DialogOptions => {
+export const errorDialog = (message?: string): DialogOptions => {
   const dialogOptions: DialogOptions = {
     title: 'エラー',
     message: message,
@@ -45,7 +45,7 @@ export const errorDialog = (message: string): DialogOptions => {
   return dialogOptions
 }
 
-export const apiOKDialog = (message: string): DialogOptions => {
+export const apiOKDialog = (message?: string): DialogOptions => {
   const dialogOptions: DialogOptions = {
     title: '成功',
     message: message,

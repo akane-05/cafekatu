@@ -7,6 +7,7 @@ import (
 	"github.com/akane-05/cafekatu/goapi/model/entity"
 	_ "github.com/go-sql-driver/mysql"
 	"gorm.io/gorm"
+	"gorm.io/gorm/clause"
 )
 
 // DIを用いたリポジトリの実装
@@ -20,7 +21,7 @@ type UsersRepository interface {
 	//GetFavoirtes(userId *int, cafes *[]CafeInfo) (cafeIds []int, err error)
 	GetFavoirtes(userId *int) (cafeIds []int, err error)
 	GetReviews(userId *int) (reviews *[]entity.Reviews, err error)
-	UpdateUser(patchUserInfo PatchUserInfo) (err error)
+	UpdateUser(updateInfo *UpdateInfo, id *int) (user entity.Users, err error)
 	DeleteUser(user *entity.Users) (err error)
 	GetUserReviews(id *int, query *UserQuery) (reviews []entity.Reviews, err error)
 }
@@ -34,26 +35,25 @@ func NewUsersRepository() UsersRepository {
 	return &usersRepository{}
 }
 
-type PatchUserInfo struct {
-	Id       int    `json:"id"`
-	Email    string `json:"email"`
-	Password string `json:"password"`
-	Nickname string `json:"nickname"`
-}
-
 type UserQuery struct {
 	PerPage int `form:"per_page" binding:"required"`
 	Page    int `form:"page" binding:"required"`
 	User_id int `form:"user_id" `
 }
 
+type UpdateInfo struct {
+	Email    string `json:"email"`
+	Password string `json:"password" binding:"required"`
+	Nickname string `json:"nickname"`
+}
+
 // ポインタレシーバ(*demoRepository)にメソッドを追加
 func (tr *usersRepository) GetUser(id *int) (user entity.Users, err error) {
 	log.Println("リポジトリ GetUser")
 
-	query := "id,email,nickname"
+	log.Println(id)
 
-	if err = Db.Debug().Table("users").Where("id = ?", id).Select(query).First(&user).Error; err != nil {
+	if err = Db.Debug().Table("users").Where("id = ?", id).First(&user).Error; err != nil {
 		return
 	}
 	//名前付き変数でreturn
@@ -170,22 +170,25 @@ func (tr *usersRepository) GetReviews(userId *int) (reviews *[]entity.Reviews, e
 	return
 }
 
-func (tr *usersRepository) UpdateUser(patchUserInfo PatchUserInfo) (err error) {
+func (tr *usersRepository) UpdateUser(updateInfo *UpdateInfo, id *int) (user entity.Users, err error) {
 	log.Println("リポジトリ UpdateUser")
 
-	// if err = Db.Transaction(func(tx *gorm.DB) error {
-	// 	// データベース操作をトランザクション内で行う
-	// 	if err = tx.Table("user").Where("id = ?", patchUserInfo.Id).Update("name", "hello").Error; err != nil {
-	// 		// エラーを返した場合はロールバックされる
-	// 		return err
-	// 	}
-	// 	// nil を返すとコミットされる
-	// 	return nil
-	// }); err != nil {
-	// 	return
-	// }
+	if err = Db.Transaction(func(tx *gorm.DB) error {
+		// データベース操作をトランザクション内で行う
+		if err = Db.Model(&user).Clauses(clause.Returning{Columns: []clause.Column{{Name: "id"}, {Name: "email"}, {Name: "nickname"}}}).Where("id = ?", id).UpdateColumns(entity.Users{Email: updateInfo.Email, Nickname: updateInfo.Nickname}).Error; err != nil {
+			// エラーを返した場合はロールバックされる
+			return err
+		}
+		// nil を返すとコミットされる
+		return nil
+	}); err != nil {
+		return
+	}
 
-	log.Println("トランザクションが正常に終了しました")
+	if err = Db.Debug().Table("users").Where("id = ?", id).First(&user).Error; err != nil {
+		return
+	}
+
 	return
 
 }

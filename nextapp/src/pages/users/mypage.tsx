@@ -25,78 +25,99 @@ import { path, strage, requests } from '@/const/Consts'
 import { useRouter } from 'next/router'
 import { useUserInfo } from '@/hooks/useUserInfo'
 import * as yup from 'yup'
-import { validate } from '@/lib/validate'
 import { ThemeProvider } from '@mui/material/styles'
 import theme from '@/styles/theme'
-import { userInfoState } from '@/globalStates/userInfo'
 import { useUser } from '@/features/users/api/useUser'
+import { updateUser } from '@/features/users/api/updateUser'
+import { UpdateInfo } from '@/features/users/types'
 import { useSetRecoilState, RecoilRoot } from 'recoil'
 import { haveTokenState } from '@/globalStates/haveToken'
-
-type State = {
-  nickname?: string
-  email?: string
-  password: string
-  newPassword: string
-  newPasswordConfirm: string
-}
-
-export type UserInfo = {
-  id?: number
-  nickname?: string
-  email?: string
-}
+import { validate } from '@/lib/validate'
+import * as Dialog from '@/context/MessageDialog'
+import { userInfoState, UserInfo } from '@/globalStates/userInfo'
 
 export default function Mypage() {
   const router = useRouter()
   const setHaveToken = useSetRecoilState(haveTokenState)
+  const dialog = Dialog.useDialogContext()
   const { response, isLoading, isError } = useUser()
-  const [userInfo, setUserInfo] = useState<UserInfo>({
-    id: 0,
-    nickname: '',
-    email: '',
-  })
+  const setUserInfo = useSetRecoilState(userInfoState)
 
-  const [values, setValues] = React.useState<State>({
+  const [values, setValues] = React.useState<UpdateInfo>({
     nickname: '',
     email: '',
     password: '',
-    newPassword: '',
-    newPasswordConfirm: '',
+    // newPassword: '',
+    // newPasswordConfirm: '',
   })
+
+  const [errors, setErrors] = React.useState<any>({})
 
   const [isEdit, setIsEdit] = React.useState<boolean>(false)
   const [showPassword, setShowPassword] = React.useState<boolean>(false)
 
-  const [errors, setErrors] = React.useState<any>({})
-
   // バリデーションルール
-  const scheme = yup.object({
-    nickname: yup
-      .string()
-      .matches(/^.{2,20}$/, '半角英数字8桁で入力してください。'),
-    email: yup.string().email('正しいメールアドレスを入力してください。'),
-    password: yup
-      .string()
-      .required('必須項目です')
-      .matches(/^([a-zA-Z0-9]{8})$/, '半角英数字8桁で入力してください。'),
-    newPassword: yup
-      .string()
-      .matches(
-        /^([a-zA-Z0-9]{8,20})$/,
-        '半角英数字8文字以上20文字以下で入力してください。',
-      ),
-    newPasswordConfirm: yup
-      .string()
-      .matches(
-        /^([a-zA-Z0-9]{8,20})$/,
-        '半角英数字8文字以上20文字以下で入力してください。',
-      )
-      .oneOf(
-        [yup.ref('newPassword'), null],
-        '確認用パスワードが一致していません',
-      ),
-  })
+  const validScheme = () => {
+    return yup.object().shape(
+      {
+        nickname: yup
+          .string()
+          .nullable()
+          .matches(/^.{2,20}$/, {
+            message: '2文字以上20文字以下で入力してください。',
+            excludeEmptyString: true,
+          })
+          .when('email', (email, scheme) => {
+            if (email) {
+              return scheme.nullable()
+            } else {
+              return scheme.required(
+                'nicknameまたはemailのどちらかは必須です。',
+              )
+            }
+          }),
+        email: yup
+          .string()
+          .email('正しいメールアドレスを入力してください。')
+          .when('nickname', (nickname, scheme) => {
+            if (nickname) {
+              return scheme.nullable()
+            } else {
+              return scheme.required(
+                'nicknameまたはemailのどちらかは必須です。',
+              )
+            }
+          }),
+        password: yup
+          .string()
+          .required('必須項目です')
+          .matches(
+            /^([a-zA-Z0-9]{8,20})$/,
+            '半角英数字8文字以上20文字以下で入力してください。',
+          ),
+      },
+      [['nickname', 'email']],
+    )
+  }
+
+  const scheme = validScheme()
+  // newPassword: yup
+  //   .string()
+  //   .matches(
+  //     /^([a-zA-Z0-9]{8,20})$/,
+  //     '半角英数字8文字以上20文字以下で入力してください。',
+  //   ),
+  // newPasswordConfirm: yup
+  //   .string()
+  //   .matches(
+  //     /^([a-zA-Z0-9]{8,20})$/,
+  //     '半角英数字8文字以上20文字以下で入力してください。',
+  //   )
+  //   .oneOf(
+  //     [yup.ref('newPassword'), null],
+  //     '確認用パスワードが一致していません',
+  //   ),
+  // })
 
   const handleLink = (path: string) => {
     router.push(path)
@@ -112,24 +133,58 @@ export default function Mypage() {
     event.preventDefault()
   }
 
-  const handleIsEdit = (id?: number, nickname?: string, email?: string) => {
-    setUserInfo({ id: id, nickname: nickname, email: email })
-    setIsEdit(true)
+  const handleIsEdit = () => {
+    setIsEdit(!isEdit)
   }
 
   const handleChange =
-    (prop: keyof State) => (event: React.ChangeEvent<HTMLInputElement>) => {
+    (prop: keyof UpdateInfo) =>
+    (event: React.ChangeEvent<HTMLInputElement>) => {
       setValues({ ...values, [prop]: event.target.value })
     }
 
-  const update = () => {
+  const handleDialog = async () => {
     const errors = validate({ ...values }, scheme)
+
+    console.log(errors)
     setErrors(errors)
     let error = false
     for (const key of Object.keys(errors)) {
       if (errors[key]) {
         error = true
       }
+    }
+
+    if (!error) {
+      await dialog
+        .confirm(Dialog.confirmDialog('ユーザー情報を更新しますか？'))
+        .then(() => {
+          update()
+        })
+    } else {
+      dialog.confirm(Dialog.errorDialog('エラーを修正してください。'))
+    }
+  }
+
+  const update = async () => {
+    const response = await updateUser(values)
+    if (response.status == 200) {
+      dialog.confirm(Dialog.apiOKDialog(response.message))
+      setHaveToken(true)
+      const userInfo: UserInfo = {
+        id: response.id,
+        nickname: response.nickname,
+        email: response.email,
+      }
+      console.log(userInfo)
+      setUserInfo(userInfo)
+      handleLink(path.cafesList)
+    } else {
+      if (response.status == 401) {
+        setHaveToken(false)
+        handleLink(path.top)
+      }
+      dialog.confirm(Dialog.apiErrorDialog(response.status, response.error))
     }
   }
 
@@ -261,13 +316,7 @@ export default function Mypage() {
               >
                 <Button
                   variant="contained"
-                  onClick={() =>
-                    handleIsEdit(
-                      response.data?.id,
-                      response.data?.nickname,
-                      response.data?.email,
-                    )
-                  }
+                  onClick={handleIsEdit}
                   sx={{ mr: 1 }}
                 >
                   編集
@@ -285,12 +334,14 @@ export default function Mypage() {
                 <TextField
                   fullWidth
                   variant="standard"
-                  id="nickName"
-                  label="nickName"
-                  defaultValue={userInfo?.nickname}
+                  id="nickname"
+                  label="nickname"
+                  onChange={handleChange('nickname')}
+                  //defaultValue={response.data?.email}
                   error={!!errors.nickname}
+                  //error={true}
                   helperText={errors.nickname?.message}
-                  value={response?.nickname}
+                  value={values.nickname}
                 />
               </Grid>
               <Grid item xs={0} md={6}></Grid>
@@ -301,11 +352,11 @@ export default function Mypage() {
                   variant="standard"
                   id="email"
                   label="email"
-                  defaultValue={userInfo?.email}
+                  onChange={handleChange('email')}
+                  // defaultValue={response.data?.email}
                   error={!!errors.email}
                   helperText={errors.email?.message}
-
-                  //value={userInfo?.nickname}
+                  value={values.email}
                 />
               </Grid>
               <Grid item xs={0} md={6}></Grid>
@@ -341,7 +392,7 @@ export default function Mypage() {
               </Grid>
               <Grid item xs={0} md={6}></Grid>
 
-              <Grid item xs={12} md={6} sx={{ p: 1 }}>
+              {/* <Grid item xs={12} md={6} sx={{ p: 1 }}>
                 <InputLabel htmlFor="newPassword" shrink={true}>
                   新しいPassword
                 </InputLabel>
@@ -363,10 +414,10 @@ export default function Mypage() {
                       </IconButton>
                     </InputAdornment>
                   }
-                  error={!!errors.newPassword}
+                  error={errors.newPassword}
                 />
                 <FormHelperText error id="newPassword-error">
-                  {errors.newPassword?.message}
+                  {errors.newPassword ? valideteErr.newPassword?.message : ''}
                 </FormHelperText>
               </Grid>
 
@@ -395,14 +446,16 @@ export default function Mypage() {
                     </InputAdornment>
                   }
                   required={values.newPassword != '' ? true : false}
-                  error={!!errors.newPasswordConfirm}
+                  error={errors.newPasswordConfirm}
                 />
                 <FormHelperText error id="newPasswordConfirm-error">
-                  {errors.newPasswordConfirm?.message}
+                  {errors.newPasswordConfirm
+                    ? valideteErr.newPasswordConfirm?.message
+                    : ''}
                 </FormHelperText>
               </Grid>
 
-              <Grid item xs={0} md={6}></Grid>
+              <Grid item xs={0} md={6}></Grid> */}
 
               <Grid
                 container
@@ -415,7 +468,7 @@ export default function Mypage() {
                 <Grid item xs={12} sm={2}>
                   <Button
                     variant="contained"
-                    onClick={() => setIsEdit(false)}
+                    onClick={handleIsEdit}
                     sx={{ mr: 2 }}
                   >
                     戻る
@@ -427,7 +480,11 @@ export default function Mypage() {
                 </Grid>
 
                 <Grid item xs={12} sm={3}>
-                  <Button variant="contained" onClick={update} sx={{ mr: 2 }}>
+                  <Button
+                    variant="contained"
+                    onClick={handleDialog}
+                    sx={{ mr: 2 }}
+                  >
                     変更
                   </Button>
                   <Button onClick={() => handleLink(path.withdrawal)}>

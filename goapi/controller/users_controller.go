@@ -4,6 +4,7 @@ import (
 	"log"
 	"math"
 	"net/http"
+	"time"
 
 	"github.com/akane-05/cafekatu/goapi/model/entity"
 	"github.com/akane-05/cafekatu/goapi/model/repository"
@@ -24,11 +25,6 @@ type UsersController interface {
 // 構造体の宣言
 type usersController struct {
 	dr repository.UsersRepository
-}
-
-type UserInfo struct {
-	User entity.Users `json:"user"`
-	//Reviews []entity.Reviews `json:"reviews"`
 }
 
 type PastPost struct {
@@ -76,6 +72,8 @@ func (dc *usersController) GetUser(c *gin.Context) {
 		return
 	}
 
+	user.PasswordDigest = ""
+
 	// reviews, err := dc.dr.GetUserReviews(&jwtInfo.Id, &query)
 	// if err != nil {
 	// 	log.Println(err.Error())
@@ -99,6 +97,8 @@ func (dc *usersController) GetUser(c *gin.Context) {
 }
 
 func (dc *usersController) PatchUser(c *gin.Context) {
+	log.Println("Register")
+
 	jwtInfo, err := unit.GetJwtToken(c)
 	if err != nil {
 		log.Println(err)
@@ -108,26 +108,63 @@ func (dc *usersController) PatchUser(c *gin.Context) {
 		return
 	}
 
-	patchUserInfo := repository.PatchUserInfo{}
-	if err := c.BindJSON(&patchUserInfo); err != nil {
+	updateInfo := repository.UpdateInfo{}
+	if err := c.BindJSON(&updateInfo); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"error": "リクエストに不正な値が含まれています。",
 		})
 		return
 	}
-	patchUserInfo.Id = jwtInfo.Id
 
-	// if err := dc.dr.UpdateUser(&patchUserInfo); err != nil {
-	// 	log.Println(err)
-	// 	c.JSON(http.StatusInternalServerError, gin.H{
-	// 		"error": "サーバーでエラーが発生しました。",
-	// 	})
-	// 	return
-	// }
+	user, err := dc.dr.GetUser(&jwtInfo.Id)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"error": "サーバーでエラーが発生しました。",
+		})
+		return
+	}
+
+	log.Printf(user.PasswordDigest)
+	//パスワード確認
+	if err = unit.CompareHashAndPassword(user.PasswordDigest, updateInfo.Password); err != nil {
+		log.Printf("passwordが間違っています。%s", updateInfo.Password)
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error": "passwordが間違っています。",
+		})
+		return
+	}
+
+	//指定されなかった場合、従来の情報をセット
+	if updateInfo.Nickname == "" {
+		updateInfo.Nickname = user.Nickname
+	}
+	if updateInfo.Email == "" {
+		updateInfo.Email = user.Email
+	}
+
+	newUserInfo, err := dc.dr.UpdateUser(&updateInfo, &jwtInfo.Id)
+
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"error": "サーバーでエラーが発生しました。",
+		})
+		return
+	}
+
+	//以下jwt認証
+
+	newJwtInfo := unit.JwtInfo{Id: newUserInfo.Id, Email: newUserInfo.Email, ExTime: time.Now().Add(time.Hour)}
+
+	tokenString := unit.CreateToken(&newJwtInfo)
+	log.Println("tokenString:", tokenString)
 
 	log.Println("更新完了　フロントに返却")
 	c.JSON(http.StatusOK, gin.H{
-		"message": "ユーザー情報を更新しました。",
+		"token":    tokenString,
+		"id":       newUserInfo.Id,
+		"email":    newUserInfo.Email,
+		"nickname": newUserInfo.Nickname,
+		"message":  "ユーザー情報を更新しました。",
 	})
 
 }

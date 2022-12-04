@@ -52,7 +52,7 @@ func GetRouter() *gin.Engine {
 			"POST",
 			"GET",
 			"DELETE",
-			"PUT",
+			"PATCH",
 			"OPTIONS",
 		},
 		// 許可したいHTTPリクエストヘッダ

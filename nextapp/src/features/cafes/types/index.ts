@@ -27,7 +27,7 @@ export type CafeInfo = {
 }
 
 export type CafesRes = {
-  message: string
-  status: number
-  error: string
+  message?: string
+  status?: number
+  error?: string
 }

@@ -2,9 +2,9 @@ import { atom } from 'recoil'
 import { recoilPersist } from 'recoil-persist'
 
 export type UserInfo = {
-  id: number
-  nickname: string
-  email: string
+  id?: number
+  nickname?: string
+  email?: string
 }
 
 const { persistAtom } = recoilPersist()

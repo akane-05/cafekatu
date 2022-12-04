@@ -51,7 +51,6 @@ func (dc *loginController) Login(c *gin.Context) {
 		return
 	}
 
-	//emailが登録済みのものか検証
 	user, err := dc.dr.GetUser(&loginInfo.Email)
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
