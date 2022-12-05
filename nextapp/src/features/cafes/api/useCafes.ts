@@ -21,6 +21,7 @@ export function useCafes(
   perPage: number,
   param?: string | string[],
 ) {
+  console.log('走ってるか')
   const setHaveToken = useSetRecoilState(haveTokenState)
 
   let searchWord = ''
@@ -51,11 +52,9 @@ export function useCafes(
     fetcher,
     {
       // revalidateIfStale: true,
-      // revalidateOnMount: true,
+      revalidateOnMount: true,
       // revalidateOnFocus: true,
       onErrorRetry: (error) => {
-        console.log('走ってるか')
-
         if (error.message == 'Network Error') {
           return
         }

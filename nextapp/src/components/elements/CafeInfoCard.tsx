@@ -15,7 +15,7 @@ import {
   IconButton,
   Rating,
 } from '@mui/material'
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import FavoriteIcon from '@mui/icons-material/Favorite'
 import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder'
 import { CafeInfo } from '@/features/cafes/types'
@@ -42,6 +42,10 @@ export default function CafeInfoCard(props: Props) {
   const [isFavorite, setIsFavorite] = React.useState<boolean>(
     props.cafeInfo.is_favorite,
   )
+
+  useEffect(() => {
+    setIsFavorite(props.cafeInfo.is_favorite)
+  }, []) // ここでsetCountって必要？
 
   const handleClickFavorite = async () => {
     let res
@@ -101,7 +105,8 @@ export default function CafeInfoCard(props: Props) {
                     edge="end"
                     sx={{ mr: 1 }}
                   >
-                    {isFavorite ? (
+                    {/* {isFavorite ? ( */}
+                    {cafeInfo.is_favorite ? (
                       <FavoriteIcon color="primary" />
                     ) : (
                       <FavoriteBorderIcon color="primary" />

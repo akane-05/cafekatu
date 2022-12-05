@@ -15,7 +15,7 @@ import {
   IconButton,
   Rating,
 } from '@mui/material'
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import FavoriteIcon from '@mui/icons-material/Favorite'
 import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder'
 import { Cafe, CafeInfo } from '@/features/cafes/types'
@@ -38,6 +38,11 @@ export default function CafeCard(props: Props) {
   const [isFavorite, setIsFavorite] = React.useState<boolean>(
     props.cafeInfo.is_favorite,
   )
+
+  useEffect(() => {
+    setIsFavorite(props.cafeInfo.is_favorite)
+  }, [])
+
   const [cafeInfo] = useState(props.cafeInfo)
   const dialog = Dialog.useDialogContext()
 
