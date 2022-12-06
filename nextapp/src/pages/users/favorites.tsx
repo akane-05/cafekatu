@@ -14,14 +14,11 @@ import * as Dialog from '@/context/MessageDialog'
 import { path, strage } from '@/const/Consts'
 import PageButton from '@/components/elements/PageButton'
 import { Pagination } from '@mui/material'
-import { useSetRecoilState, RecoilRoot } from 'recoil'
-import { haveTokenState } from '@/globalStates/haveToken'
 import { useUserFavorites } from '@/features/users/api/useUserFavorites'
 
 export default function UserFavorites() {
   const router = useRouter()
   const [page, setPage] = React.useState(1)
-  const setHaveToken = useSetRecoilState(haveTokenState)
   const [parPage, setparPage] = React.useState(10)
   const { response, isLoading, isError } = useUserFavorites(page, parPage)
 
@@ -45,8 +42,6 @@ export default function UserFavorites() {
   }
 
   if (isError && isError?.response?.status == 401) {
-    setHaveToken(false)
-
     return (
       <>
         <Grid

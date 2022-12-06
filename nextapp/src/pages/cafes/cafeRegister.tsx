@@ -24,8 +24,6 @@ import { Cafe } from '@/features/cafes/types'
 import * as yup from 'yup'
 import { validate } from '@/lib/validate'
 import * as Dialog from '@/context/MessageDialog'
-import { useSetRecoilState, RecoilRoot } from 'recoil'
-import { haveTokenState } from '@/globalStates/haveToken'
 import { path } from '@/const/Consts'
 import { useRouter } from 'next/router'
 import { postCafe } from '@/features/cafes/api/postCafe'
@@ -45,7 +43,6 @@ export default function CafeRegister() {
   const router = useRouter()
   const dialog = Dialog.useDialogContext()
   const classes = useStyles()
-  const setHaveToken = useSetRecoilState(haveTokenState)
   const [values, setValues] = React.useState<Cafe>({
     name: '',
     zipcode: '',
@@ -121,11 +118,9 @@ export default function CafeRegister() {
     const response = await postCafe(values)
     if (response.status == 200) {
       dialog.confirm(Dialog.apiOKDialog(response.message))
-      setHaveToken(true)
       handleLink(path.cafesList)
     } else {
       if (response.status == 401) {
-        setHaveToken(false)
         handleLink(path.top)
       }
       dialog.confirm(Dialog.apiErrorDialog(response.status, response.error))
@@ -157,8 +152,6 @@ export default function CafeRegister() {
   }
 
   if (isError && isError?.response?.status == 401) {
-    setHaveToken(false)
-
     return (
       <>
         <Grid

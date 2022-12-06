@@ -15,7 +15,7 @@ import {
   IconButton,
   Rating,
 } from '@mui/material'
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import FavoriteIcon from '@mui/icons-material/Favorite'
 import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder'
 import { Cafe, CafeInfo } from '@/features/cafes/types'
@@ -24,22 +24,24 @@ import { useRouter } from 'next/router'
 import { postFavorite } from '@/features/cafes/api/postFavorite'
 import { deleteFavorite } from '@/features/cafes/api/deleteFavorite'
 import * as Dialog from '@/context/MessageDialog'
-import { useSetRecoilState, RecoilRoot } from 'recoil'
-import { haveTokenState } from '@/globalStates/haveToken'
 
 type Props = {
   cafeInfo: CafeInfo
+  detail?: boolean
 }
 
 export default function CafeCard(props: Props) {
   const router = useRouter() //useRouterフックを定義して
-  const setHaveToken = useSetRecoilState(haveTokenState)
+  const dialog = Dialog.useDialogContext()
 
   const [isFavorite, setIsFavorite] = React.useState<boolean>(
     props.cafeInfo.is_favorite,
   )
-  const [cafeInfo] = useState(props.cafeInfo)
-  const dialog = Dialog.useDialogContext()
+  const cafeInfo = props.cafeInfo
+
+  useEffect(() => {
+    setIsFavorite(props.cafeInfo.is_favorite)
+  }, [])
 
   const handleClickFavorite = async () => {
     let res
@@ -52,9 +54,6 @@ export default function CafeCard(props: Props) {
     if (res.status == 200) {
       setIsFavorite(!isFavorite)
     } else {
-      if (res.status == 401) {
-        setHaveToken(false)
-      }
       dialog.confirm(Dialog.apiErrorDialog(res.status, res.error))
     }
   }
@@ -155,20 +154,30 @@ export default function CafeCard(props: Props) {
               {cafeInfo.street}
             </Typography>
 
-            <Grid
-              container
-              direction="row"
-              justifyContent="flex-end"
-              alignItems="flex-end"
-            >
-              <Button
-                variant="contained"
-                color="primary"
-                onClick={() => handleLink(path.cafeDatail)}
+            {props.detail ? (
+              <Typography
+                variant="subtitle1"
+                color="text.secondary"
+                component="div"
               >
-                詳細
-              </Button>
-            </Grid>
+                {cafeInfo.business_hours}
+              </Typography>
+            ) : (
+              <Grid
+                container
+                direction="row"
+                justifyContent="flex-end"
+                alignItems="flex-end"
+              >
+                <Button
+                  variant="contained"
+                  color="primary"
+                  onClick={() => handleLink(path.cafeDatail)}
+                >
+                  詳細
+                </Button>
+              </Grid>
+            )}
           </CardContent>
         </Grid>
       </Grid>

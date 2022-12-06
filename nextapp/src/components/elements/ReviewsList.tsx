@@ -32,16 +32,15 @@ import { ReviewInfo } from '@/features/reviews/types/index'
 import ReviewCard from '@/components/elements/ReviewCard'
 // import ReviewPost from '@/components/elements/ReviewPost'
 import { useUserInfo } from '@/hooks/useUserInfo'
-import { useSetRecoilState, RecoilRoot } from 'recoil'
-import { haveTokenState } from '@/globalStates/haveToken'
 import { postReview } from '@/features/reviews/api/postReview'
-import useSWR, { useSWRConfig } from 'swr'
+import useSWR, { useSWRConfig, KeyedMutator } from 'swr'
 import * as yup from 'yup'
 import { validate } from '@/lib/validate'
 import { makeStyles } from '@mui/styles'
 
 type Props = {
   id: any
+  parentMutate?: any
 }
 
 const useStyles = makeStyles((theme) => ({
@@ -55,15 +54,17 @@ export default function ReviewsList(props: Props) {
   const router = useRouter()
   const [page, setPage] = React.useState(1)
   const [perPage, setperPage] = React.useState(10)
-  const { response, isLoading, isError } = useReviews(page, perPage, props.id)
+  const { response, isLoading, isError, mutate } = useReviews(
+    page,
+    perPage,
+    props.id,
+  )
   const dialog = Dialog.useDialogContext()
   const [isCommentPost, setIsCommentPost] = React.useState<boolean>(false)
 
   const classes = useStyles()
-  const { mutate } = useSWRConfig()
 
   const { userInfo } = useUserInfo()
-  const setHaveToken = useSetRecoilState(haveTokenState)
 
   const defaultReview: ReviewInfo = {
     cafe_id: 0,
@@ -129,22 +130,12 @@ export default function ReviewsList(props: Props) {
       if (response.status == 200) {
         setValues(defaultReview)
         dialog.confirm(Dialog.apiOKDialog(response.message))
-        mutate(
-          requests.reviews +
-            '/' +
-            props.id +
-            '?' +
-            new URLSearchParams({
-              per_page: `${10}`,
-              page: `${1}`,
-            }),
-        )
-        mutate(requests.cafes + '/' + props.id)
+        mutate()
+        if (props.parentMutate) {
+          props.parentMutate()
+        }
         setIsCommentPost(!isCommentPost)
       } else {
-        if (response.status == 401) {
-          setHaveToken(false)
-        }
         dialog.confirm(Dialog.apiErrorDialog(response.status, response.error))
       }
     }

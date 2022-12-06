@@ -5,9 +5,6 @@ import { requests } from '@/const/Consts'
 import { useRouter } from 'next/router'
 import { useState, useEffect } from 'react'
 import { strage } from '@/const/Consts'
-import { useSetRecoilState, RecoilRoot } from 'recoil'
-import { haveTokenState } from '@/globalStates/haveToken'
-import { useHaveToken } from '@/hooks/useHaveToken'
 
 export type fetchPostReturnType = {
   data: {
@@ -21,8 +18,6 @@ export function useCafes(
   perPage: number,
   param?: string | string[],
 ) {
-  const setHaveToken = useSetRecoilState(haveTokenState)
-
   let searchWord = ''
   if (typeof param === undefined) {
     searchWord = ''
@@ -51,17 +46,14 @@ export function useCafes(
     fetcher,
     {
       // revalidateIfStale: true,
-      // revalidateOnMount: true,
+      revalidateOnMount: true,
       // revalidateOnFocus: true,
       onErrorRetry: (error) => {
-        console.log('走ってるか')
-
         if (error.message == 'Network Error') {
           return
         }
         // 401でトークンを削除
         if (error.response.status == 401) {
-          setHaveToken(false)
           localStorage.removeItem(strage.Token)
         }
       },

@@ -19,8 +19,6 @@ import { registerUser } from '@/features/register/api/registerUser'
 import * as Dialog from '@/context/MessageDialog'
 import CustomButton from '@/components/elements/CustomButton'
 import { path } from '@/const/Consts'
-import { useSetRecoilState, RecoilRoot } from 'recoil'
-import { haveTokenState } from '@/globalStates/haveToken'
 import { userInfoState, UserInfo } from '@/globalStates/userInfo'
 import * as yup from 'yup'
 import { validate } from '@/lib/validate'
@@ -34,8 +32,6 @@ type InputValue = RegisterInfo & ComfirmValue
 
 export default function RegisterForm() {
   const dialog = Dialog.useDialogContext()
-  const setHaveToken = useSetRecoilState(haveTokenState)
-  const setUserInfo = useSetRecoilState(userInfoState)
 
   const [values, setValues] = React.useState<InputValue>({
     email: '',
@@ -117,13 +113,6 @@ export default function RegisterForm() {
     const response = await registerUser(values)
     if (response.status == 200) {
       dialog.confirm(Dialog.apiOKDialog(response.message))
-      setHaveToken(true)
-      const userInfo: UserInfo = {
-        id: response.id,
-        nickname: response.nickname,
-        email: response.email,
-      }
-      setUserInfo(userInfo)
       handleLink(path.cafesList)
     } else {
       dialog.confirm(Dialog.apiErrorDialog(response.status, response.error))

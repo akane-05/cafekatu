@@ -5,9 +5,6 @@ import { requests } from '@/const/Consts'
 import { useRouter } from 'next/router'
 import { useState, useEffect } from 'react'
 import { strage } from '@/const/Consts'
-import { useSetRecoilState, RecoilRoot } from 'recoil'
-import { haveTokenState } from '@/globalStates/haveToken'
-import { useHaveToken } from '@/hooks/useHaveToken'
 
 export type fetchPostReturnType = {
   data: {
@@ -17,7 +14,6 @@ export type fetchPostReturnType = {
 }
 
 export function usePastPosts(page: number, perPage: number) {
-  const setHaveToken = useSetRecoilState(haveTokenState)
   const fetcher = (url: string) =>
     apiClient
       .get(url, {
@@ -27,7 +23,11 @@ export function usePastPosts(page: number, perPage: number) {
       })
       .then((res) => res.data)
 
-  const { data: data, error } = useSWR(
+  const {
+    data: data,
+    error,
+    mutate: mutate,
+  } = useSWR(
     requests.users +
       '/pastPosts' +
       '?' +
@@ -43,16 +43,15 @@ export function usePastPosts(page: number, perPage: number) {
         }
         // 401でトークンを削除
         if (error.response.status == 401) {
-          setHaveToken(false)
           localStorage.removeItem(strage.Token)
         }
       },
     },
   )
-
   return {
     response: data,
     isLoading: !error && !data,
     isError: error,
+    mutate: mutate,
   }
 }

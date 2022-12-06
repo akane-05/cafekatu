@@ -2,22 +2,18 @@
 // import Router from 'next/router'
 import { Button, Grid, Typography, Link } from '@mui/material'
 import React, { useState, useEffect } from 'react'
-import CafeInfoCard from '@/components/elements/CafeInfoCard'
+import CafeCard from '@/components/elements/CafeCard'
 import ReviewCard from '@/components/elements/ReviewCard'
 import CustomPaper, { LinkPaper } from '@/components/layouts/CustomPaper'
 import { useCafe } from '@/features/cafes/api/useCafe'
 import { useRouter } from 'next/router'
 import { path, strage, requests } from '@/const/Consts'
-import { useSetRecoilState, RecoilRoot } from 'recoil'
-import { haveTokenState } from '@/globalStates/haveToken'
 import ReviewsList from '@/components/elements/ReviewsList'
 import useSWR, { useSWRConfig } from 'swr'
 
 export default function CafeDetail() {
   const router = useRouter()
-  const { response, isLoading, isError } = useCafe(router.query.id)
-
-  const setHaveToken = useSetRecoilState(haveTokenState)
+  const { response, isLoading, isError, mutate } = useCafe(router.query.id)
 
   const handleLink = (path: string) => {
     router.push(path)
@@ -39,8 +35,6 @@ export default function CafeDetail() {
   }
 
   if (isError && isError?.response?.status == 401) {
-    setHaveToken(false)
-
     return (
       <>
         <Grid
@@ -103,10 +97,13 @@ export default function CafeDetail() {
       </LinkPaper>
 
       <CustomPaper>
-        <CafeInfoCard cafeInfo={response.data.cafe}></CafeInfoCard>
+        <CafeCard cafeInfo={response.data.cafe} detail={true}></CafeCard>
       </CustomPaper>
 
-      <ReviewsList id={router.query.id ? router.query.id : null}></ReviewsList>
+      <ReviewsList
+        id={router.query.id ? router.query.id : null}
+        parentMutate={mutate}
+      />
     </>
   )
 }

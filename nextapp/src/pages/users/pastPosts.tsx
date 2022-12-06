@@ -1,6 +1,6 @@
 // import { NextPage } from 'next'
 // import Router from 'next/router'
-import { Paper, Grid, Button, Typography, Link } from '@mui/material'
+import { Paper, Grid, Button, Typography, Link, Box } from '@mui/material'
 import React from 'react'
 import CafeCard from '@/components/elements/CafeCard'
 import CustomPaper, { LinkPaper } from '@/components/layouts/CustomPaper'
@@ -13,21 +13,16 @@ import * as Dialog from '@/context/MessageDialog'
 import { path, strage } from '@/const/Consts'
 import PageButton from '@/components/elements/PageButton'
 import { Pagination } from '@mui/material'
-import { useSetRecoilState, RecoilRoot } from 'recoil'
-import { haveTokenState } from '@/globalStates/haveToken'
 //import { CafeInfo } from '@/features/cafes/types'
-import CafeInfo from '@/components/elements/CafeInfoCard'
 import ReviewCard from '@/components/elements/ReviewCard'
 import { Review } from '@/features/reviews/types'
 import { PastPost } from '@/features/users/types'
-import PastPostPaper from '@/components/elements/PastPostPaper'
 
 export default function pastPosts() {
   const router = useRouter()
   const [page, setPage] = React.useState(1)
-  const setHaveToken = useSetRecoilState(haveTokenState)
   const [parPage, setparPage] = React.useState(10)
-  const { response, isLoading, isError } = usePastPosts(page, parPage)
+  const { response, isLoading, isError, mutate } = usePastPosts(page, parPage)
 
   const handleLink = (path: string) => {
     router.push(path)
@@ -49,8 +44,6 @@ export default function pastPosts() {
   }
 
   if (isError && isError?.response?.status == 401) {
-    setHaveToken(false)
-
     return (
       <>
         <Grid
@@ -116,20 +109,37 @@ export default function pastPosts() {
           >
             店舗一覧に戻る
           </Link>
-
-          <Typography color="text.secondary">
-            {parPage * (page - 1) + 1}～
-            {parPage * (page - 1) + response.data?.pastPosts.length} 件を表示 ／
-            全{response.data?.cafes_total} 件
-          </Typography>
+          {response.data?.cafes_total != 0 ? (
+            <Typography color="text.secondary">
+              {parPage * (page - 1) + 1}～
+              {parPage * (page - 1) + response.data?.pastPosts.length} 件を表示
+              ／ 全{response.data?.cafes_total} 件
+            </Typography>
+          ) : (
+            <></>
+          )}
         </Grid>
       </LinkPaper>
-      {/* <CustomPaper> */}
       {response.data?.cafes_total != 0 ? (
         <>
           {response.data?.pastPosts.map((pastPost: PastPost, index: number) => {
             return (
-              <PastPostPaper key={index} pastPost={pastPost}></PastPostPaper>
+              <Box key={index}>
+                <CustomPaper>
+                  <CafeCard cafeInfo={pastPost.cafeInfo}></CafeCard>
+                  {pastPost.reviews.map((review: Review) => {
+                    return (
+                      <ReviewCard
+                        key={review.id}
+                        review={review}
+                        pastPost={true}
+                        mutate={mutate}
+                      />
+                    ) //keyを指定
+                  })}
+                </CustomPaper>
+                <Box sx={{ mb: 2 }}></Box>
+              </Box>
             )
           })}
 
@@ -173,7 +183,6 @@ export default function pastPosts() {
           </Grid>
         </CustomPaper>
       )}
-      {/* </CustomPaper> */}
     </>
   )
 }
