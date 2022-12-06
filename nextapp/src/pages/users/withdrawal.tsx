@@ -8,14 +8,11 @@ import { ThemeProvider } from '@mui/material/styles'
 import { path } from '@/const/Consts'
 import { useRouter } from 'next/router'
 import * as Dialog from '@/context/MessageDialog'
-import { useSetRecoilState, RecoilRoot } from 'recoil'
-import { haveTokenState } from '@/globalStates/haveToken'
 import { deleteUser } from '@/features/users/api/deleteUser'
 
 export default function withdrawal() {
   const router = useRouter()
   const dialog = Dialog.useDialogContext()
-  const setHaveToken = useSetRecoilState(haveTokenState)
 
   const handleLink = (path: string) => {
     router.push(path)
@@ -25,11 +22,9 @@ export default function withdrawal() {
     const response = await deleteUser()
     if (response.status == 200) {
       dialog.confirm(Dialog.apiOKDialog('退会しました'))
-      setHaveToken(false)
       handleLink(path.top)
     } else {
       dialog.confirm(Dialog.apiErrorDialog(response.status, response.error))
-      setHaveToken(false)
     }
   }
 

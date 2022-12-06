@@ -8,16 +8,12 @@ import CustomPaper, { LinkPaper } from '@/components/layouts/CustomPaper'
 import { useCafe } from '@/features/cafes/api/useCafe'
 import { useRouter } from 'next/router'
 import { path, strage, requests } from '@/const/Consts'
-import { useSetRecoilState, RecoilRoot } from 'recoil'
-import { haveTokenState } from '@/globalStates/haveToken'
 import ReviewsList from '@/components/elements/ReviewsList'
 import useSWR, { useSWRConfig } from 'swr'
 
 export default function CafeDetail() {
   const router = useRouter()
   const { response, isLoading, isError, mutate } = useCafe(router.query.id)
-
-  const setHaveToken = useSetRecoilState(haveTokenState)
 
   const handleLink = (path: string) => {
     router.push(path)
@@ -39,8 +35,6 @@ export default function CafeDetail() {
   }
 
   if (isError && isError?.response?.status == 401) {
-    setHaveToken(false)
-
     return (
       <>
         <Grid

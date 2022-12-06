@@ -30,18 +30,13 @@ import theme from '@/styles/theme'
 import { useUser } from '@/features/users/api/useUser'
 import { updateUser } from '@/features/users/api/updateUser'
 import { UpdateInfo } from '@/features/users/types'
-import { useSetRecoilState, RecoilRoot } from 'recoil'
-import { haveTokenState } from '@/globalStates/haveToken'
 import { validate } from '@/lib/validate'
 import * as Dialog from '@/context/MessageDialog'
-import { userInfoState, UserInfo } from '@/globalStates/userInfo'
 
 export default function Mypage() {
   const router = useRouter()
-  const setHaveToken = useSetRecoilState(haveTokenState)
   const dialog = Dialog.useDialogContext()
   const { response, isLoading, isError } = useUser()
-  const setUserInfo = useSetRecoilState(userInfoState)
 
   const [values, setValues] = React.useState<UpdateInfo>({
     nickname: '',
@@ -170,18 +165,9 @@ export default function Mypage() {
     const response = await updateUser(values)
     if (response.status == 200) {
       dialog.confirm(Dialog.apiOKDialog(response.message))
-      setHaveToken(true)
-      const userInfo: UserInfo = {
-        id: response.id,
-        nickname: response.nickname,
-        email: response.email,
-      }
-      console.log(userInfo)
-      setUserInfo(userInfo)
       handleLink(path.cafesList)
     } else {
       if (response.status == 401) {
-        setHaveToken(false)
         handleLink(path.top)
       }
       dialog.confirm(Dialog.apiErrorDialog(response.status, response.error))
@@ -193,8 +179,6 @@ export default function Mypage() {
   }
 
   if (isError && isError?.response?.status == 401) {
-    setHaveToken(false)
-
     return (
       <>
         <Grid

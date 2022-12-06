@@ -19,8 +19,6 @@ import React from 'react'
 import { ReviewInfo } from '@/features/reviews/types/index'
 import * as Dialog from '@/context/MessageDialog'
 import { deleteReview } from '@/features/reviews/api/deleteReview'
-import { haveTokenState } from '@/globalStates/haveToken'
-import { useSetRecoilState, RecoilRoot } from 'recoil'
 
 type Props = {
   review: ReviewInfo
@@ -29,7 +27,6 @@ type Props = {
 }
 
 export default function ReviewCard(props: Props) {
-  const setHaveToken = useSetRecoilState(haveTokenState)
   const dialog = Dialog.useDialogContext()
   const review = props.review
   const pastPost = props.pastPost
@@ -44,16 +41,13 @@ export default function ReviewCard(props: Props) {
   }
 
   const handleDeleteReview = async (id: number) => {
-    const res = await deleteReview(id)
-    if (res.status == 200) {
-      dialog.confirm(Dialog.apiOKDialog(res.message))
+    const response = await deleteReview(id)
+    if (response.status == 200) {
+      dialog.confirm(Dialog.apiOKDialog(response.message))
       console.log(props.mutate)
       props.mutate()
     } else {
-      if (res.status == 401) {
-        setHaveToken(false)
-      }
-      dialog.confirm(Dialog.apiErrorDialog(res.status, res.error))
+      dialog.confirm(Dialog.apiErrorDialog(response.status, response.error))
     }
   }
 

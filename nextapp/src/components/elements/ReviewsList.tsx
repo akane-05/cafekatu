@@ -32,8 +32,6 @@ import { ReviewInfo } from '@/features/reviews/types/index'
 import ReviewCard from '@/components/elements/ReviewCard'
 // import ReviewPost from '@/components/elements/ReviewPost'
 import { useUserInfo } from '@/hooks/useUserInfo'
-import { useSetRecoilState, RecoilRoot } from 'recoil'
-import { haveTokenState } from '@/globalStates/haveToken'
 import { postReview } from '@/features/reviews/api/postReview'
 import useSWR, { useSWRConfig, KeyedMutator } from 'swr'
 import * as yup from 'yup'
@@ -67,7 +65,6 @@ export default function ReviewsList(props: Props) {
   const classes = useStyles()
 
   const { userInfo } = useUserInfo()
-  const setHaveToken = useSetRecoilState(haveTokenState)
 
   const defaultReview: ReviewInfo = {
     cafe_id: 0,
@@ -139,9 +136,6 @@ export default function ReviewsList(props: Props) {
         }
         setIsCommentPost(!isCommentPost)
       } else {
-        if (response.status == 401) {
-          setHaveToken(false)
-        }
         dialog.confirm(Dialog.apiErrorDialog(response.status, response.error))
       }
     }

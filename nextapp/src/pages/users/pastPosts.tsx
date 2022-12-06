@@ -13,8 +13,6 @@ import * as Dialog from '@/context/MessageDialog'
 import { path, strage } from '@/const/Consts'
 import PageButton from '@/components/elements/PageButton'
 import { Pagination } from '@mui/material'
-import { useSetRecoilState, RecoilRoot } from 'recoil'
-import { haveTokenState } from '@/globalStates/haveToken'
 //import { CafeInfo } from '@/features/cafes/types'
 import ReviewCard from '@/components/elements/ReviewCard'
 import { Review } from '@/features/reviews/types'
@@ -23,7 +21,6 @@ import { PastPost } from '@/features/users/types'
 export default function pastPosts() {
   const router = useRouter()
   const [page, setPage] = React.useState(1)
-  const setHaveToken = useSetRecoilState(haveTokenState)
   const [parPage, setparPage] = React.useState(10)
   const { response, isLoading, isError, mutate } = usePastPosts(page, parPage)
 
@@ -47,8 +44,6 @@ export default function pastPosts() {
   }
 
   if (isError && isError?.response?.status == 401) {
-    setHaveToken(false)
-
     return (
       <>
         <Grid

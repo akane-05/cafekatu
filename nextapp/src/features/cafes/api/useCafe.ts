@@ -5,9 +5,6 @@ import { requests } from '@/const/Consts'
 import { useRouter } from 'next/router'
 import { useState, useEffect } from 'react'
 import { strage } from '@/const/Consts'
-import { useSetRecoilState, RecoilRoot } from 'recoil'
-import { haveTokenState } from '@/globalStates/haveToken'
-import { useHaveToken } from '@/hooks/useHaveToken'
 
 export type fetchPostReturnType = {
   data: {
@@ -17,7 +14,6 @@ export type fetchPostReturnType = {
 }
 
 export function useCafe(id: any) {
-  const setHaveToken = useSetRecoilState(haveTokenState)
   const fetcher = (url: string) =>
     apiClient
       .get(url, {
@@ -38,7 +34,6 @@ export function useCafe(id: any) {
       }
       // 401でトークンを削除
       if (error.response.status == 401) {
-        setHaveToken(false)
         localStorage.removeItem(strage.Token)
       }
     },

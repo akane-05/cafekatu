@@ -5,9 +5,6 @@ import { requests } from '@/const/Consts'
 import { useRouter } from 'next/router'
 import { useState, useEffect } from 'react'
 import { strage } from '@/const/Consts'
-import { useSetRecoilState, RecoilRoot } from 'recoil'
-import { haveTokenState } from '@/globalStates/haveToken'
-import { useHaveToken } from '@/hooks/useHaveToken'
 
 export type fetchPostReturnType = {
   data: {
@@ -21,9 +18,6 @@ export function useCafes(
   perPage: number,
   param?: string | string[],
 ) {
-  console.log('走ってるか')
-  const setHaveToken = useSetRecoilState(haveTokenState)
-
   let searchWord = ''
   if (typeof param === undefined) {
     searchWord = ''
@@ -60,7 +54,6 @@ export function useCafes(
         }
         // 401でトークンを削除
         if (error.response.status == 401) {
-          setHaveToken(false)
           localStorage.removeItem(strage.Token)
         }
       },
