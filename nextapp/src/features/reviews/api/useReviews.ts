@@ -28,7 +28,11 @@ export function useReviews(page: number, perPage: number, id: any) {
       })
       .then((res) => res.data)
 
-  const { data: data, error } = useSWR(
+  const {
+    data: data,
+    error,
+    mutate,
+  } = useSWR(
     id
       ? requests.reviews +
           '/' +
@@ -58,5 +62,6 @@ export function useReviews(page: number, perPage: number, id: any) {
     response: data,
     isLoading: !error && !data,
     isError: error,
+    mutate: mutate,
   }
 }

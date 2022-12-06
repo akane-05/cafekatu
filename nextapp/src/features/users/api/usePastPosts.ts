@@ -27,7 +27,11 @@ export function usePastPosts(page: number, perPage: number) {
       })
       .then((res) => res.data)
 
-  const { data: data, error } = useSWR(
+  const {
+    data: data,
+    error,
+    mutate: mutate,
+  } = useSWR(
     requests.users +
       '/pastPosts' +
       '?' +
@@ -49,10 +53,10 @@ export function usePastPosts(page: number, perPage: number) {
       },
     },
   )
-
   return {
     response: data,
     isLoading: !error && !data,
     isError: error,
+    mutate: mutate,
   }
 }

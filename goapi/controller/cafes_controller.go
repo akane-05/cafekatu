@@ -171,8 +171,6 @@ func (dc *cafesController) GetCafe(c *gin.Context) {
 		return
 	}
 
-	log.Println(favorite)
-
 	cafe.IsFavorite = favorite
 
 	cafeResponse := CafeResponse{cafe}

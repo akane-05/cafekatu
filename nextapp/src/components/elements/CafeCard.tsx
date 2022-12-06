@@ -29,22 +29,22 @@ import { haveTokenState } from '@/globalStates/haveToken'
 
 type Props = {
   cafeInfo: CafeInfo
+  detail?: boolean
 }
 
 export default function CafeCard(props: Props) {
   const router = useRouter() //useRouterフックを定義して
   const setHaveToken = useSetRecoilState(haveTokenState)
+  const dialog = Dialog.useDialogContext()
 
   const [isFavorite, setIsFavorite] = React.useState<boolean>(
     props.cafeInfo.is_favorite,
   )
+  const cafeInfo = props.cafeInfo
 
   useEffect(() => {
     setIsFavorite(props.cafeInfo.is_favorite)
   }, [])
-
-  const [cafeInfo] = useState(props.cafeInfo)
-  const dialog = Dialog.useDialogContext()
 
   const handleClickFavorite = async () => {
     let res
@@ -160,20 +160,30 @@ export default function CafeCard(props: Props) {
               {cafeInfo.street}
             </Typography>
 
-            <Grid
-              container
-              direction="row"
-              justifyContent="flex-end"
-              alignItems="flex-end"
-            >
-              <Button
-                variant="contained"
-                color="primary"
-                onClick={() => handleLink(path.cafeDatail)}
+            {props.detail ? (
+              <Typography
+                variant="subtitle1"
+                color="text.secondary"
+                component="div"
               >
-                詳細
-              </Button>
-            </Grid>
+                {cafeInfo.business_hours}
+              </Typography>
+            ) : (
+              <Grid
+                container
+                direction="row"
+                justifyContent="flex-end"
+                alignItems="flex-end"
+              >
+                <Button
+                  variant="contained"
+                  color="primary"
+                  onClick={() => handleLink(path.cafeDatail)}
+                >
+                  詳細
+                </Button>
+              </Grid>
+            )}
           </CardContent>
         </Grid>
       </Grid>

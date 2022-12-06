@@ -25,6 +25,7 @@ import { useSetRecoilState, RecoilRoot } from 'recoil'
 type Props = {
   review: ReviewInfo
   pastPost?: boolean
+  mutate?: any
 }
 
 export default function ReviewCard(props: Props) {
@@ -38,6 +39,7 @@ export default function ReviewCard(props: Props) {
       .confirm(Dialog.confirmDialog('選択した投稿を削除しますか？'))
       .then(() => {
         handleDeleteReview(id)
+        props.mutate()
       })
   }
 
@@ -45,6 +47,8 @@ export default function ReviewCard(props: Props) {
     const res = await deleteReview(id)
     if (res.status == 200) {
       dialog.confirm(Dialog.apiOKDialog(res.message))
+      console.log(props.mutate)
+      props.mutate()
     } else {
       if (res.status == 401) {
         setHaveToken(false)

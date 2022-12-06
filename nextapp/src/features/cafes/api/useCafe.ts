@@ -27,26 +27,27 @@ export function useCafe(id: any) {
       })
       .then((res) => res.data)
 
-  const { data: data, error } = useSWR(
-    id ? requests.cafes + '/' + id : null,
-    fetcher,
-    {
-      onErrorRetry: (error) => {
-        if (error.message == 'Network Error') {
-          return
-        }
-        // 401でトークンを削除
-        if (error.response.status == 401) {
-          setHaveToken(false)
-          localStorage.removeItem(strage.Token)
-        }
-      },
+  const {
+    data: data,
+    error,
+    mutate,
+  } = useSWR(id ? requests.cafes + '/' + id : null, fetcher, {
+    onErrorRetry: (error) => {
+      if (error.message == 'Network Error') {
+        return
+      }
+      // 401でトークンを削除
+      if (error.response.status == 401) {
+        setHaveToken(false)
+        localStorage.removeItem(strage.Token)
+      }
     },
-  )
+  })
 
   return {
     response: data,
     isLoading: !error && !data,
     isError: error,
+    mutate: mutate,
   }
 }
