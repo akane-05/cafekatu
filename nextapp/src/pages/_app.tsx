@@ -9,22 +9,6 @@ import { useSetRecoilState, RecoilRoot } from 'recoil'
 import { haveTokenState } from '@/globalStates/haveToken'
 import { strage } from '@/const/Consts'
 
-function AppInit() {
-  // グローバルステートにユーザー情報をセットするためのもの
-  const setHaveToken = useSetRecoilState(haveTokenState)
-
-  useEffect(() => {
-    const token = localStorage.getItem(strage.Token)
-    if (token != null) {
-      setHaveToken(true)
-    } else {
-      setHaveToken(false)
-    }
-  }, [])
-
-  return null
-}
-
 function MyApp({ Component, pageProps }: AppProps) {
   return (
     <RecoilRoot>
@@ -35,7 +19,6 @@ function MyApp({ Component, pageProps }: AppProps) {
           </Layout>
         </MessageDialog>
       </ThemeProvider>
-      <AppInit />
     </RecoilRoot>
   )
 }
