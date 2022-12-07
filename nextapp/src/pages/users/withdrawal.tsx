@@ -2,7 +2,7 @@
 // import Router from 'next/router'
 import { Button, Grid, Paper, Typography, Link } from '@mui/material'
 import React, { useState } from 'react'
-import CustomPaper, { LinkPaper } from '@/components/layouts/CustomPaper'
+import CustomPaper, { LinkPaper } from '@/components/elements/CustomPaper'
 import theme from '@/styles/theme'
 import { ThemeProvider } from '@mui/material/styles'
 import { path } from '@/const/Consts'

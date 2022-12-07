@@ -3,7 +3,7 @@
 import { Paper, Grid, Button, Typography, Link, Box } from '@mui/material'
 import React from 'react'
 import CafeCard from '@/components/elements/CafeCard'
-import CustomPaper, { LinkPaper } from '@/components/layouts/CustomPaper'
+import CustomPaper, { LinkPaper } from '@/components/elements/CustomPaper'
 import Router from 'next/router'
 import { useRouter } from 'next/router'
 import { useState, useEffect } from 'react'

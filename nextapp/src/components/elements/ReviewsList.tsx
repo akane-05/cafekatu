@@ -17,7 +17,7 @@ import {
 } from '@mui/material'
 import React, { useRef } from 'react'
 import CafeCard from '@/components/elements/CafeCard'
-import CustomPaper from '@/components/layouts/CustomPaper'
+import CustomPaper from '@/components/elements/CustomPaper'
 import Router from 'next/router'
 import { CafeInfo } from '@/features/cafes/types'
 import { useRouter } from 'next/router'

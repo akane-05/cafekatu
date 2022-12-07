@@ -18,7 +18,7 @@ import {
 } from '@mui/material'
 import React, { useState, useRef, useEffect } from 'react'
 import Review from '@/components/elements/ReviewCard'
-import CustomPaper, { LinkPaper } from '@/components/layouts/CustomPaper'
+import CustomPaper, { LinkPaper } from '@/components/elements/CustomPaper'
 import Visibility from '@mui/icons-material/Visibility'
 import VisibilityOff from '@mui/icons-material/VisibilityOff'
 import { path, strage, requests } from '@/const/Consts'

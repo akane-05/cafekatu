@@ -19,7 +19,7 @@ import {
 } from '@mui/material'
 import theme from '@/styles/theme'
 import { ThemeProvider } from '@mui/material/styles'
-import CustomPaper, { LinkPaper } from '@/components/layouts/CustomPaper'
+import CustomPaper, { LinkPaper } from '@/components/elements/CustomPaper'
 import { Cafe } from '@/features/cafes/types'
 import * as yup from 'yup'
 import { validate } from '@/lib/validate'
