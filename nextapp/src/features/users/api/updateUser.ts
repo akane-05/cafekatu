@@ -1,10 +1,10 @@
-import { UpdateInfo, UserUpdRes } from '@/features/users/types'
+import { UserUpdInfo, UserUpdRes } from '@/features/users/types'
 import apiClient from '@/lib/axios'
 import { requests } from '@/const/Consts'
 import { strage } from '@/const/Consts'
 import { errorHandler } from '@/features/index'
 
-export async function updateUser(info: UpdateInfo): Promise<UserUpdRes> {
+export async function updateUser(info: UserUpdInfo): Promise<UserUpdRes> {
   return apiClient
     .patch(requests.users, JSON.stringify(info), {
       headers: {
@@ -15,6 +15,7 @@ export async function updateUser(info: UpdateInfo): Promise<UserUpdRes> {
       const { data, status } = res
       const response = JSON.parse(JSON.stringify(data)) as UserUpdRes
       response.status = status
+
       localStorage.setItem(strage.Token, response.token ? response.token : '')
 
       return response

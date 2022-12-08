@@ -8,7 +8,7 @@ export type UserUpdRes = BasicResponse & {
   address?: string
 }
 
-export type UpdateInfo = {
+export type UserUpdInfo = {
   nickname: string
   email: string
   password: string

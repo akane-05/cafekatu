@@ -9,10 +9,14 @@ import { path, errStatus } from '@/const/Consts'
 import { useRouter } from 'next/router'
 import * as Dialog from '@/context/MessageDialog'
 import { deleteUser } from '@/features/users/api/deleteUser'
+import { userInfoState, UserInfo } from '@/globalStates/userInfo'
+import { useSetRecoilState, RecoilRoot } from 'recoil'
 
 export default function withdrawal() {
   const router = useRouter()
   const dialog = Dialog.useDialogContext()
+
+  const setUserInfo = useSetRecoilState(userInfoState)
 
   const handleLink = (path: string) => {
     router.push(path)
@@ -21,6 +25,8 @@ export default function withdrawal() {
   const deleteUserInfo = async () => {
     const response = await deleteUser()
     if (response.status == 200) {
+      setUserInfo(undefined) //stateを空にする
+
       dialog.confirm(Dialog.apiOKDialog('退会しました'))
       handleLink(path.top)
     } else {

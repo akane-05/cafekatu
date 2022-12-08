@@ -29,17 +29,19 @@ import { ThemeProvider } from '@mui/material/styles'
 import theme from '@/styles/theme'
 import { useUser } from '@/features/users/api/useUser'
 import { updateUser } from '@/features/users/api/updateUser'
-import { UpdateInfo } from '@/features/users/types'
+import { UserUpdInfo } from '@/features/users/types'
 import { validate } from '@/lib/validate'
 import * as Dialog from '@/context/MessageDialog'
 import Error from '@/pages/_error'
+import { userInfoState, UserInfo } from '@/globalStates/userInfo'
+import { useSetRecoilState, RecoilRoot } from 'recoil'
 
 export default function Mypage() {
   const router = useRouter()
   const dialog = Dialog.useDialogContext()
   const { response, isLoading, isError } = useUser()
 
-  const [values, setValues] = React.useState<UpdateInfo>({
+  const [values, setValues] = React.useState<UserUpdInfo>({
     nickname: '',
     email: '',
     password: '',
@@ -51,6 +53,8 @@ export default function Mypage() {
 
   const [isEdit, setIsEdit] = React.useState<boolean>(false)
   const [showPassword, setShowPassword] = React.useState<boolean>(false)
+
+  const setUserInfo = useSetRecoilState(userInfoState)
 
   // バリデーションルール
   const validScheme = () => {
@@ -117,7 +121,7 @@ export default function Mypage() {
   }
 
   const handleChange =
-    (prop: keyof UpdateInfo) =>
+    (prop: keyof UserUpdInfo) =>
     (event: React.ChangeEvent<HTMLInputElement>) => {
       setValues({ ...values, [prop]: event.target.value })
     }
@@ -147,6 +151,13 @@ export default function Mypage() {
   const update = async () => {
     const response = await updateUser(values)
     if (response.status == 200) {
+      const userInfo: UserInfo = {
+        id: response.id,
+        nickname: response.nickname,
+        email: response.email,
+      }
+      setUserInfo(userInfo)
+
       dialog.confirm(Dialog.apiOKDialog(response.message))
       handleLink(path.cafesList)
     } else {
