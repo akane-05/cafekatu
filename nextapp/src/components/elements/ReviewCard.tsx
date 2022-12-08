@@ -47,7 +47,6 @@ export default function ReviewCard(props: Props) {
     const response = await deleteReview(id)
     if (response.status == 200) {
       dialog.confirm(Dialog.apiOKDialog(response.message))
-      console.log(props.mutate)
       props.mutate()
     } else {
       if (errStatus.includes(response.status)) {

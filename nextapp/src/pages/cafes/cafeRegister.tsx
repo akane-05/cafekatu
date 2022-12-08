@@ -93,7 +93,7 @@ export default function CafeRegister() {
     router.push(path)
   }
 
-  const handleSelect = (event: SelectChangeEvent<any>) => {
+  const handleSelect = (event: SelectChangeEvent<number>) => {
     const value = event.target.value as number
 
     setValues({ ...values, ['prefecture_id']: value })

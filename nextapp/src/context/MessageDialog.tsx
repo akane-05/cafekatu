@@ -98,11 +98,6 @@ export function MessageDialog({ children }: { children: React.ReactNode }) {
     setOptions({ ...options, open: false })
   }
 
-  // const handleCancel = () => {
-  //   // reject()
-  //   handleClose()
-  // }
-
   const handleConfirm = () => {
     resolve()
     handleClose()

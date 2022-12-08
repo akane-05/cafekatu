@@ -40,8 +40,6 @@ export default function CafeCard(props: Props) {
   const cafeInfo = props.cafeInfo
 
   useEffect(() => {
-    console.log('お気に入り')
-    console.log(props.cafeInfo.is_favorite)
     setIsFavorite(props.cafeInfo.is_favorite)
   }, [])
 

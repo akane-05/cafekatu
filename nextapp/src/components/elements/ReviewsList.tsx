@@ -101,7 +101,7 @@ export default function ReviewsList(props: Props) {
       setValues({ ...values, [prop]: event.target.value })
     }
 
-  const handleSelect = (event: SelectChangeEvent<any>) => {
+  const handleSelect = (event: SelectChangeEvent<number>) => {
     const value = event.target.value as number
 
     setValues({ ...values, ['rating']: value })
