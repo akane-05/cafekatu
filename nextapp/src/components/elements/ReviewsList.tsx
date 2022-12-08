@@ -25,7 +25,7 @@ import { useState, useEffect } from 'react'
 //import { getCafes } from '@/features/cafes/api/getCafes'
 import { useReviews } from '@/features/reviews/api/useReviews'
 import * as Dialog from '@/context/MessageDialog'
-import { path, strage, ratingList, requests } from '@/const/Consts'
+import { path, strage, ratingList, requests, errStatus } from '@/const/Consts'
 import PageButton from '@/components/elements/PageButton'
 import { Pagination } from '@mui/material'
 import { ReviewInfo } from '@/features/reviews/types/index'
@@ -71,12 +71,8 @@ export default function ReviewsList(props: Props) {
     rating: 0,
     comment: '',
   }
-  //const [values, setValues] = React.useState<Review>(defaultReview)
-  const [values, setValues] = React.useState<ReviewInfo>({
-    cafe_id: 0,
-    rating: 0,
-    comment: '',
-  })
+
+  const [values, setValues] = React.useState<ReviewInfo>(defaultReview)
 
   const [errors, setErrors] = useState<any>({})
 
@@ -136,7 +132,14 @@ export default function ReviewsList(props: Props) {
         }
         setIsCommentPost(!isCommentPost)
       } else {
-        dialog.confirm(Dialog.apiErrorDialog(response.status, response.error))
+        if (errStatus.includes(response.status)) {
+          router.push({
+            pathname: path.error,
+            query: { status: response.status, error: response.error },
+          })
+        } else {
+          dialog.confirm(Dialog.apiErrorDialog(response.status, response.error))
+        }
       }
     }
   }

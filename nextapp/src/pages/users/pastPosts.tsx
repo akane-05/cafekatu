@@ -15,13 +15,13 @@ import PageButton from '@/components/elements/PageButton'
 import { Pagination } from '@mui/material'
 //import { CafeInfo } from '@/features/cafes/types'
 import ReviewCard from '@/components/elements/ReviewCard'
-import { Review } from '@/features/reviews/types'
+import { ReviewInfo } from '@/features/reviews/types'
 import Error from '@/pages/_error'
 import { CafeInfo } from '@/features/cafes/types'
 
 export type PastPost = {
   cafeInfo: CafeInfo
-  reviews: Review[]
+  reviews: ReviewInfo[]
 }
 
 export default function pastPosts() {
@@ -91,7 +91,7 @@ export default function pastPosts() {
               <Box key={index}>
                 <CustomPaper>
                   <CafeCard cafeInfo={pastPost.cafeInfo}></CafeCard>
-                  {pastPost.reviews.map((review: Review) => {
+                  {pastPost.reviews.map((review: ReviewInfo) => {
                     return (
                       <ReviewCard
                         key={review.id}

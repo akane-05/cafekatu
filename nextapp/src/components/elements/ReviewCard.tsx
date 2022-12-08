@@ -19,6 +19,8 @@ import React from 'react'
 import { ReviewInfo } from '@/features/reviews/types/index'
 import * as Dialog from '@/context/MessageDialog'
 import { deleteReview } from '@/features/reviews/api/deleteReview'
+import { path, errStatus } from '@/const/Consts'
+import { useRouter } from 'next/router'
 
 type Props = {
   review: ReviewInfo
@@ -27,6 +29,7 @@ type Props = {
 }
 
 export default function ReviewCard(props: Props) {
+  const router = useRouter()
   const dialog = Dialog.useDialogContext()
   const review = props.review
   const pastPost = props.pastPost
@@ -47,7 +50,14 @@ export default function ReviewCard(props: Props) {
       console.log(props.mutate)
       props.mutate()
     } else {
-      dialog.confirm(Dialog.apiErrorDialog(response.status, response.error))
+      if (errStatus.includes(response.status)) {
+        router.push({
+          pathname: path.error,
+          query: { status: response.status, error: response.error },
+        })
+      } else {
+        dialog.confirm(Dialog.apiErrorDialog(response.status, response.error))
+      }
     }
   }
 

@@ -1,9 +1,10 @@
 import apiClient from '@/lib/axios'
-import { ReviewsRes } from '@/features/reviews/types'
+import { BasicResponse } from '@/features/index'
 import { strage } from '@/const/Consts'
 import { requests } from '@/const/Consts'
+import { errorHandler } from '@/features/index'
 
-export async function deleteReview(id: number): Promise<ReviewsRes> {
+export async function deleteReview(id: number): Promise<BasicResponse> {
   return apiClient
     .delete(requests.reviews + '/' + id, {
       headers: {
@@ -12,19 +13,11 @@ export async function deleteReview(id: number): Promise<ReviewsRes> {
     })
     .then((res) => {
       const { data, status } = res
-      const response = JSON.parse(JSON.stringify(data)) as ReviewsRes
+      const response = JSON.parse(JSON.stringify(data)) as BasicResponse
       response.status = status
       return response
     })
     .catch((error) => {
-      const { data, status } = error.response
-      const response = JSON.parse(JSON.stringify(data)) as ReviewsRes
-      response.status = status
-
-      if (status == 401) {
-        localStorage.removeItem(strage.Token)
-      }
-
-      return response
+      return errorHandler(error)
     })
 }
