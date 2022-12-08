@@ -30,6 +30,7 @@ import { postCafe } from '@/features/cafes/api/postCafe'
 import { usePrefecture } from '@/features/unit/api/usePrefecture'
 import { makeStyles } from '@mui/styles'
 import { Prefectures } from '@/features/unit/types/index'
+import Error from '@/pages/_error'
 
 const useStyles = makeStyles((theme) => ({
   menuPaper: {
@@ -132,48 +133,9 @@ export default function CafeRegister() {
   }
   if (isError) {
     return (
-      <>
-        <CustomPaper sx={{ mt: 2 }}>
-          <Grid
-            container
-            alignItems="center"
-            justifyContent="center"
-            direction="column"
-          >
-            <Grid item xs={12} p={2}>
-              <Typography variant="body1">
-                都道府県情報を取得できませんでした。
-              </Typography>
-            </Grid>
-          </Grid>
-        </CustomPaper>
-      </>
-    )
-  }
-
-  if (isError && isError?.response?.status == 401) {
-    return (
-      <>
-        <Grid
-          container
-          alignItems="center"
-          justifyContent="center"
-          direction="column"
-        >
-          <Grid item xs={12} p={2}>
-            <Typography variant="body1">
-              ログイン情報を取得できませんでした。再度ログインしてください。
-            </Typography>
-          </Grid>
-          <Button
-            variant="contained"
-            color="primary"
-            onClick={() => handleLink(path.top)}
-          >
-            Top画面に戻る
-          </Button>
-        </Grid>
-      </>
+      <Error
+        statusCode={isError.response ? isError.response.status : 500}
+      ></Error>
     )
   }
 

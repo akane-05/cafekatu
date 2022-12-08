@@ -165,50 +165,8 @@ export default function Mypage() {
     return <span>読み込み中...</span>
   }
 
-  // if (isError && isError?.response?.status == 401) {
-  //   return (
-  //     <>
-  //       <Grid
-  //         container
-  //         alignItems="center"
-  //         justifyContent="center"
-  //         direction="column"
-  //       >
-  //         <Grid item xs={12} p={2}>
-  //           <Typography variant="body1">
-  //             ログイン情報を取得できませんでした。再度ログインしてください。
-  //           </Typography>
-  //         </Grid>
-  //         <Button
-  //           variant="contained"
-  //           color="primary"
-  //           onClick={() => handleLink(path.top)}
-  //         >
-  //           Top画面に戻る
-  //         </Button>
-  //       </Grid>
-  //     </>
-  //   )
-  // }
-
   if (isError) {
     return (
-      // <>
-      //   <CustomPaper sx={{ mt: 2 }}>
-      //     <Grid
-      //       container
-      //       alignItems="center"
-      //       justifyContent="center"
-      //       direction="column"
-      //     >
-      //       <Grid item xs={12} p={2}>
-      //         <Typography variant="body1">
-      //           ユーザー情報を取得できませんでした。
-      //         </Typography>
-      //       </Grid>
-      //     </Grid>
-      //   </CustomPaper>
-      // </>
       <Error
         statusCode={isError.response ? isError.response.status : 500}
       ></Error>

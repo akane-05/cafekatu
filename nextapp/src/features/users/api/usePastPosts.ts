@@ -6,13 +6,6 @@ import { useRouter } from 'next/router'
 import { useState, useEffect } from 'react'
 import { strage } from '@/const/Consts'
 
-export type fetchPostReturnType = {
-  data: {
-    cafes: CafeInfo[]
-    message: string
-  }
-}
-
 export function usePastPosts(page: number, perPage: number) {
   const fetcher = (url: string) =>
     apiClient
