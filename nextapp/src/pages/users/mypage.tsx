@@ -21,7 +21,7 @@ import Review from '@/components/elements/ReviewCard'
 import CustomPaper, { LinkPaper } from '@/components/elements/CustomPaper'
 import Visibility from '@mui/icons-material/Visibility'
 import VisibilityOff from '@mui/icons-material/VisibilityOff'
-import { path, strage, requests } from '@/const/Consts'
+import { path, strage, requests, errStatus } from '@/const/Consts'
 import { useRouter } from 'next/router'
 import { useUserInfo } from '@/hooks/useUserInfo'
 import * as yup from 'yup'
@@ -32,6 +32,7 @@ import { updateUser } from '@/features/users/api/updateUser'
 import { UpdateInfo } from '@/features/users/types'
 import { validate } from '@/lib/validate'
 import * as Dialog from '@/context/MessageDialog'
+import Error from '@/pages/_error'
 
 export default function Mypage() {
   const router = useRouter()
@@ -96,23 +97,6 @@ export default function Mypage() {
   }
 
   const scheme = validScheme()
-  // newPassword: yup
-  //   .string()
-  //   .matches(
-  //     /^([a-zA-Z0-9]{8,20})$/,
-  //     '半角英数字8文字以上20文字以下で入力してください。',
-  //   ),
-  // newPasswordConfirm: yup
-  //   .string()
-  //   .matches(
-  //     /^([a-zA-Z0-9]{8,20})$/,
-  //     '半角英数字8文字以上20文字以下で入力してください。',
-  //   )
-  //   .oneOf(
-  //     [yup.ref('newPassword'), null],
-  //     '確認用パスワードが一致していません',
-  //   ),
-  // })
 
   const handleLink = (path: string) => {
     router.push(path)
@@ -141,7 +125,6 @@ export default function Mypage() {
   const handleDialog = async () => {
     const errors = validate({ ...values }, scheme)
 
-    console.log(errors)
     setErrors(errors)
     let error = false
     for (const key of Object.keys(errors)) {
@@ -167,10 +150,14 @@ export default function Mypage() {
       dialog.confirm(Dialog.apiOKDialog(response.message))
       handleLink(path.cafesList)
     } else {
-      if (response.status == 401) {
-        handleLink(path.top)
+      if (errStatus.includes(response.status)) {
+        router.push({
+          pathname: path.error,
+          query: { status: response.status, error: response.error },
+        })
+      } else {
+        dialog.confirm(Dialog.apiErrorDialog(response.status, response.error))
       }
-      dialog.confirm(Dialog.apiErrorDialog(response.status, response.error))
     }
   }
 
@@ -178,50 +165,53 @@ export default function Mypage() {
     return <span>読み込み中...</span>
   }
 
-  if (isError && isError?.response?.status == 401) {
-    return (
-      <>
-        <Grid
-          container
-          alignItems="center"
-          justifyContent="center"
-          direction="column"
-        >
-          <Grid item xs={12} p={2}>
-            <Typography variant="body1">
-              ログイン情報を取得できませんでした。再度ログインしてください。
-            </Typography>
-          </Grid>
-          <Button
-            variant="contained"
-            color="primary"
-            onClick={() => handleLink(path.top)}
-          >
-            Top画面に戻る
-          </Button>
-        </Grid>
-      </>
-    )
-  }
+  // if (isError && isError?.response?.status == 401) {
+  //   return (
+  //     <>
+  //       <Grid
+  //         container
+  //         alignItems="center"
+  //         justifyContent="center"
+  //         direction="column"
+  //       >
+  //         <Grid item xs={12} p={2}>
+  //           <Typography variant="body1">
+  //             ログイン情報を取得できませんでした。再度ログインしてください。
+  //           </Typography>
+  //         </Grid>
+  //         <Button
+  //           variant="contained"
+  //           color="primary"
+  //           onClick={() => handleLink(path.top)}
+  //         >
+  //           Top画面に戻る
+  //         </Button>
+  //       </Grid>
+  //     </>
+  //   )
+  // }
 
   if (isError) {
     return (
-      <>
-        <CustomPaper sx={{ mt: 2 }}>
-          <Grid
-            container
-            alignItems="center"
-            justifyContent="center"
-            direction="column"
-          >
-            <Grid item xs={12} p={2}>
-              <Typography variant="body1">
-                ユーザー情報を取得できませんでした。
-              </Typography>
-            </Grid>
-          </Grid>
-        </CustomPaper>
-      </>
+      // <>
+      //   <CustomPaper sx={{ mt: 2 }}>
+      //     <Grid
+      //       container
+      //       alignItems="center"
+      //       justifyContent="center"
+      //       direction="column"
+      //     >
+      //       <Grid item xs={12} p={2}>
+      //         <Typography variant="body1">
+      //           ユーザー情報を取得できませんでした。
+      //         </Typography>
+      //       </Grid>
+      //     </Grid>
+      //   </CustomPaper>
+      // </>
+      <Error
+        statusCode={isError.response ? isError.response.status : 500}
+      ></Error>
     )
   }
 

@@ -96,7 +96,7 @@ func GetRouter() *gin.Engine {
 	r.POST("/register", loginC.Register)
 	r.GET("/prefectures", commonC.GetPrefectures)
 	r.NoRoute(func(c *gin.Context) {
-		c.JSON(404, gin.H{"code": "PAGE_NOT_FOUND", "message": "Page not found"})
+		c.JSON(404, gin.H{"error": "指定されたページが見つかりませんでした"})
 	})
 
 	return r

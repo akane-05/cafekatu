@@ -15,6 +15,7 @@ import { path, strage } from '@/const/Consts'
 import PageButton from '@/components/elements/PageButton'
 import { Pagination } from '@mui/material'
 import { useUserFavorites } from '@/features/users/api/useUserFavorites'
+import Error from '@/pages/_error'
 
 export default function UserFavorites() {
   const router = useRouter()
@@ -40,54 +41,11 @@ export default function UserFavorites() {
       </Grid>
     )
   }
-
-  if (isError && isError?.response?.status == 401) {
-    return (
-      <>
-        <Grid
-          container
-          alignItems="center"
-          justifyContent="center"
-          direction="column"
-        >
-          <Grid item xs={12} p={2}>
-            <Typography variant="body1">
-              ログイン情報を取得できませんでした。再度ログインしてください。
-            </Typography>
-          </Grid>
-          <Button
-            variant="contained"
-            color="primary"
-            onClick={() => handleLink(path.top)}
-          >
-            Top画面に戻る
-          </Button>
-        </Grid>
-      </>
-    )
-  }
-
   if (isError) {
     return (
-      <>
-        <Grid
-          container
-          alignItems="center"
-          justifyContent="center"
-          direction="column"
-        >
-          <Grid item xs={12} p={2}>
-            <Typography variant="body1">エラーが発生しました</Typography>
-          </Grid>
-          <Button
-            variant="contained"
-            color="primary"
-            onClick={() => handleLink(path.top)}
-          >
-            Top画面に戻る
-          </Button>
-        </Grid>
-      </>
+      <Error
+        statusCode={isError.response ? isError.response.status : 500}
+      ></Error>
     )
   }
 

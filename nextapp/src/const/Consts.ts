@@ -20,6 +20,7 @@ const path = {
   favorites: '/users/favorites',
   pastPosts: '/users/pastPosts',
   withdrawal: '/users/withdrawal',
+  error: '/error',
 }
 
 const strage = {
@@ -33,4 +34,6 @@ const ratingList: number[] = [
   4.6, 4.7, 4.8, 4.9, 5.0,
 ]
 
-export { requests, path, strage, ratingList }
+const errStatus: number[] = [401, 404, 500]
+
+export { requests, path, strage, ratingList, errStatus }

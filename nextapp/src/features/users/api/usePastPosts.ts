@@ -38,11 +38,8 @@ export function usePastPosts(page: number, perPage: number) {
     fetcher,
     {
       onErrorRetry: (error) => {
-        if (error.message == 'Network Error') {
-          return
-        }
         // 401でトークンを削除
-        if (error.response.status == 401) {
+        if (error.response && error.response.status == 401) {
           localStorage.removeItem(strage.Token)
         }
       },
