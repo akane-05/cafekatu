@@ -1,4 +1,3 @@
-import { CafeInfo } from '@/features/cafes/types'
 import apiClient from '@/lib/axios'
 import useSWR from 'swr'
 import { requests } from '@/const/Consts'

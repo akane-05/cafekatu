@@ -30,6 +30,7 @@ export function useReviews(page: number, perPage: number, id: any) {
       : null,
     fetcher,
     {
+      revalidateOnMount: true,
       onErrorRetry: (error) => {
         // 401でトークンを削除
         if (error.response && error.response.status == 401) {

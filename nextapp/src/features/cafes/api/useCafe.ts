@@ -1,4 +1,3 @@
-import { CafeInfo } from '@/features/cafes/types'
 import apiClient from '@/lib/axios'
 import useSWR from 'swr'
 import { requests } from '@/const/Consts'
@@ -21,12 +20,10 @@ export function useCafe(id: any) {
     error,
     mutate,
   } = useSWR(id ? requests.cafes + '/' + id : null, fetcher, {
+    revalidateOnMount: true,
     onErrorRetry: (error) => {
-      if (error.message == 'Network Error') {
-        return
-      }
       // 401でトークンを削除
-      if (error.response.status == 401) {
+      if (error.response && error.response.status == 401) {
         localStorage.removeItem(strage.Token)
       }
     },

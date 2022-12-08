@@ -1,4 +1,3 @@
-import { CafeInfo } from '@/features/cafes/types'
 import apiClient from '@/lib/axios'
 import useSWR from 'swr'
 import { requests } from '@/const/Consts'
@@ -6,19 +5,9 @@ import { useRouter } from 'next/router'
 import { useState, useEffect } from 'react'
 import { strage } from '@/const/Consts'
 
-export function useCafes(
-  page: number,
-  perPage: number,
-  param?: string | string[],
-) {
-  let searchWord = ''
-  if (typeof param === undefined) {
-    searchWord = ''
-  } else if (typeof param === 'string') {
-    searchWord = param
-  } else if (Array.isArray(param)) {
-    searchWord = param[0]
-  }
+export function useCafes(page: number, perPage: number, param?: any) {
+  const searchWord = param ? param : ''
+
   const fetcher = (url: string) =>
     apiClient
       .get(url, {
@@ -38,15 +27,10 @@ export function useCafes(
       }),
     fetcher,
     {
-      // revalidateIfStale: true,
       revalidateOnMount: true,
-      // revalidateOnFocus: true,
       onErrorRetry: (error) => {
-        if (error.message == 'Network Error') {
-          return
-        }
         // 401でトークンを削除
-        if (error.response.status == 401) {
+        if (error.response && error.response.status == 401) {
           localStorage.removeItem(strage.Token)
         }
       },

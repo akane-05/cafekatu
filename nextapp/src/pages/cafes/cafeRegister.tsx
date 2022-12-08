@@ -20,11 +20,11 @@ import {
 import theme from '@/styles/theme'
 import { ThemeProvider } from '@mui/material/styles'
 import CustomPaper, { LinkPaper } from '@/components/elements/CustomPaper'
-import { Cafe } from '@/features/cafes/types'
+import { CafeRgsInfo } from '@/features/cafes/types'
 import * as yup from 'yup'
 import { validate } from '@/lib/validate'
 import * as Dialog from '@/context/MessageDialog'
-import { path } from '@/const/Consts'
+import { path, errStatus } from '@/const/Consts'
 import { useRouter } from 'next/router'
 import { postCafe } from '@/features/cafes/api/postCafe'
 import { usePrefecture } from '@/features/unit/api/usePrefecture'
@@ -48,7 +48,7 @@ export default function CafeRegister() {
   const router = useRouter()
   const dialog = Dialog.useDialogContext()
   const classes = useStyles()
-  const [values, setValues] = React.useState<Cafe>({
+  const [values, setValues] = React.useState<CafeRgsInfo>({
     name: '',
     zipcode: '',
     prefecture_id: 1,
@@ -84,7 +84,8 @@ export default function CafeRegister() {
   })
 
   const handleChange =
-    (prop: keyof Cafe) => (event: React.ChangeEvent<HTMLInputElement>) => {
+    (prop: keyof CafeRgsInfo) =>
+    (event: React.ChangeEvent<HTMLInputElement>) => {
       setValues({ ...values, [prop]: event.target.value })
     }
 
@@ -125,10 +126,14 @@ export default function CafeRegister() {
       dialog.confirm(Dialog.apiOKDialog(response.message))
       handleLink(path.cafesList)
     } else {
-      if (response.status == 401) {
-        handleLink(path.top)
+      if (errStatus.includes(response.status)) {
+        router.push({
+          pathname: path.error,
+          query: { status: response.status, error: response.error },
+        })
+      } else {
+        dialog.confirm(Dialog.apiErrorDialog(response.status, response.error))
       }
-      dialog.confirm(Dialog.apiErrorDialog(response.status, response.error))
     }
   }
 

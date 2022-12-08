@@ -2,13 +2,13 @@ import { ReviewInfo } from '@/features/reviews/types'
 import apiClient from '@/lib/axios'
 import { requests } from '@/const/Consts'
 import { strage } from '@/const/Consts'
-import { BasicResponse } from '@/features/index'
+import { BasicRes } from '@/features/index'
 import { errorHandler } from '@/features/index'
 
 export async function postReview(
   review: ReviewInfo,
   id: any,
-): Promise<BasicResponse> {
+): Promise<BasicRes> {
   const cafe_id = parseInt(id)
   review.cafe_id = cafe_id
 
@@ -20,7 +20,7 @@ export async function postReview(
     })
     .then((res) => {
       const { data, status } = res
-      const response = JSON.parse(JSON.stringify(data)) as BasicResponse
+      const response = JSON.parse(JSON.stringify(data)) as BasicRes
       response.status = status
 
       return response

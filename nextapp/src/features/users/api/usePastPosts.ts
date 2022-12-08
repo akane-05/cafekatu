@@ -1,4 +1,3 @@
-import { CafeInfo } from '@/features/cafes/types'
 import apiClient from '@/lib/axios'
 import useSWR from 'swr'
 import { requests } from '@/const/Consts'
@@ -30,6 +29,7 @@ export function usePastPosts(page: number, perPage: number) {
       }),
     fetcher,
     {
+      revalidateOnMount: true,
       onErrorRetry: (error) => {
         // 401でトークンを削除
         if (error.response && error.response.status == 401) {

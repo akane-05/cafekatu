@@ -1,10 +1,10 @@
 import apiClient from '@/lib/axios'
-import { BasicResponse } from '@/features/index'
+import { BasicRes } from '@/features/index'
 import { strage } from '@/const/Consts'
 import { requests } from '@/const/Consts'
 import { errorHandler } from '@/features/index'
 
-export async function deleteReview(id: number): Promise<BasicResponse> {
+export async function deleteReview(id: number): Promise<BasicRes> {
   return apiClient
     .delete(requests.reviews + '/' + id, {
       headers: {
@@ -13,7 +13,7 @@ export async function deleteReview(id: number): Promise<BasicResponse> {
     })
     .then((res) => {
       const { data, status } = res
-      const response = JSON.parse(JSON.stringify(data)) as BasicResponse
+      const response = JSON.parse(JSON.stringify(data)) as BasicRes
       response.status = status
       return response
     })

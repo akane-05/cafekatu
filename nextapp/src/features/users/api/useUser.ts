@@ -17,6 +17,7 @@ export function useUser() {
       .then((res) => res.data)
 
   const { data: data, error } = useSWR(requests.users, fetcher, {
+    revalidateOnMount: true,
     onErrorRetry: (error) => {
       // 401でトークンを削除
       if (error.response && error.response.status == 401) {

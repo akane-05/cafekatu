@@ -1,6 +1,6 @@
-import { BasicResponse } from '@/features/index'
+import { BasicRes } from '@/features/index'
 
-export type LoginRes = BasicResponse & {
+export type LoginRes = BasicRes & {
   id?: number
   nickname?: string
   email?: string
