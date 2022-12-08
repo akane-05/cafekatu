@@ -29,7 +29,6 @@ import { useRouter } from 'next/router'
 import { postCafe } from '@/features/cafes/api/postCafe'
 import { usePrefecture } from '@/features/unit/api/usePrefecture'
 import { makeStyles } from '@mui/styles'
-import { Prefectures } from '@/features/unit/types/index'
 import Error from '@/pages/_error'
 
 const useStyles = makeStyles((theme) => ({
@@ -38,6 +37,11 @@ const useStyles = makeStyles((theme) => ({
     maxHeight: 200,
   },
 }))
+
+export type Prefectures = {
+  id: number
+  prefecture: string
+}
 
 export default function CafeRegister() {
   const { response, isLoading, isError } = usePrefecture()
