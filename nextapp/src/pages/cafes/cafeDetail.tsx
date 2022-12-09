@@ -4,12 +4,12 @@ import { Button, Grid, Typography, Link } from '@mui/material'
 import React, { useState, useEffect } from 'react'
 import CafeCard from '@/components/elements/CafeCard'
 import ReviewCard from '@/components/elements/ReviewCard'
-import CustomPaper, { LinkPaper } from '@/components/layouts/CustomPaper'
+import CustomPaper, { LinkPaper } from '@/components/elements/CustomPaper'
 import { useCafe } from '@/features/cafes/api/useCafe'
 import { useRouter } from 'next/router'
 import { path, strage, requests } from '@/const/Consts'
 import ReviewsList from '@/components/elements/ReviewsList'
-import useSWR, { useSWRConfig } from 'swr'
+import Error from '@/pages/_error'
 
 export default function CafeDetail() {
   const router = useRouter()
@@ -34,53 +34,11 @@ export default function CafeDetail() {
     )
   }
 
-  if (isError && isError?.response?.status == 401) {
-    return (
-      <>
-        <Grid
-          container
-          alignItems="center"
-          justifyContent="center"
-          direction="column"
-        >
-          <Grid item xs={12} p={2}>
-            <Typography variant="body1">
-              ログイン情報を取得できませんでした。再度ログインしてください。
-            </Typography>
-          </Grid>
-          <Button
-            variant="contained"
-            color="primary"
-            onClick={() => handleLink(path.top)}
-          >
-            Top画面に戻る
-          </Button>
-        </Grid>
-      </>
-    )
-  }
-
   if (isError) {
     return (
-      <>
-        <Grid
-          container
-          alignItems="center"
-          justifyContent="center"
-          direction="column"
-        >
-          <Grid item xs={12} p={2}>
-            <Typography variant="body1">エラーが発生しました</Typography>
-          </Grid>
-          <Button
-            variant="contained"
-            color="primary"
-            onClick={() => handleLink(path.top)}
-          >
-            Top画面に戻る
-          </Button>
-        </Grid>
-      </>
+      <Error
+        statusCode={isError.response ? isError.response.status : 500}
+      ></Error>
     )
   }
 

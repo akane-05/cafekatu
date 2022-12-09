@@ -17,12 +17,10 @@ export function useUser() {
       .then((res) => res.data)
 
   const { data: data, error } = useSWR(requests.users, fetcher, {
+    revalidateOnMount: true,
     onErrorRetry: (error) => {
-      if (error.message == 'Network Error') {
-        return
-      }
       // 401でトークンを削除
-      if (error.response.status == 401) {
+      if (error.response && error.response.status == 401) {
         localStorage.removeItem(strage.Token)
       }
     },

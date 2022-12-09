@@ -18,8 +18,8 @@ import {
 import React, { useState, useEffect } from 'react'
 import FavoriteIcon from '@mui/icons-material/Favorite'
 import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder'
-import { Cafe, CafeInfo } from '@/features/cafes/types'
-import { path } from '@/const/Consts'
+import { CafeInfo } from '@/features/cafes/types'
+import { path, errStatus } from '@/const/Consts'
 import { useRouter } from 'next/router'
 import { postFavorite } from '@/features/cafes/api/postFavorite'
 import { deleteFavorite } from '@/features/cafes/api/deleteFavorite'
@@ -41,20 +41,27 @@ export default function CafeCard(props: Props) {
 
   useEffect(() => {
     setIsFavorite(props.cafeInfo.is_favorite)
-  }, [])
+  }, [props.cafeInfo.is_favorite])
 
   const handleClickFavorite = async () => {
-    let res
+    let response
     if (!isFavorite) {
-      res = await postFavorite(cafeInfo.id)
+      response = await postFavorite(cafeInfo.id)
     } else {
-      res = await deleteFavorite(cafeInfo.id)
+      response = await deleteFavorite(cafeInfo.id)
     }
 
-    if (res.status == 200) {
+    if (response.status == 200) {
       setIsFavorite(!isFavorite)
     } else {
-      dialog.confirm(Dialog.apiErrorDialog(res.status, res.error))
+      if (errStatus.includes(response.status)) {
+        router.push({
+          pathname: path.error,
+          query: { status: response.status, error: response.error },
+        })
+      } else {
+        dialog.confirm(Dialog.apiErrorDialog(response.status, response.error))
+      }
     }
   }
 

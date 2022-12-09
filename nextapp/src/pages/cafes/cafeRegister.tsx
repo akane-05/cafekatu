@@ -19,17 +19,17 @@ import {
 } from '@mui/material'
 import theme from '@/styles/theme'
 import { ThemeProvider } from '@mui/material/styles'
-import CustomPaper, { LinkPaper } from '@/components/layouts/CustomPaper'
-import { Cafe } from '@/features/cafes/types'
+import CustomPaper, { LinkPaper } from '@/components/elements/CustomPaper'
+import { CafeRgsInfo } from '@/features/cafes/types'
 import * as yup from 'yup'
 import { validate } from '@/lib/validate'
 import * as Dialog from '@/context/MessageDialog'
-import { path } from '@/const/Consts'
+import { path, errStatus } from '@/const/Consts'
 import { useRouter } from 'next/router'
 import { postCafe } from '@/features/cafes/api/postCafe'
 import { usePrefecture } from '@/features/unit/api/usePrefecture'
 import { makeStyles } from '@mui/styles'
-import { Prefectures } from '@/features/unit/types/index'
+import Error from '@/pages/_error'
 
 const useStyles = makeStyles((theme) => ({
   menuPaper: {
@@ -38,12 +38,17 @@ const useStyles = makeStyles((theme) => ({
   },
 }))
 
+export type Prefectures = {
+  id: number
+  prefecture: string
+}
+
 export default function CafeRegister() {
   const { response, isLoading, isError } = usePrefecture()
   const router = useRouter()
   const dialog = Dialog.useDialogContext()
   const classes = useStyles()
-  const [values, setValues] = React.useState<Cafe>({
+  const [values, setValues] = React.useState<CafeRgsInfo>({
     name: '',
     zipcode: '',
     prefecture_id: 1,
@@ -79,7 +84,8 @@ export default function CafeRegister() {
   })
 
   const handleChange =
-    (prop: keyof Cafe) => (event: React.ChangeEvent<HTMLInputElement>) => {
+    (prop: keyof CafeRgsInfo) =>
+    (event: React.ChangeEvent<HTMLInputElement>) => {
       setValues({ ...values, [prop]: event.target.value })
     }
 
@@ -87,7 +93,7 @@ export default function CafeRegister() {
     router.push(path)
   }
 
-  const handleSelect = (event: SelectChangeEvent<any>) => {
+  const handleSelect = (event: SelectChangeEvent<number>) => {
     const value = event.target.value as number
 
     setValues({ ...values, ['prefecture_id']: value })
@@ -120,10 +126,14 @@ export default function CafeRegister() {
       dialog.confirm(Dialog.apiOKDialog(response.message))
       handleLink(path.cafesList)
     } else {
-      if (response.status == 401) {
-        handleLink(path.top)
+      if (errStatus.includes(response.status)) {
+        router.push({
+          pathname: path.error,
+          query: { status: response.status, error: response.error },
+        })
+      } else {
+        dialog.confirm(Dialog.apiErrorDialog(response.status, response.error))
       }
-      dialog.confirm(Dialog.apiErrorDialog(response.status, response.error))
     }
   }
 
@@ -132,48 +142,9 @@ export default function CafeRegister() {
   }
   if (isError) {
     return (
-      <>
-        <CustomPaper sx={{ mt: 2 }}>
-          <Grid
-            container
-            alignItems="center"
-            justifyContent="center"
-            direction="column"
-          >
-            <Grid item xs={12} p={2}>
-              <Typography variant="body1">
-                都道府県情報を取得できませんでした。
-              </Typography>
-            </Grid>
-          </Grid>
-        </CustomPaper>
-      </>
-    )
-  }
-
-  if (isError && isError?.response?.status == 401) {
-    return (
-      <>
-        <Grid
-          container
-          alignItems="center"
-          justifyContent="center"
-          direction="column"
-        >
-          <Grid item xs={12} p={2}>
-            <Typography variant="body1">
-              ログイン情報を取得できませんでした。再度ログインしてください。
-            </Typography>
-          </Grid>
-          <Button
-            variant="contained"
-            color="primary"
-            onClick={() => handleLink(path.top)}
-          >
-            Top画面に戻る
-          </Button>
-        </Grid>
-      </>
+      <Error
+        statusCode={isError.response ? isError.response.status : 500}
+      ></Error>
     )
   }
 

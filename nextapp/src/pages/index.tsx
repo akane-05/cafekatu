@@ -10,6 +10,7 @@ import {
   InputAdornment,
   IconButton,
   FormHelperText,
+  Box,
 } from '@mui/material'
 import Visibility from '@mui/icons-material/Visibility'
 import VisibilityOff from '@mui/icons-material/VisibilityOff'
@@ -22,13 +23,25 @@ import { LoginInfo } from '@/features/login/types'
 import { path, strage } from '@/const/Consts'
 import * as Dialog from '@/context/MessageDialog'
 import { useHaveToken } from '@/hooks/useHaveToken'
+import { useSetRecoilState, RecoilRoot } from 'recoil'
+import { haveTokenState } from '@/globalStates/haveToken'
 
 function Home() {
   const router = useRouter()
   const { haveToken, isAuthChecking } = useHaveToken()
+  const setHaveToken = useSetRecoilState(haveTokenState)
+
+  useEffect(() => {
+    const token = localStorage.getItem(strage.Token)
+    if (token != null) {
+      setHaveToken(true)
+    } else {
+      setHaveToken(false)
+    }
+  }, [])
 
   if (isAuthChecking) {
-    // return <div>ログイン情報を確認中…</div>
+    //return <Box>ログイン情報を確認中…</Box>
     return (
       <Grid
         container

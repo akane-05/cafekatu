@@ -1,10 +1,10 @@
-import { UpdateInfo, UpdateRes } from '@/features/users/types'
+import { UserUpdInfo, UserUpdRes } from '@/features/users/types'
 import apiClient from '@/lib/axios'
 import { requests } from '@/const/Consts'
 import { strage } from '@/const/Consts'
-import Axios from 'axios'
+import { resolveHandler, errorHandler } from '@/features/index'
 
-export async function updateUser(info: UpdateInfo): Promise<UpdateRes> {
+export async function updateUser(info: UserUpdInfo): Promise<UserUpdRes> {
   return apiClient
     .patch(requests.users, JSON.stringify(info), {
       headers: {
@@ -12,41 +12,13 @@ export async function updateUser(info: UpdateInfo): Promise<UpdateRes> {
       },
     })
     .then((res) => {
-      const { data, status } = res
-      const response = JSON.parse(JSON.stringify(data)) as UpdateRes
-      response.status = status
+      const response = <UserUpdRes>resolveHandler(res)
+
       localStorage.setItem(strage.Token, response.token ? response.token : '')
 
       return response
     })
     .catch((error) => {
-      let response: UpdateRes
-      if (error?.message == 'Network Error') {
-        response = {
-          status: 404,
-          error: '指定されたページが見つかりません。',
-        }
-        return response
-      }
-
-      const { data, status } = error.response
-      response = JSON.parse(JSON.stringify(data)) as UpdateRes
-      response.status = status
-
-      if (status == 401) {
-        localStorage.removeItem(strage.Token)
-      }
-
-      return response
-
-      // const { data, status } = error.response
-      // const response = JSON.parse(JSON.stringify(data)) as UpdateRes
-      // response.status = status
-
-      // if (status == 401) {
-      //   localStorage.removeItem(strage.Token)
-      // }
-
-      // return response
+      return errorHandler(error)
     })
 }

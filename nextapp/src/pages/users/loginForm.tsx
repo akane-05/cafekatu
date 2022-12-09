@@ -18,14 +18,17 @@ import { ThemeProvider } from '@mui/material/styles'
 import React, { useState, useRef } from 'react'
 import CustomButton from '@/components/elements/CustomButton'
 import { LoginInfo } from '@/features/login/types'
-import { path } from '@/const/Consts'
+import { path, errStatus } from '@/const/Consts'
 import { login } from '@/features/login/api/login'
 import * as Dialog from '@/context/MessageDialog'
 import { userInfoState, UserInfo } from '@/globalStates/userInfo'
+import { useSetRecoilState, RecoilRoot } from 'recoil'
 import * as yup from 'yup'
 import { validate } from '@/lib/validate'
+import { useRouter } from 'next/router'
 
 export default function LoginForm() {
+  const router = useRouter()
   const [values, setValues] = React.useState<LoginInfo>({
     email: '',
     password: '',
@@ -33,6 +36,7 @@ export default function LoginForm() {
 
   const [showPassword, setShowPassword] = React.useState<boolean>(false)
   const [errors, setErrors] = useState<any>({})
+  const setUserInfo = useSetRecoilState(userInfoState)
 
   // バリデーションルール
   const scheme = yup.object({
@@ -82,6 +86,13 @@ export default function LoginForm() {
     if (!error) {
       const response = await login(values)
       if (response.status == 200) {
+        const userInfo: UserInfo = {
+          id: response.id,
+          nickname: response.nickname,
+          email: response.email,
+        }
+        setUserInfo(userInfo)
+
         dialog.confirm(Dialog.apiOKDialog(response.message))
         handleLink(path.cafesList)
       } else {

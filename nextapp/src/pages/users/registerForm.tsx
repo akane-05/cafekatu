@@ -14,34 +14,37 @@ import { ThemeProvider } from '@mui/material/styles'
 import Visibility from '@mui/icons-material/Visibility'
 import VisibilityOff from '@mui/icons-material/VisibilityOff'
 import React, { useState, useRef } from 'react'
-import { RegisterInfo } from '@/features/register/types'
+import { UserRgsInfo } from '@/features/register/types'
 import { registerUser } from '@/features/register/api/registerUser'
 import * as Dialog from '@/context/MessageDialog'
 import CustomButton from '@/components/elements/CustomButton'
-import { path } from '@/const/Consts'
-import { userInfoState, UserInfo } from '@/globalStates/userInfo'
+import { path, errStatus } from '@/const/Consts'
 import * as yup from 'yup'
 import { validate } from '@/lib/validate'
+import { userInfoState, UserInfo } from '@/globalStates/userInfo'
+import { useSetRecoilState, RecoilRoot } from 'recoil'
+import { useRouter } from 'next/router'
 
-type ComfirmValue = {
-  passwordConfirm: string
-  showPassword: boolean
+type InputValue = UserRgsInfo & {
+  passwordConfirm: ''
 }
 
-type InputValue = RegisterInfo & ComfirmValue
-
 export default function RegisterForm() {
+  const router = useRouter()
   const dialog = Dialog.useDialogContext()
 
+  const [showPassword, setShowPassword] = React.useState<boolean>(false)
+
   const [values, setValues] = React.useState<InputValue>({
+    nickname: '',
     email: '',
     password: '',
     passwordConfirm: '',
-    nickname: '',
-    showPassword: false,
   })
 
   const [errors, setErrors] = React.useState<any>({})
+
+  const setUserInfo = useSetRecoilState(userInfoState)
 
   // バリデーションルール
   const scheme = yup.object({
@@ -68,10 +71,7 @@ export default function RegisterForm() {
   })
 
   const handleClickShowPassword = () => {
-    setValues({
-      ...values,
-      showPassword: !values.showPassword,
-    })
+    setShowPassword(!showPassword)
   }
 
   const handleMouseDownPassword = (
@@ -89,14 +89,7 @@ export default function RegisterForm() {
         error = true
       }
     }
-
-    if (!error) {
-      await dialog.confirm(Dialog.confirmDialog('登録しますか？')).then(() => {
-        register()
-      })
-    } else {
-      dialog.confirm(Dialog.errorDialog('エラーを修正してください。'))
-    }
+    dialog.confirm(Dialog.errorDialog('エラーを修正してください。'))
   }
 
   const handleLink = (path: string) => {
@@ -112,10 +105,24 @@ export default function RegisterForm() {
   const register = async () => {
     const response = await registerUser(values)
     if (response.status == 200) {
+      const userInfo: UserInfo = {
+        id: response.id,
+        nickname: response.nickname,
+        email: response.email,
+      }
+      setUserInfo(userInfo)
+
       dialog.confirm(Dialog.apiOKDialog(response.message))
       handleLink(path.cafesList)
     } else {
-      dialog.confirm(Dialog.apiErrorDialog(response.status, response.error))
+      if (errStatus.includes(response.status)) {
+        router.push({
+          pathname: path.error,
+          query: { status: response.status, error: response.error },
+        })
+      } else {
+        dialog.confirm(Dialog.apiErrorDialog(response.status, response.error))
+      }
     }
   }
 
@@ -170,7 +177,7 @@ export default function RegisterForm() {
             <InputLabel htmlFor="password">Password</InputLabel>
             <OutlinedInput
               id="password"
-              type={values.showPassword ? 'text' : 'password'}
+              type={showPassword ? 'text' : 'password'}
               value={values.password}
               onChange={handleChange('password')}
               endAdornment={
@@ -181,7 +188,7 @@ export default function RegisterForm() {
                     onMouseDown={handleMouseDownPassword}
                     edge="end"
                   >
-                    {values.showPassword ? <VisibilityOff /> : <Visibility />}
+                    {showPassword ? <VisibilityOff /> : <Visibility />}
                   </IconButton>
                 </InputAdornment>
               }
@@ -200,7 +207,7 @@ export default function RegisterForm() {
             <InputLabel htmlFor="password confirm">Password確認</InputLabel>
             <OutlinedInput
               id="password confirm"
-              type={values.showPassword ? 'text' : 'password'}
+              type={showPassword ? 'text' : 'password'}
               value={values.passwordConfirm}
               onChange={handleChange('passwordConfirm')}
               endAdornment={
@@ -211,7 +218,7 @@ export default function RegisterForm() {
                     onMouseDown={handleMouseDownPassword}
                     edge="end"
                   >
-                    {values.showPassword ? <VisibilityOff /> : <Visibility />}
+                    {showPassword ? <VisibilityOff /> : <Visibility />}
                   </IconButton>
                 </InputAdornment>
               }

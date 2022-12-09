@@ -1,9 +1,10 @@
 import apiClient from '@/lib/axios'
-import { UsersRes } from '@/features/users/types'
+import { BasicRes } from '@/features/index'
 import { strage } from '@/const/Consts'
 import { requests } from '@/const/Consts'
+import { resolveHandler, errorHandler } from '@/features/index'
 
-export async function deleteUser(): Promise<UsersRes> {
+export async function deleteUser(): Promise<BasicRes> {
   return apiClient
     .delete(requests.users, {
       headers: {
@@ -11,20 +12,10 @@ export async function deleteUser(): Promise<UsersRes> {
       },
     })
     .then((res) => {
-      const { data, status } = res
-      const response = JSON.parse(JSON.stringify(data)) as UsersRes
-      response.status = status
+      const response = <BasicRes>resolveHandler(res)
       return response
     })
     .catch((error) => {
-      const { data, status } = error.response
-      const response = JSON.parse(JSON.stringify(data)) as UsersRes
-      response.status = status
-
-      if (status == 200 || status == 401) {
-        localStorage.removeItem(strage.Token)
-      }
-
-      return response
+      return errorHandler(error)
     })
 }

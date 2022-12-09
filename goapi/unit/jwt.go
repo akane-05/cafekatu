@@ -47,7 +47,8 @@ func CheckJwtToken(c *gin.Context) {
 	jwtToken, err := ExtractBearerToken(c.GetHeader("Authorization"))
 	if err != nil {
 		c.JSON(http.StatusUnauthorized, gin.H{
-			"error": "ログイン情報を取得できませんでした。再度ログインしてください。",
+			"status": http.StatusUnauthorized,
+			"error":  "ログイン情報を取得できませんでした。再度ログインしてください。",
 		})
 		c.Abort()
 		return
@@ -57,7 +58,8 @@ func CheckJwtToken(c *gin.Context) {
 	token, err := ParseToken(jwtToken)
 	if err != nil {
 		c.JSON(http.StatusUnauthorized, gin.H{
-			"error": "ログイン情報を取得できませんでした。再度ログインしてください。",
+			"status": http.StatusUnauthorized,
+			"error":  "ログイン情報を取得できませんでした。再度ログインしてください。",
 		})
 		c.Abort()
 		return
@@ -67,7 +69,8 @@ func CheckJwtToken(c *gin.Context) {
 	_, OK := token.Claims.(jwt.MapClaims)
 	if !OK {
 		c.JSON(http.StatusUnauthorized, gin.H{
-			"error": "ログイン情報を取得できませんでした。再度ログインしてください。",
+			"status": http.StatusUnauthorized,
+			"error":  "ログイン情報を取得できませんでした。再度ログインしてください。",
 		})
 		c.Abort()
 		return

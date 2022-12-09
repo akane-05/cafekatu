@@ -36,50 +36,6 @@ type ReviewsResponse struct {
 	PagesTotal   int                 `json:"pages_total"`
 }
 
-// func (dc *reviewsController) GetUserReviews(c *gin.Context) {
-
-// 	var query repository.ReviewQuery
-
-// 	log.Println("GetUserReviews")
-// 	if err := c.BindQuery(&query); err != nil {
-// 		log.Println("クエリパラメータに不正な値が含まれています。")
-// 		c.JSON(http.StatusBadRequest, gin.H{
-// 			"error": "クエリパラメータに不正な値が含まれています。",
-// 		})
-// 		return
-// 	}
-
-// 	var reviews []entity.Reviews
-// 	var err error
-
-// 	jwtInfo, e := unit.GetJwtToken(c)
-// 	if e != nil {
-// 		log.Println(err)
-// 		c.JSON(http.StatusUnauthorized, gin.H{
-// 			"error": "ログイン情報を取得できませんでした。再度ログインしてください。",
-// 		})
-// 		return
-// 	}
-
-// 	reviews, err = dc.dr.GetUserReviews(jwtInfo.Id, &query)
-// 	if err != nil {
-// 		log.Println(err.Error())
-// 		c.JSON(http.StatusInternalServerError, gin.H{
-// 			"error": "サーバーでエラーが発生しました。",
-// 		})
-// 		return
-// 	}
-
-// 	log.Println("フロントに返却")
-// 	c.JSON(http.StatusOK, gin.H{
-// 		"message": "ok",
-// 		"data":    reviews,
-// 	})
-
-// 	log.Println("フロントに返却")
-
-// }
-
 func (dc *reviewsController) GetCafesReviews(c *gin.Context) {
 
 	log.Println("GetCafesReviews")
@@ -89,7 +45,8 @@ func (dc *reviewsController) GetCafesReviews(c *gin.Context) {
 	if err != nil {
 		log.Println(err)
 		c.JSON(http.StatusBadRequest, gin.H{
-			"error": "idが不正な値です。数値を入力してください。",
+			"status": http.StatusBadRequest,
+			"error":  "idが不正な値です。数値を入力してください。",
 		})
 		return
 	}
@@ -98,7 +55,8 @@ func (dc *reviewsController) GetCafesReviews(c *gin.Context) {
 	if err := c.BindQuery(&query); err != nil {
 		log.Println("クエリパラメータに不正な値が含まれています。")
 		c.JSON(http.StatusBadRequest, gin.H{
-			"error": "クエリパラメータに不正な値が含まれています。",
+			"status": http.StatusBadRequest,
+			"error":  "クエリパラメータに不正な値が含まれています。",
 		})
 		return
 	}
@@ -109,19 +67,19 @@ func (dc *reviewsController) GetCafesReviews(c *gin.Context) {
 	if err != nil {
 		log.Println(err.Error())
 		c.JSON(http.StatusInternalServerError, gin.H{
-			"error": "サーバーでエラーが発生しました。",
+			"status": http.StatusInternalServerError,
+			"error":  "サーバーでエラーが発生しました。",
 		})
 		return
 	}
-
-	log.Println(reviews)
 
 	//件数
 	reviewsTotal, err := dc.dr.GetReviewsTotal(&id)
 	if err != nil {
 		log.Println(err.Error())
 		c.JSON(http.StatusInternalServerError, gin.H{
-			"error": "サーバーでエラーが発生しました。",
+			"status": http.StatusInternalServerError,
+			"error":  "サーバーでエラーが発生しました。",
 		})
 		return
 	}
@@ -133,6 +91,7 @@ func (dc *reviewsController) GetCafesReviews(c *gin.Context) {
 
 	log.Println("フロントに返却")
 	c.JSON(http.StatusOK, gin.H{
+		"status":  http.StatusOK,
 		"message": "ok",
 		"data":    reviewsResponse,
 	})
@@ -146,7 +105,8 @@ func (dc *reviewsController) PostReview(c *gin.Context) {
 	review := entity.Reviews{}
 	if err := c.BindJSON(&review); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
-			"error": "リクエストに不正な値が含まれています。",
+			"status": http.StatusBadRequest,
+			"error":  "リクエストに不正な値が含まれています。",
 		})
 		return
 	}
@@ -156,7 +116,8 @@ func (dc *reviewsController) PostReview(c *gin.Context) {
 	if err != nil {
 		log.Println(err)
 		c.JSON(http.StatusUnauthorized, gin.H{
-			"error": "ログイン情報を取得できませんでした。再度ログインしてください。",
+			"status": http.StatusUnauthorized,
+			"error":  "ログイン情報を取得できませんでした。再度ログインしてください。",
 		})
 		return
 	}
@@ -166,13 +127,15 @@ func (dc *reviewsController) PostReview(c *gin.Context) {
 	if err := dc.dr.InsertReview(&review); err != nil {
 		log.Println(err)
 		c.JSON(http.StatusInternalServerError, gin.H{
-			"error": "サーバーでエラーが発生しました。",
+			"status": http.StatusInternalServerError,
+			"error":  "サーバーでエラーが発生しました。",
 		})
 		return
 	}
 
 	log.Println("登録完了　フロントに返却")
 	c.JSON(http.StatusOK, gin.H{
+		"status":  http.StatusOK,
 		"message": "レビューを投稿しました。",
 	})
 
@@ -188,7 +151,8 @@ func (dc *reviewsController) DeleteReview(c *gin.Context) {
 	if err != nil {
 		log.Println(err)
 		c.JSON(http.StatusBadRequest, gin.H{
-			"error": "idが不正な値です。数値を入力してください。",
+			"status": http.StatusBadRequest,
+			"error":  "idが不正な値です。数値を入力してください。",
 		})
 		return
 	}
@@ -198,13 +162,15 @@ func (dc *reviewsController) DeleteReview(c *gin.Context) {
 	if err := dc.dr.DeleteReview(&review); err != nil {
 		log.Println(err)
 		c.JSON(http.StatusInternalServerError, gin.H{
-			"error": "サーバーでエラーが発生しました。",
+			"status": http.StatusInternalServerError,
+			"error":  "サーバーでエラーが発生しました。",
 		})
 		return
 	}
 
 	log.Println("削除完了　フロントに返却")
 	c.JSON(http.StatusOK, gin.H{
+		"status":  http.StatusOK,
 		"message": "レビューを削除しました。",
 	})
 }

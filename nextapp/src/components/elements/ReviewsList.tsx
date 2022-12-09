@@ -16,17 +16,14 @@ import {
   Rating,
 } from '@mui/material'
 import React, { useRef } from 'react'
-import CafeCard from '@/components/elements/CafeCard'
-import CustomPaper from '@/components/layouts/CustomPaper'
+import CustomPaper from '@/components/elements/CustomPaper'
 import Router from 'next/router'
-import { CafeInfo } from '@/features/cafes/types'
 import { useRouter } from 'next/router'
 import { useState, useEffect } from 'react'
 //import { getCafes } from '@/features/cafes/api/getCafes'
 import { useReviews } from '@/features/reviews/api/useReviews'
 import * as Dialog from '@/context/MessageDialog'
-import { path, strage, ratingList, requests } from '@/const/Consts'
-import PageButton from '@/components/elements/PageButton'
+import { path, strage, ratingList, requests, errStatus } from '@/const/Consts'
 import { Pagination } from '@mui/material'
 import { ReviewInfo } from '@/features/reviews/types/index'
 import ReviewCard from '@/components/elements/ReviewCard'
@@ -71,12 +68,8 @@ export default function ReviewsList(props: Props) {
     rating: 0,
     comment: '',
   }
-  //const [values, setValues] = React.useState<Review>(defaultReview)
-  const [values, setValues] = React.useState<ReviewInfo>({
-    cafe_id: 0,
-    rating: 0,
-    comment: '',
-  })
+
+  const [values, setValues] = React.useState<ReviewInfo>(defaultReview)
 
   const [errors, setErrors] = useState<any>({})
 
@@ -108,7 +101,7 @@ export default function ReviewsList(props: Props) {
       setValues({ ...values, [prop]: event.target.value })
     }
 
-  const handleSelect = (event: SelectChangeEvent<any>) => {
+  const handleSelect = (event: SelectChangeEvent<number>) => {
     const value = event.target.value as number
 
     setValues({ ...values, ['rating']: value })
@@ -136,7 +129,14 @@ export default function ReviewsList(props: Props) {
         }
         setIsCommentPost(!isCommentPost)
       } else {
-        dialog.confirm(Dialog.apiErrorDialog(response.status, response.error))
+        if (errStatus.includes(response.status)) {
+          router.push({
+            pathname: path.error,
+            query: { status: response.status, error: response.error },
+          })
+        } else {
+          dialog.confirm(Dialog.apiErrorDialog(response.status, response.error))
+        }
       }
     }
   }

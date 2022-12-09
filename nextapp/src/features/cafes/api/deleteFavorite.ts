@@ -1,8 +1,9 @@
 import apiClient from '@/lib/axios'
-import { CafesRes } from '@/features/cafes/types'
 import { strage } from '@/const/Consts'
+import { BasicRes } from '@/features/index'
+import { resolveHandler, errorHandler } from '@/features/index'
 
-export async function deleteFavorite(id: number): Promise<CafesRes> {
+export async function deleteFavorite(id: number): Promise<BasicRes> {
   return apiClient
     .delete(`/cafes/${id}/favorite`, {
       headers: {
@@ -10,20 +11,10 @@ export async function deleteFavorite(id: number): Promise<CafesRes> {
       },
     })
     .then((res) => {
-      const { data, status } = res
-      const response = JSON.parse(JSON.stringify(data)) as CafesRes
-      response.status = status
+      const response = <BasicRes>resolveHandler(res)
       return response
     })
     .catch((error) => {
-      const { data, status } = error.response
-      const response = JSON.parse(JSON.stringify(data)) as CafesRes
-      response.status = status
-
-      if (status == 401) {
-        localStorage.removeItem(strage.Token)
-      }
-
-      return response
+      return errorHandler(error)
     })
 }

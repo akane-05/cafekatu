@@ -1,15 +1,14 @@
-export type RegisterInfo = {
-  email: string
-  password: string
-  nickname: string
+import { BasicRes } from '@/features/index'
+
+export type UserRgsRes = BasicRes & {
+  token?: string
+  id?: number
+  nickname?: string
+  email?: string
 }
 
-export type RegisterRes = {
-  status: number
-  message: string
-  token: string
-  id: number
+export type UserRgsInfo = {
   nickname: string
   email: string
-  error: string
+  password: string
 }

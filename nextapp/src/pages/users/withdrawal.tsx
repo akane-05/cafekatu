@@ -2,17 +2,21 @@
 // import Router from 'next/router'
 import { Button, Grid, Paper, Typography, Link } from '@mui/material'
 import React, { useState } from 'react'
-import CustomPaper, { LinkPaper } from '@/components/layouts/CustomPaper'
+import CustomPaper, { LinkPaper } from '@/components/elements/CustomPaper'
 import theme from '@/styles/theme'
 import { ThemeProvider } from '@mui/material/styles'
-import { path } from '@/const/Consts'
+import { path, errStatus } from '@/const/Consts'
 import { useRouter } from 'next/router'
 import * as Dialog from '@/context/MessageDialog'
 import { deleteUser } from '@/features/users/api/deleteUser'
+import { userInfoState, UserInfo } from '@/globalStates/userInfo'
+import { useSetRecoilState, RecoilRoot } from 'recoil'
 
 export default function withdrawal() {
   const router = useRouter()
   const dialog = Dialog.useDialogContext()
+
+  const setUserInfo = useSetRecoilState(userInfoState)
 
   const handleLink = (path: string) => {
     router.push(path)
@@ -21,10 +25,19 @@ export default function withdrawal() {
   const deleteUserInfo = async () => {
     const response = await deleteUser()
     if (response.status == 200) {
+      setUserInfo(undefined) //stateを空にする
+
       dialog.confirm(Dialog.apiOKDialog('退会しました'))
       handleLink(path.top)
     } else {
-      dialog.confirm(Dialog.apiErrorDialog(response.status, response.error))
+      if (errStatus.includes(response.status)) {
+        router.push({
+          pathname: path.error,
+          query: { status: response.status, error: response.error },
+        })
+      } else {
+        dialog.confirm(Dialog.apiErrorDialog(response.status, response.error))
+      }
     }
   }
 
