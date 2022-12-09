@@ -114,8 +114,6 @@ func (dc *reviewsController) GetCafesReviews(c *gin.Context) {
 		return
 	}
 
-	log.Println(reviews)
-
 	//件数
 	reviewsTotal, err := dc.dr.GetReviewsTotal(&id)
 	if err != nil {

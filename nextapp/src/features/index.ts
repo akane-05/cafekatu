@@ -1,10 +1,17 @@
-import { AxiosError } from 'axios'
+import { AxiosResponse, AxiosError } from 'axios'
 import { strage } from '@/const/Consts'
 
 export type BasicRes = {
   status: number
   message?: string
   error?: string
+}
+
+export const resolveHandler = <T>(res: AxiosResponse<any, any>): T => {
+  const { data, status } = res
+  const response = JSON.parse(JSON.stringify(data)) as T
+  //response.status = status
+  return response
 }
 
 export const errorHandler = (error: AxiosError<any>) => {

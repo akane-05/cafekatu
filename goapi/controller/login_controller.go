@@ -135,8 +135,6 @@ func (dc *loginController) Register(c *gin.Context) {
 		return
 	}
 
-	log.Println("DBに登録完了")
-
 	//以下jwt認証
 	jwtInfo := unit.JwtInfo{Id: id, Email: postUser.Email, ExTime: time.Now().Add(time.Hour)}
 	tokenString := unit.CreateToken(&jwtInfo)

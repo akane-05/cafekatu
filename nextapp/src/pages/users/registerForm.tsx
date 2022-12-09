@@ -89,14 +89,7 @@ export default function RegisterForm() {
         error = true
       }
     }
-
-    if (!error) {
-      await dialog.confirm(Dialog.confirmDialog('登録しますか？')).then(() => {
-        register()
-      })
-    } else {
-      dialog.confirm(Dialog.errorDialog('エラーを修正してください。'))
-    }
+    dialog.confirm(Dialog.errorDialog('エラーを修正してください。'))
   }
 
   const handleLink = (path: string) => {

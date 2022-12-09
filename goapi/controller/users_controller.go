@@ -53,16 +53,6 @@ func (dc *usersController) GetUser(c *gin.Context) {
 		return
 	}
 
-	// var query repository.UserQuery
-
-	// if err := c.BindQuery(&query); err != nil {
-	// 	log.Println("クエリパラメータに不正な値が含まれています。")
-	// 	c.JSON(http.StatusBadRequest, gin.H{
-	// 		"error": "クエリパラメータに不正な値が含まれています。",
-	// 	})
-	// 	return
-	// }
-
 	user, err := dc.dr.GetUser(&jwtInfo.Id)
 	if err != nil {
 		log.Println(err.Error())
@@ -74,25 +64,12 @@ func (dc *usersController) GetUser(c *gin.Context) {
 
 	user.PasswordDigest = ""
 
-	// reviews, err := dc.dr.GetUserReviews(&jwtInfo.Id, &query)
-	// if err != nil {
-	// 	log.Println(err.Error())
-	// 	c.JSON(http.StatusInternalServerError, gin.H{
-	// 		"error": "サーバーでエラーが発生しました。",
-	// 	})
-	// 	return
-	// }
-
-	//userInfo := UserInfo{user, reviews}
-
 	log.Println("フロントに返却")
+
 	c.JSON(http.StatusOK, gin.H{
 		"message": "ok",
-		// "data":    userInfo,
-		"data": user,
+		"data":    user,
 	})
-
-	log.Println("フロントに返却")
 
 }
 
@@ -124,10 +101,8 @@ func (dc *usersController) PatchUser(c *gin.Context) {
 		return
 	}
 
-	log.Printf(user.PasswordDigest)
 	//パスワード確認
 	if err = unit.CompareHashAndPassword(user.PasswordDigest, updateInfo.Password); err != nil {
-		log.Printf("passwordが間違っています。%s", updateInfo.Password)
 		c.JSON(http.StatusBadRequest, gin.H{
 			"error": "passwordが間違っています。",
 		})
@@ -156,7 +131,6 @@ func (dc *usersController) PatchUser(c *gin.Context) {
 	newJwtInfo := unit.JwtInfo{Id: newUserInfo.Id, Email: newUserInfo.Email, ExTime: time.Now().Add(time.Hour)}
 
 	tokenString := unit.CreateToken(&newJwtInfo)
-	log.Println("tokenString:", tokenString)
 
 	log.Println("更新完了　フロントに返却")
 	c.JSON(http.StatusOK, gin.H{
@@ -214,15 +188,6 @@ func (dc *usersController) GetUserFavorites(c *gin.Context) {
 	//ページ数
 	pageTotals := cafesTotal/int64(query.PerPage) + 1
 
-	// favoCafes, err := dc.dr.GetFavoirtes(&jwtInfo.Id, &cafes)
-	// if err != nil {
-	// 	log.Println(err.Error())
-	// 	c.JSON(http.StatusInternalServerError, gin.H{
-	// 		"error": "サーバーでエラーが発生しました。",
-	// 	})
-	// 	return
-	// }
-
 	const baseNum = 10
 	for i, cafe := range cafes {
 		cafes[i].IsFavorite = true
@@ -272,8 +237,6 @@ func (dc *usersController) GetUserPastPosts(c *gin.Context) {
 		return
 	}
 
-	log.Println(cafes)
-
 	//一件もなかったら終了
 	if len(cafes) == 0 {
 		pastPostRes := PastPostRes{nil, 0, 0}
@@ -294,13 +257,10 @@ func (dc *usersController) GetUserPastPosts(c *gin.Context) {
 		return
 	}
 
-	log.Println(cafesTotal)
-
 	//ページ数
 	pageTotals := cafesTotal/int64(query.PerPage) + 1
 
 	//取得したカフェのお気に入り情報を取得
-	// favoCafesId, err := dc.dr.GetFavoirtes(&jwtInfo.Id, &cafes)
 	favoCafesId, err := dc.dr.GetFavoirtes(&jwtInfo.Id)
 	if err != nil {
 
@@ -321,7 +281,6 @@ func (dc *usersController) GetUserPastPosts(c *gin.Context) {
 	//レビューを取得
 	reviews, err := dc.dr.GetReviews(&jwtInfo.Id)
 	if err != nil {
-		log.Println(err.Error())
 		c.JSON(http.StatusInternalServerError, gin.H{
 			"error": "サーバーでエラーが発生しました。",
 		})

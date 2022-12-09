@@ -96,14 +96,7 @@ export default function LoginForm() {
         dialog.confirm(Dialog.apiOKDialog(response.message))
         handleLink(path.cafesList)
       } else {
-        if (errStatus.includes(response.status)) {
-          router.push({
-            pathname: path.error,
-            query: { status: response.status, error: response.error },
-          })
-        } else {
-          dialog.confirm(Dialog.apiErrorDialog(response.status, response.error))
-        }
+        dialog.confirm(Dialog.apiErrorDialog(response.status, response.error))
       }
     } else {
       dialog.confirm(Dialog.errorDialog('エラーを修正してください。'))

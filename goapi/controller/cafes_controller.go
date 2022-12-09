@@ -138,22 +138,10 @@ func (dc *cafesController) GetCafe(c *gin.Context) {
 		return
 	}
 
-	// var query repository.CafeQuery
-
-	// log.Println("GetCafe")
-	// if err := c.BindQuery(&query); err != nil {
-	// 	log.Println("クエリパラメータに不正な値が含まれています。")
-	// 	c.JSON(http.StatusBadRequest, gin.H{
-	// 		"error": "クエリパラメータに不正な値が含まれています。",
-	// 	})
-	// 	return
-	// }
-
 	cafe, err := dc.dr.GetCafe(&id)
 	if err != nil {
 		log.Println(err.Error())
 		c.JSON(http.StatusInternalServerError, gin.H{
-			// "error": "サーバーでエラーが発生しました。 " + err.Error()
 			"error": err.Error(),
 		})
 		return
