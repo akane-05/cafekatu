@@ -50,7 +50,8 @@ func (dc *cafesController) GetCafes(c *gin.Context) {
 	if err != nil {
 		log.Println(err)
 		c.JSON(http.StatusUnauthorized, gin.H{
-			"error": "ログイン情報を取得できませんでした。再度ログインしてください。",
+			"status": http.StatusUnauthorized,
+			"error":  "ログイン情報を取得できませんでした。再度ログインしてください。",
 		})
 		return
 	}
@@ -61,7 +62,8 @@ func (dc *cafesController) GetCafes(c *gin.Context) {
 	if err := c.BindQuery(&query); err != nil {
 		log.Println("クエリパラメータに不正な値が含まれています。")
 		c.JSON(http.StatusBadRequest, gin.H{
-			"error": "クエリパラメータに不正な値が含まれています。",
+			"status": http.StatusBadRequest,
+			"error":  "クエリパラメータに不正な値が含まれています。",
 		})
 		return
 	}
@@ -70,7 +72,8 @@ func (dc *cafesController) GetCafes(c *gin.Context) {
 	if err != nil {
 		log.Println(err.Error())
 		c.JSON(http.StatusInternalServerError, gin.H{
-			"error": "サーバーでエラーが発生しました。",
+			"status": http.StatusInternalServerError,
+			"error":  "サーバーでエラーが発生しました。",
 		})
 		return
 	}
@@ -80,7 +83,8 @@ func (dc *cafesController) GetCafes(c *gin.Context) {
 	if err != nil {
 		log.Println(err.Error())
 		c.JSON(http.StatusInternalServerError, gin.H{
-			"error": "サーバーでエラーが発生しました。",
+			"status": http.StatusInternalServerError,
+			"error":  "サーバーでエラーが発生しました。",
 		})
 		return
 	}
@@ -92,7 +96,8 @@ func (dc *cafesController) GetCafes(c *gin.Context) {
 	if err != nil {
 		log.Println(err.Error())
 		c.JSON(http.StatusInternalServerError, gin.H{
-			"error": "サーバーでエラーが発生しました。",
+			"status": http.StatusInternalServerError,
+			"error":  "サーバーでエラーが発生しました。",
 		})
 		return
 	}
@@ -107,6 +112,7 @@ func (dc *cafesController) GetCafes(c *gin.Context) {
 	cafesResponse := CafesResponse{cafes, int(cafesTotal), int(pageTotals)}
 	log.Println("フロントに返却")
 	c.JSON(http.StatusOK, gin.H{
+		"status":  http.StatusOK,
 		"message": "ok",
 		"data":    cafesResponse,
 	})
@@ -123,7 +129,8 @@ func (dc *cafesController) GetCafe(c *gin.Context) {
 	if err != nil {
 		log.Println(err)
 		c.JSON(http.StatusUnauthorized, gin.H{
-			"error": "ログイン情報を取得できませんでした。再度ログインしてください。",
+			"status": http.StatusUnauthorized,
+			"error":  "ログイン情報を取得できませんでした。再度ログインしてください。",
 		})
 		return
 	}
@@ -133,7 +140,8 @@ func (dc *cafesController) GetCafe(c *gin.Context) {
 	if err != nil {
 		log.Println(err)
 		c.JSON(http.StatusBadRequest, gin.H{
-			"error": "idが不正な値です。数値を入力してください。",
+			"status": http.StatusBadRequest,
+			"error":  "idが不正な値です。数値を入力してください。",
 		})
 		return
 	}
@@ -142,7 +150,8 @@ func (dc *cafesController) GetCafe(c *gin.Context) {
 	if err != nil {
 		log.Println(err.Error())
 		c.JSON(http.StatusInternalServerError, gin.H{
-			"error": err.Error(),
+			"status": http.StatusInternalServerError,
+			"error":  err.Error(),
 		})
 		return
 	}
@@ -154,7 +163,8 @@ func (dc *cafesController) GetCafe(c *gin.Context) {
 	if err != nil {
 		log.Println(err.Error())
 		c.JSON(http.StatusInternalServerError, gin.H{
-			"error": err.Error(),
+			"status": http.StatusInternalServerError,
+			"error":  err.Error(),
 		})
 		return
 	}
@@ -165,6 +175,7 @@ func (dc *cafesController) GetCafe(c *gin.Context) {
 
 	log.Println("フロントに返却")
 	c.JSON(http.StatusOK, gin.H{
+		"status":  http.StatusOK,
 		"message": "ok",
 		"data":    cafeResponse,
 	})
@@ -178,7 +189,8 @@ func (dc *cafesController) PostCafe(c *gin.Context) {
 	cafe := entity.Cafes{}
 	if err := c.BindJSON(&cafe); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
-			"error": "リクエストに不正な値が含まれています。",
+			"status": http.StatusBadRequest,
+			"error":  "リクエストに不正な値が含まれています。",
 		})
 		return
 	}
@@ -186,13 +198,15 @@ func (dc *cafesController) PostCafe(c *gin.Context) {
 	if err := dc.dr.InsertCafe(&cafe); err != nil {
 		log.Println(err)
 		c.JSON(http.StatusInternalServerError, gin.H{
-			"error": "サーバーでエラーが発生しました。",
+			"status": http.StatusInternalServerError,
+			"error":  "サーバーでエラーが発生しました。",
 		})
 		return
 	}
 
 	log.Println("登録完了　フロントに返却")
 	c.JSON(http.StatusOK, gin.H{
+		"status":  http.StatusOK,
 		"message": "店舗情報を登録しました。管理人が確認後、店舗情報が反映されます。",
 	})
 
@@ -207,7 +221,8 @@ func (dc *cafesController) PostFavorite(c *gin.Context) {
 	if err != nil {
 		log.Println(err)
 		c.JSON(http.StatusBadRequest, gin.H{
-			"error": "idが不正な値です。数値を入力してください。",
+			"status": http.StatusBadRequest,
+			"error":  "idが不正な値です。数値を入力してください。",
 		})
 		return
 	}
@@ -217,7 +232,8 @@ func (dc *cafesController) PostFavorite(c *gin.Context) {
 	if err != nil {
 		log.Println(err)
 		c.JSON(http.StatusUnauthorized, gin.H{
-			"error": "ログイン情報を取得できませんでした。再度ログインしてください。",
+			"status": http.StatusUnauthorized,
+			"error":  "ログイン情報を取得できませんでした。再度ログインしてください。",
 		})
 		return
 	}
@@ -226,13 +242,15 @@ func (dc *cafesController) PostFavorite(c *gin.Context) {
 	if err := dc.dr.InsertFavorite(&favo); err != nil {
 		log.Println(err)
 		c.JSON(http.StatusInternalServerError, gin.H{
-			"error": "サーバーでエラーが発生しました。",
+			"status": http.StatusInternalServerError,
+			"error":  "サーバーでエラーが発生しました。",
 		})
 		return
 	}
 
 	log.Println("登録完了　フロントに返却")
 	c.JSON(http.StatusOK, gin.H{
+		"status":  http.StatusOK,
 		"message": "お気に入りに登録しました。",
 	})
 
@@ -247,7 +265,8 @@ func (dc *cafesController) DeleteFavorite(c *gin.Context) {
 	if err != nil {
 		log.Println(err)
 		c.JSON(http.StatusBadRequest, gin.H{
-			"error": "idが不正な値です。数値を入力してください。",
+			"status": http.StatusBadRequest,
+			"error":  "idが不正な値です。数値を入力してください。",
 		})
 		return
 	}
@@ -257,7 +276,8 @@ func (dc *cafesController) DeleteFavorite(c *gin.Context) {
 	if err != nil {
 		log.Println(err)
 		c.JSON(http.StatusUnauthorized, gin.H{
-			"error": "ログイン情報を取得できませんでした。再度ログインしてください。",
+			"status": http.StatusUnauthorized,
+			"error":  "ログイン情報を取得できませんでした。再度ログインしてください。",
 		})
 		return
 	}
@@ -267,13 +287,15 @@ func (dc *cafesController) DeleteFavorite(c *gin.Context) {
 	if err := dc.dr.DeleteFavorite(&favo); err != nil {
 		log.Println(err)
 		c.JSON(http.StatusInternalServerError, gin.H{
-			"error": "サーバーでエラーが発生しました。",
+			"status": http.StatusInternalServerError,
+			"error":  "サーバーでエラーが発生しました。",
 		})
 		return
 	}
 
 	log.Println("登録完了　フロントに返却")
 	c.JSON(http.StatusOK, gin.H{
+		"status":  http.StatusOK,
 		"message": "お気に入りから削除しました。",
 	})
 

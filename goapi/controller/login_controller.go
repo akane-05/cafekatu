@@ -46,7 +46,8 @@ func (dc *loginController) Login(c *gin.Context) {
 	loginInfo := LoginInfo{}
 	if err := c.BindJSON(&loginInfo); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
-			"error": "リクエストに不正な値が含まれています。",
+			"status": http.StatusBadRequest,
+			"error":  "リクエストに不正な値が含まれています。",
 		})
 		return
 	}
@@ -56,13 +57,15 @@ func (dc *loginController) Login(c *gin.Context) {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			log.Printf("入力されたemail,またはpasswordが間違っています。%s", loginInfo.Email)
 			c.JSON(http.StatusUnauthorized, gin.H{
-				"error": "入力されたemail,またはpasswordが間違っています。",
+				"status": http.StatusUnauthorized,
+				"error":  "入力されたemail,またはpasswordが間違っています。",
 			})
 			return
 		}
 		log.Println(err.Error())
 		c.JSON(http.StatusInternalServerError, gin.H{
-			"error": "サーバーでエラーが発生しました。",
+			"status": http.StatusInternalServerError,
+			"error":  "サーバーでエラーが発生しました。",
 		})
 		return
 	}
@@ -70,7 +73,8 @@ func (dc *loginController) Login(c *gin.Context) {
 	if err = unit.CompareHashAndPassword(user.PasswordDigest, loginInfo.Password); err != nil {
 		log.Printf("入力されたemail,またはpasswordが間違っています。%s", loginInfo.Password)
 		c.JSON(http.StatusUnauthorized, gin.H{
-			"error": "入力されたemail,またはpasswordが間違っています。",
+			"status": http.StatusUnauthorized,
+			"error":  "入力されたemail,またはpasswordが間違っています。",
 		})
 		return
 	}
@@ -79,9 +83,9 @@ func (dc *loginController) Login(c *gin.Context) {
 	jwtInfo := unit.JwtInfo{Id: user.Id, Email: user.Email, ExTime: time.Now().Add(time.Hour)}
 
 	tokenString := unit.CreateToken(&jwtInfo)
-	log.Println("tokenString:", tokenString)
 
 	c.JSON(http.StatusOK, gin.H{
+		"status":   http.StatusOK,
 		"token":    tokenString,
 		"id":       user.Id,
 		"email":    user.Email,
@@ -97,7 +101,8 @@ func (dc *loginController) Register(c *gin.Context) {
 	registerInfo := RegisterInfo{}
 	if err := c.BindJSON(&registerInfo); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
-			"error": "リクエストに不正な値が含まれています。",
+			"status": http.StatusBadRequest,
+			"error":  "リクエストに不正な値が含まれています。",
 		})
 		return
 	}
@@ -107,7 +112,8 @@ func (dc *loginController) Register(c *gin.Context) {
 	if exist {
 		log.Printf("登録済みのemailアドレスが入力されました。%s", registerInfo.Email)
 		c.JSON(http.StatusUnauthorized, gin.H{
-			"error": "登録済みのemailアドレスです。別のアドレスで登録してください。",
+			"status": http.StatusUnauthorized,
+			"error":  "登録済みのemailアドレスです。別のアドレスで登録してください。",
 		})
 		return
 	}
@@ -115,7 +121,8 @@ func (dc *loginController) Register(c *gin.Context) {
 	if err != nil {
 		log.Println(err.Error())
 		c.JSON(http.StatusInternalServerError, gin.H{
-			"error": "サーバーでエラーが発生しました。",
+			"status": http.StatusInternalServerError,
+			"error":  "サーバーでエラーが発生しました。",
 		})
 		return
 	}
@@ -130,7 +137,8 @@ func (dc *loginController) Register(c *gin.Context) {
 	if err != nil {
 		log.Println(err)
 		c.JSON(http.StatusInternalServerError, gin.H{
-			"error": "サーバーでエラーが発生しました。",
+			"status": http.StatusInternalServerError,
+			"error":  "サーバーでエラーが発生しました。",
 		})
 		return
 	}
@@ -141,6 +149,7 @@ func (dc *loginController) Register(c *gin.Context) {
 	log.Println("tokenString:", tokenString)
 
 	c.JSON(http.StatusOK, gin.H{
+		"status":   http.StatusOK,
 		"token":    tokenString,
 		"id":       id,
 		"email":    postUser.Email,

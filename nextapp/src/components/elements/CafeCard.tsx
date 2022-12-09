@@ -41,7 +41,7 @@ export default function CafeCard(props: Props) {
 
   useEffect(() => {
     setIsFavorite(props.cafeInfo.is_favorite)
-  }, [])
+  }, [props.cafeInfo.is_favorite])
 
   const handleClickFavorite = async () => {
     let response

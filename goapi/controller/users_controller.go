@@ -48,7 +48,8 @@ func (dc *usersController) GetUser(c *gin.Context) {
 	if err != nil {
 		log.Println(err)
 		c.JSON(http.StatusUnauthorized, gin.H{
-			"error": "ログイン情報を取得できませんでした。再度ログインしてください。",
+			"status": http.StatusUnauthorized,
+			"error":  "ログイン情報を取得できませんでした。再度ログインしてください。",
 		})
 		return
 	}
@@ -57,7 +58,8 @@ func (dc *usersController) GetUser(c *gin.Context) {
 	if err != nil {
 		log.Println(err.Error())
 		c.JSON(http.StatusInternalServerError, gin.H{
-			"error": "サーバーでエラーが発生しました。",
+			"status": http.StatusInternalServerError,
+			"error":  "サーバーでエラーが発生しました。",
 		})
 		return
 	}
@@ -67,6 +69,7 @@ func (dc *usersController) GetUser(c *gin.Context) {
 	log.Println("フロントに返却")
 
 	c.JSON(http.StatusOK, gin.H{
+		"status":  http.StatusOK,
 		"message": "ok",
 		"data":    user,
 	})
@@ -80,7 +83,8 @@ func (dc *usersController) PatchUser(c *gin.Context) {
 	if err != nil {
 		log.Println(err)
 		c.JSON(http.StatusUnauthorized, gin.H{
-			"error": "ログイン情報を取得できませんでした。再度ログインしてください。",
+			"status": http.StatusUnauthorized,
+			"error":  "ログイン情報を取得できませんでした。再度ログインしてください。",
 		})
 		return
 	}
@@ -88,7 +92,8 @@ func (dc *usersController) PatchUser(c *gin.Context) {
 	updateInfo := repository.UpdateInfo{}
 	if err := c.BindJSON(&updateInfo); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
-			"error": "リクエストに不正な値が含まれています。",
+			"status": http.StatusBadRequest,
+			"error":  "リクエストに不正な値が含まれています。",
 		})
 		return
 	}
@@ -96,7 +101,8 @@ func (dc *usersController) PatchUser(c *gin.Context) {
 	user, err := dc.dr.GetUser(&jwtInfo.Id)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{
-			"error": "サーバーでエラーが発生しました。",
+			"status": http.StatusInternalServerError,
+			"error":  "サーバーでエラーが発生しました。",
 		})
 		return
 	}
@@ -104,7 +110,8 @@ func (dc *usersController) PatchUser(c *gin.Context) {
 	//パスワード確認
 	if err = unit.CompareHashAndPassword(user.PasswordDigest, updateInfo.Password); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
-			"error": "passwordが間違っています。",
+			"status": http.StatusBadRequest,
+			"error":  "passwordが間違っています。",
 		})
 		return
 	}
@@ -121,7 +128,8 @@ func (dc *usersController) PatchUser(c *gin.Context) {
 
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{
-			"error": "サーバーでエラーが発生しました。",
+			"status": http.StatusInternalServerError,
+			"error":  "サーバーでエラーが発生しました。",
 		})
 		return
 	}
@@ -134,6 +142,7 @@ func (dc *usersController) PatchUser(c *gin.Context) {
 
 	log.Println("更新完了　フロントに返却")
 	c.JSON(http.StatusOK, gin.H{
+		"status":   http.StatusOK,
 		"token":    tokenString,
 		"id":       newUserInfo.Id,
 		"email":    newUserInfo.Email,
@@ -150,7 +159,8 @@ func (dc *usersController) GetUserFavorites(c *gin.Context) {
 	if err != nil {
 		log.Println(err)
 		c.JSON(http.StatusUnauthorized, gin.H{
-			"error": "ログイン情報を取得できませんでした。再度ログインしてください。",
+			"status": http.StatusUnauthorized,
+			"error":  "ログイン情報を取得できませんでした。再度ログインしてください。",
 		})
 		return
 	}
@@ -160,7 +170,8 @@ func (dc *usersController) GetUserFavorites(c *gin.Context) {
 	if err := c.BindQuery(&query); err != nil {
 		log.Println("クエリパラメータに不正な値が含まれています。")
 		c.JSON(http.StatusBadRequest, gin.H{
-			"error": "クエリパラメータに不正な値が含まれています。",
+			"status": http.StatusBadRequest,
+			"error":  "クエリパラメータに不正な値が含まれています。",
 		})
 		return
 	}
@@ -170,7 +181,8 @@ func (dc *usersController) GetUserFavorites(c *gin.Context) {
 	if err != nil {
 		log.Println(err.Error())
 		c.JSON(http.StatusInternalServerError, gin.H{
-			"error": "サーバーでエラーが発生しました。",
+			"status": http.StatusInternalServerError,
+			"error":  "サーバーでエラーが発生しました。",
 		})
 		return
 	}
@@ -180,7 +192,8 @@ func (dc *usersController) GetUserFavorites(c *gin.Context) {
 	if err != nil {
 		log.Println(err.Error())
 		c.JSON(http.StatusInternalServerError, gin.H{
-			"error": "サーバーでエラーが発生しました。",
+			"status": http.StatusInternalServerError,
+			"error":  "サーバーでエラーが発生しました。",
 		})
 		return
 	}
@@ -197,6 +210,7 @@ func (dc *usersController) GetUserFavorites(c *gin.Context) {
 	cafesResponse := CafesResponse{cafes, int(cafesTotal), int(pageTotals)}
 	log.Println("フロントに返却")
 	c.JSON(http.StatusOK, gin.H{
+		"status":  http.StatusOK,
 		"message": "ok",
 		"data":    cafesResponse,
 	})
@@ -210,7 +224,8 @@ func (dc *usersController) GetUserPastPosts(c *gin.Context) {
 	if err != nil {
 		log.Println(err)
 		c.JSON(http.StatusUnauthorized, gin.H{
-			"error": "ログイン情報を取得できませんでした。再度ログインしてください。",
+			"status": http.StatusUnauthorized,
+			"error":  "ログイン情報を取得できませんでした。再度ログインしてください。",
 		})
 		return
 	}
@@ -220,7 +235,8 @@ func (dc *usersController) GetUserPastPosts(c *gin.Context) {
 	if err := c.BindQuery(&query); err != nil {
 		log.Println("クエリパラメータに不正な値が含まれています。")
 		c.JSON(http.StatusBadRequest, gin.H{
-			"error": "クエリパラメータに不正な値が含まれています。",
+			"status": http.StatusBadRequest,
+			"error":  "クエリパラメータに不正な値が含まれています。",
 		})
 		return
 	}
@@ -232,7 +248,8 @@ func (dc *usersController) GetUserPastPosts(c *gin.Context) {
 	if err != nil {
 		log.Println(err.Error())
 		c.JSON(http.StatusInternalServerError, gin.H{
-			"error": "サーバーでエラーが発生しました。",
+			"status": http.StatusInternalServerError,
+			"error":  "サーバーでエラーが発生しました。",
 		})
 		return
 	}
@@ -241,6 +258,7 @@ func (dc *usersController) GetUserPastPosts(c *gin.Context) {
 	if len(cafes) == 0 {
 		pastPostRes := PastPostRes{nil, 0, 0}
 		c.JSON(http.StatusOK, gin.H{
+			"status":  http.StatusOK,
 			"message": "ok",
 			"data":    pastPostRes,
 		})
@@ -252,7 +270,8 @@ func (dc *usersController) GetUserPastPosts(c *gin.Context) {
 	if err != nil {
 		log.Println(err.Error())
 		c.JSON(http.StatusInternalServerError, gin.H{
-			"error": "サーバーでエラーが発生しました。",
+			"status": http.StatusInternalServerError,
+			"error":  "サーバーでエラーが発生しました。",
 		})
 		return
 	}
@@ -266,7 +285,8 @@ func (dc *usersController) GetUserPastPosts(c *gin.Context) {
 
 		log.Println(err.Error())
 		c.JSON(http.StatusInternalServerError, gin.H{
-			"error": "サーバーでエラーが発生しました。",
+			"status": http.StatusInternalServerError,
+			"error":  "サーバーでエラーが発生しました。",
 		})
 		return
 	}
@@ -282,7 +302,8 @@ func (dc *usersController) GetUserPastPosts(c *gin.Context) {
 	reviews, err := dc.dr.GetReviews(&jwtInfo.Id)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{
-			"error": "サーバーでエラーが発生しました。",
+			"status": http.StatusInternalServerError,
+			"error":  "サーバーでエラーが発生しました。",
 		})
 		return
 	}
@@ -298,6 +319,7 @@ func (dc *usersController) GetUserPastPosts(c *gin.Context) {
 	pastPostRes := PastPostRes{pastPosts, int(cafesTotal), int(pageTotals)}
 	log.Println("フロントに返却")
 	c.JSON(http.StatusOK, gin.H{
+		"status":  http.StatusOK,
 		"message": "ok",
 		"data":    pastPostRes,
 	})
@@ -311,7 +333,8 @@ func (dc *usersController) DeleteUser(c *gin.Context) {
 	if err != nil {
 		log.Println(err)
 		c.JSON(http.StatusUnauthorized, gin.H{
-			"error": "ログイン情報を取得できませんでした。再度ログインしてください。",
+			"status": http.StatusUnauthorized,
+			"error":  "ログイン情報を取得できませんでした。再度ログインしてください。",
 		})
 		return
 	}
@@ -320,13 +343,15 @@ func (dc *usersController) DeleteUser(c *gin.Context) {
 	if err := dc.dr.DeleteUser(&user); err != nil {
 		log.Println(err)
 		c.JSON(http.StatusInternalServerError, gin.H{
-			"error": "サーバーでエラーが発生しました。",
+			"status": http.StatusInternalServerError,
+			"error":  "サーバーでエラーが発生しました。",
 		})
 		return
 	}
 
 	log.Println("削除完了　フロントに返却")
 	c.JSON(http.StatusOK, gin.H{
+		"status":  http.StatusOK,
 		"message": "ユーザーを削除しました。",
 	})
 }

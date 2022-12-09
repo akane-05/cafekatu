@@ -31,13 +31,15 @@ func (dc *commonController) GetPrefectures(c *gin.Context) {
 	if err != nil {
 		log.Println(err.Error())
 		c.JSON(http.StatusInternalServerError, gin.H{
-			"error": "サーバーでエラーが発生しました。",
+			"status": http.StatusInternalServerError,
+			"error":  "サーバーでエラーが発生しました。",
 		})
 		return
 	}
 
 	log.Println("フロントに返却")
 	c.JSON(http.StatusOK, gin.H{
+		"status":  http.StatusOK,
 		"message": "ok",
 		"data":    prefectures,
 	})

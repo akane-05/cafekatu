@@ -2,6 +2,7 @@ package main
 
 import (
 	"log"
+	"net/http"
 	"time"
 
 	"github.com/akane-05/cafekatu/goapi/controller"
@@ -96,7 +97,7 @@ func GetRouter() *gin.Engine {
 	r.POST("/register", loginC.Register)
 	r.GET("/prefectures", commonC.GetPrefectures)
 	r.NoRoute(func(c *gin.Context) {
-		c.JSON(404, gin.H{"error": "指定されたページが見つかりませんでした"})
+		c.JSON(http.StatusNotFound, gin.H{"status": http.StatusNotFound, "error": "指定されたページが見つかりませんでした"})
 	})
 
 	return r
