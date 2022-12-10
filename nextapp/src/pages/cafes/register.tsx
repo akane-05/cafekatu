@@ -24,7 +24,7 @@ import { CafeRgsInfo } from '@/features/cafes/types'
 import * as yup from 'yup'
 import { validate } from '@/lib/validate'
 import * as Dialog from '@/context/MessageDialog'
-import { path, errStatus } from '@/const/Consts'
+import { pagePath, errStatus } from '@/const/Consts'
 import { useRouter } from 'next/router'
 import { postCafe } from '@/features/cafes/api/postCafe'
 import { usePrefecture } from '@/features/unit/api/usePrefecture'
@@ -124,11 +124,11 @@ export default function CafeRegister() {
     const response = await postCafe(values)
     if (response.status == 200) {
       dialog.confirm(Dialog.apiOKDialog(response.message))
-      handleLink(path.cafesList)
+      handleLink(pagePath('cafes'))
     } else {
       if (errStatus.includes(response.status)) {
         router.push({
-          pathname: path.error,
+          pathname: pagePath('error'),
           query: { status: response.status, error: response.error },
         })
       } else {
@@ -152,7 +152,7 @@ export default function CafeRegister() {
     <ThemeProvider theme={theme}>
       <LinkPaper elevation={0}>
         <Link
-          onClick={() => handleLink(path.cafesList)}
+          onClick={() => handleLink(pagePath('cafes'))}
           component="button"
           variant="body1"
         >

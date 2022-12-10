@@ -20,7 +20,7 @@ import React, { useState, useRef, useEffect } from 'react'
 import { useRouter } from 'next/router'
 import CustomButton from '@/components/elements/CustomButton'
 import { LoginInfo } from '@/features/login/types'
-import { path, strage } from '@/const/Consts'
+import { strage, pagePath } from '@/const/Consts'
 import * as Dialog from '@/context/MessageDialog'
 import { useHaveToken } from '@/hooks/useHaveToken'
 import { useSetRecoilState, RecoilRoot } from 'recoil'
@@ -41,7 +41,6 @@ function Home() {
   }, [])
 
   if (isAuthChecking) {
-    //return <Box>ログイン情報を確認中…</Box>
     return (
       <Grid
         container
@@ -57,9 +56,9 @@ function Home() {
   }
 
   if (haveToken) {
-    router.push(path.cafesList)
+    router.push(pagePath('cafes'))
   } else {
-    router.push(path.login)
+    router.push(pagePath('login'))
   }
 
   return <></>

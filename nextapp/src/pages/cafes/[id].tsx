@@ -7,12 +7,13 @@ import ReviewCard from '@/components/elements/ReviewCard'
 import CustomPaper, { LinkPaper } from '@/components/elements/CustomPaper'
 import { useCafe } from '@/features/cafes/api/useCafe'
 import { useRouter } from 'next/router'
-import { path, strage, requests } from '@/const/Consts'
+import { pagePath } from '@/const/Consts'
 import ReviewsList from '@/components/elements/ReviewsList'
 import Error from '@/pages/_error'
 
 export default function CafeDetail() {
   const router = useRouter()
+
   const { response, isLoading, isError, mutate } = useCafe(router.query.id)
 
   const handleLink = (path: string) => {
@@ -46,7 +47,7 @@ export default function CafeDetail() {
     <>
       <LinkPaper elevation={0}>
         <Link
-          onClick={() => handleLink(path.cafesList)}
+          onClick={() => handleLink(pagePath('cafes'))}
           component="button"
           variant="body1"
         >

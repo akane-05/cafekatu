@@ -4,7 +4,7 @@ import { Box, Grid, Typography, Button } from '@mui/material'
 import { useRouter } from 'next/router'
 import theme from '@/styles/theme'
 import { ThemeProvider } from '@mui/material/styles'
-import { path } from '@/const/Consts'
+import { pagePath } from '@/const/Consts'
 
 interface Props {
   statusCode: number
@@ -12,7 +12,7 @@ interface Props {
 const Error: NextPage<Props> = ({ statusCode }) => {
   const router = useRouter()
   const handleLink = (path: string) => {
-    router.push(path)
+    router.push(pagePath(path))
   }
 
   let errMessage = 'エラーが発生しました'
@@ -47,7 +47,7 @@ const Error: NextPage<Props> = ({ statusCode }) => {
           <Button
             variant="contained"
             color="primary"
-            onClick={() => handleLink(path.top)}
+            onClick={() => handleLink('top')}
           >
             Top画面に戻る
           </Button>

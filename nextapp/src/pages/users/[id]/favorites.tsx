@@ -9,7 +9,7 @@ import { CafeInfo } from '@/features/cafes/types'
 import { useRouter } from 'next/router'
 import { useState, useEffect } from 'react'
 import * as Dialog from '@/context/MessageDialog'
-import { path, strage } from '@/const/Consts'
+import { pagePath } from '@/const/Consts'
 import { Pagination } from '@mui/material'
 import { useUserFavorites } from '@/features/users/api/useUserFavorites'
 import Error from '@/pages/_error'
@@ -50,7 +50,7 @@ export default function UserFavorites() {
     <>
       <LinkPaper elevation={0}>
         <Link
-          onClick={() => handleLink(path.cafesList)}
+          onClick={() => handleLink(pagePath('cafes'))}
           component="button"
           variant="body1"
         >

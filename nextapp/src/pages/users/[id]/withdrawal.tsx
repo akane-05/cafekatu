@@ -5,17 +5,19 @@ import React, { useState } from 'react'
 import CustomPaper, { LinkPaper } from '@/components/elements/CustomPaper'
 import theme from '@/styles/theme'
 import { ThemeProvider } from '@mui/material/styles'
-import { path, errStatus } from '@/const/Consts'
+import { pagePath, errStatus } from '@/const/Consts'
 import { useRouter } from 'next/router'
 import * as Dialog from '@/context/MessageDialog'
 import { deleteUser } from '@/features/users/api/deleteUser'
 import { userInfoState, UserInfo } from '@/globalStates/userInfo'
 import { useSetRecoilState, RecoilRoot } from 'recoil'
+import { useUserInfo } from '@/hooks/useUserInfo'
 
 export default function withdrawal() {
   const router = useRouter()
   const dialog = Dialog.useDialogContext()
 
+  const { userInfo } = useUserInfo()
   const setUserInfo = useSetRecoilState(userInfoState)
 
   const handleLink = (path: string) => {
@@ -28,11 +30,11 @@ export default function withdrawal() {
       setUserInfo(undefined) //stateを空にする
 
       dialog.confirm(Dialog.apiOKDialog('退会しました'))
-      handleLink(path.top)
+      handleLink(pagePath('top'))
     } else {
       if (errStatus.includes(response.status)) {
         router.push({
-          pathname: path.error,
+          pathname: pagePath('error'),
           query: { status: response.status, error: response.error },
         })
       } else {
@@ -46,7 +48,7 @@ export default function withdrawal() {
       <ThemeProvider theme={theme}>
         <LinkPaper elevation={0}>
           <Link
-            onClick={() => handleLink(path.mypage)}
+            onClick={() => handleLink(pagePath('mypage', String(userInfo?.id)))}
             component="button"
             variant="body1"
           >
@@ -84,7 +86,9 @@ export default function withdrawal() {
               <Button
                 variant="contained"
                 sx={{ mr: 2 }}
-                onClick={() => handleLink(path.mypage)}
+                onClick={() =>
+                  handleLink(pagePath('mypage', String(userInfo?.id)))
+                }
               >
                 退会しない
               </Button>

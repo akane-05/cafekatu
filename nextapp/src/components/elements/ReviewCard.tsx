@@ -19,7 +19,7 @@ import React from 'react'
 import { ReviewInfo } from '@/features/reviews/types/index'
 import * as Dialog from '@/context/MessageDialog'
 import { deleteReview } from '@/features/reviews/api/deleteReview'
-import { path, errStatus } from '@/const/Consts'
+import { pagePath, errStatus } from '@/const/Consts'
 import { useRouter } from 'next/router'
 
 type Props = {
@@ -51,7 +51,7 @@ export default function ReviewCard(props: Props) {
     } else {
       if (errStatus.includes(response.status)) {
         router.push({
-          pathname: path.error,
+          pathname: pagePath('error'),
           query: { status: response.status, error: response.error },
         })
       } else {

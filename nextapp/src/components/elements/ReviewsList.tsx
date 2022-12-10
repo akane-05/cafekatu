@@ -23,7 +23,7 @@ import { useState, useEffect } from 'react'
 //import { getCafes } from '@/features/cafes/api/getCafes'
 import { useReviews } from '@/features/reviews/api/useReviews'
 import * as Dialog from '@/context/MessageDialog'
-import { path, strage, ratingList, requests, errStatus } from '@/const/Consts'
+import { pagePath, ratingList, errStatus } from '@/const/Consts'
 import { Pagination } from '@mui/material'
 import { ReviewInfo } from '@/features/reviews/types/index'
 import ReviewCard from '@/components/elements/ReviewCard'
@@ -131,7 +131,7 @@ export default function ReviewsList(props: Props) {
       } else {
         if (errStatus.includes(response.status)) {
           router.push({
-            pathname: path.error,
+            pathname: pagePath('error'),
             query: { status: response.status, error: response.error },
           })
         } else {

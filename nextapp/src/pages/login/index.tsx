@@ -15,10 +15,10 @@ import Visibility from '@mui/icons-material/Visibility'
 import VisibilityOff from '@mui/icons-material/VisibilityOff'
 import theme from '@/styles/theme'
 import { ThemeProvider } from '@mui/material/styles'
-import React, { useState, useRef } from 'react'
+import React, { useState, useEffect } from 'react'
 import CustomButton from '@/components/elements/CustomButton'
 import { LoginInfo } from '@/features/login/types'
-import { path, errStatus } from '@/const/Consts'
+import { pagePath, errStatus } from '@/const/Consts'
 import { login } from '@/features/login/api/login'
 import * as Dialog from '@/context/MessageDialog'
 import { userInfoState, UserInfo } from '@/globalStates/userInfo'
@@ -27,8 +27,7 @@ import * as yup from 'yup'
 import { validate } from '@/lib/validate'
 import { useRouter } from 'next/router'
 
-export default function LoginForm() {
-  const router = useRouter()
+export default function Login() {
   const [values, setValues] = React.useState<LoginInfo>({
     email: '',
     password: '',
@@ -94,7 +93,7 @@ export default function LoginForm() {
         setUserInfo(userInfo)
 
         dialog.confirm(Dialog.apiOKDialog(response.message))
-        handleLink(path.cafesList)
+        handleLink(pagePath('cafes'))
       } else {
         dialog.confirm(Dialog.apiErrorDialog(response.status, response.error))
       }
@@ -175,7 +174,7 @@ export default function LoginForm() {
         <Grid item xs={12}>
           <CustomButton
             variant="contained"
-            onClick={() => handleLink(path.register)}
+            onClick={() => handleLink(pagePath('register'))}
           >
             新規会員登録
           </CustomButton>

@@ -15,22 +15,23 @@ import SearchIcon from '@mui/icons-material/Search'
 import { styled, alpha } from '@mui/material/styles'
 import InputBase from '@mui/material/InputBase'
 import * as React from 'react'
-import { path } from '@/const/Consts'
+import { pagePath } from '@/const/Consts'
 import { useRouter } from 'next/router'
 import * as Dialog from '@/context/MessageDialog'
 import { useSetRecoilState, RecoilRoot } from 'recoil'
-import { haveTokenState } from '@/globalStates/haveToken'
+import { useUserInfo } from '@/hooks/useUserInfo'
 import { logout } from '@/features/login/api/logout'
-import { useHaveToken } from '@/hooks/useHaveToken'
 
 export default function Header() {
   const [anchorElUser, setAnchorElUser] = React.useState<null | HTMLElement>(
     null,
   )
+
+  const { userInfo } = useUserInfo()
+
   const settings = ['マイページ', 'お気に入り', '過去の投稿', 'ログアウト']
   const router = useRouter()
   const dialog = Dialog.useDialogContext()
-  const setHaveToken = useSetRecoilState(haveTokenState)
 
   const handleOpenUserMenu = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorElUser(event.currentTarget)
@@ -48,15 +49,15 @@ export default function Header() {
     switch (setting) {
       case settings[0]:
         setAnchorElUser(null)
-        handleLink(path.mypage)
+        handleLink(pagePath('mypage', `${userInfo?.id}`))
         break
       case settings[1]:
         setAnchorElUser(null)
-        handleLink(path.favorites)
+        handleLink(pagePath('favorites', `${userInfo?.id}`))
         break
       case settings[2]:
         setAnchorElUser(null)
-        handleLink(path.pastPosts)
+        handleLink(pagePath('pastPosts', `${userInfo?.id}`))
         break
       case settings[3]:
         await dialog
@@ -64,9 +65,8 @@ export default function Header() {
           .then(() => {
             setAnchorElUser(null)
             logout()
-            setHaveToken(false)
             dialog.confirm(Dialog.apiOKDialog('ログアウトしました！'))
-            handleLink(path.top)
+            handleLink(pagePath('top'))
           })
         break
     }
@@ -75,7 +75,7 @@ export default function Header() {
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault()
     router.push({
-      pathname: path.cafesList,
+      pathname: pagePath('cafes'),
       query: { searchWord: searchWord },
     })
   }
@@ -132,13 +132,10 @@ export default function Header() {
   return (
     <AppBar style={{ backgroundColor: '#CC74AB' }} position="fixed">
       <Toolbar>
-        {router.pathname == path.login || router.pathname == path.register ? (
+        {router.pathname == pagePath('login') ||
+        router.pathname == pagePath('register') ? (
           <Box sx={{ m: 0 }}>
-            <Button
-              size="medium"
-              color="inherit"
-              //onClick={() => handleLink(path.top)}
-            >
+            <Button size="medium" color="inherit">
               Cafe活
             </Button>
           </Box>
@@ -148,7 +145,7 @@ export default function Header() {
               <Button
                 size="medium"
                 color="inherit"
-                onClick={() => handleLink(path.top)}
+                onClick={() => handleLink(pagePath('top'))}
               >
                 Cafe活
               </Button>
@@ -158,7 +155,6 @@ export default function Header() {
                 sx={{
                   mr: 'auto',
                   ml: 'auto',
-                  //visibility: haveToken ? 'visible' : 'hidden',
                 }}
               >
                 <SearchIconWrapper>
@@ -169,7 +165,6 @@ export default function Header() {
                   placeholder="店舗名、住所..."
                   inputProps={{ 'aria-label': 'search' }}
                   onChange={handleChange}
-                  //value={values.searchWord}
                   type="text"
                 />
               </Search>
