@@ -39,7 +39,7 @@ import { useSetRecoilState, RecoilRoot } from 'recoil'
 export default function Mypage() {
   const router = useRouter()
   const dialog = Dialog.useDialogContext()
-  const { response, isLoading, isError } = useUser()
+  const { response, isLoading, isError } = useUser(router.query.id)
 
   const [values, setValues] = React.useState<UserUpdInfo>({
     nickname: '',
@@ -149,25 +149,25 @@ export default function Mypage() {
   }
 
   const update = async () => {
-    const response = await updateUser(values)
-    if (response.status == 200) {
+    const res = await updateUser(response.data?.id, values)
+    if (res.status == 200) {
       const userInfo: UserInfo = {
-        id: response.id,
-        nickname: response.nickname,
-        email: response.email,
+        id: res.id,
+        nickname: res.nickname,
+        email: res.email,
       }
       setUserInfo(userInfo)
 
-      dialog.confirm(Dialog.apiOKDialog(response.message))
+      dialog.confirm(Dialog.apiOKDialog(res.message))
       handleLink(pagePath('cafes'))
     } else {
-      if (errStatus.includes(response.status)) {
+      if (errStatus.includes(res.status)) {
         router.push({
           pathname: pagePath('error'),
-          query: { status: response.status, error: response.error },
+          query: { status: res.status, error: res.error },
         })
       } else {
-        dialog.confirm(Dialog.apiErrorDialog(response.status, response.error))
+        dialog.confirm(Dialog.apiErrorDialog(res.status, res.error))
       }
     }
   }

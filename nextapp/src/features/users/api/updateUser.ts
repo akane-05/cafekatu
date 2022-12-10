@@ -1,12 +1,14 @@
 import { UserUpdInfo, UserUpdRes } from '@/features/users/types'
 import apiClient from '@/lib/axios'
-import { requests } from '@/const/Consts'
-import { strage } from '@/const/Consts'
+import { strage, reqPath } from '@/const/Consts'
 import { resolveHandler, errorHandler } from '@/features/index'
 
-export async function updateUser(info: UserUpdInfo): Promise<UserUpdRes> {
+export async function updateUser(
+  id: undefined | number,
+  info: UserUpdInfo,
+): Promise<UserUpdRes> {
   return apiClient
-    .patch(requests.users, JSON.stringify(info), {
+    .patch(reqPath('user', String(id)), JSON.stringify(info), {
       headers: {
         Authorization: `Bearer ${localStorage.getItem(strage.Token)}`,
       },
