@@ -3,7 +3,7 @@ import React, { useState, useRef, useEffect } from 'react'
 import { useRouter } from 'next/router'
 import theme from '@/styles/theme'
 import { ThemeProvider } from '@mui/material/styles'
-import { path } from '@/const/Consts'
+import { pagePath } from '@/const/Consts'
 
 export default function Custom404() {
   const router = useRouter()
@@ -37,7 +37,7 @@ export default function Custom404() {
           <Button
             variant="contained"
             color="primary"
-            onClick={() => handleLink(path.top)}
+            onClick={() => handleLink(pagePath('top'))}
           >
             Top画面に戻る
           </Button>

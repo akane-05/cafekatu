@@ -29,12 +29,12 @@ const pagePath = (page: string, id?: string): string => {
     login: '/login',
     register: '/register',
     cafes: '/cafes',
-    cafe: '/cafes/' + { id },
+    cafe: '/cafes/' + id,
     cafeRegister: '/cafes/register',
-    mypage: '/users/' + { id },
-    favorites: '/users/' + { id } + '/favorites',
-    pastPosts: '/users/' + { id } + '/pastPosts',
-    withdrawal: '/users/' + { id } + '/withdrawal',
+    mypage: '/users/' + id,
+    favorites: '/users/' + id + '/favorites',
+    pastPosts: '/users/' + id + '/pastPosts',
+    withdrawal: '/users/' + id + '/withdrawal',
     error: '/error',
   }
 

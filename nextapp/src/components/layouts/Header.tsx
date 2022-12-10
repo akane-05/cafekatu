@@ -42,23 +42,22 @@ export default function Header() {
   }
 
   const handleLink = (path: string) => {
-    console.log(userInfo?.id)
-    router.push(pagePath(path, `${userInfo?.id}`))
+    router.push(path)
   }
 
   const handleClickUserMenu = async (setting: string) => {
     switch (setting) {
       case settings[0]:
         setAnchorElUser(null)
-        handleLink('mypage')
+        handleLink(pagePath('mypage', `${userInfo?.id}`))
         break
       case settings[1]:
         setAnchorElUser(null)
-        handleLink('favorites')
+        handleLink(pagePath('favorites', `${userInfo?.id}`))
         break
       case settings[2]:
         setAnchorElUser(null)
-        handleLink('pastPosts')
+        handleLink(pagePath('pastPosts', `${userInfo?.id}`))
         break
       case settings[3]:
         await dialog
@@ -67,7 +66,7 @@ export default function Header() {
             setAnchorElUser(null)
             logout()
             dialog.confirm(Dialog.apiOKDialog('ログアウトしました！'))
-            handleLink('top')
+            handleLink(pagePath('top'))
           })
         break
     }
@@ -146,7 +145,7 @@ export default function Header() {
               <Button
                 size="medium"
                 color="inherit"
-                onClick={() => handleLink('top')}
+                onClick={() => handleLink(pagePath('top'))}
               >
                 Cafe活
               </Button>

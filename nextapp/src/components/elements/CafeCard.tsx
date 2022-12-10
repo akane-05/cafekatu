@@ -66,10 +66,7 @@ export default function CafeCard(props: Props) {
   }
 
   const handleLink = (path: string) => {
-    router.push({
-      pathname: path,
-      query: { id: cafeInfo.id },
-    })
+    router.push(path)
   }
 
   const handleMouseDownFavorite = (
@@ -179,7 +176,9 @@ export default function CafeCard(props: Props) {
                 <Button
                   variant="contained"
                   color="primary"
-                  onClick={() => handleLink(pagePath('cafe', `${cafeInfo.id}`))}
+                  onClick={() =>
+                    handleLink(pagePath('cafe', String(cafeInfo.id)))
+                  }
                 >
                   詳細
                 </Button>

@@ -21,7 +21,7 @@ import Review from '@/components/elements/ReviewCard'
 import CustomPaper, { LinkPaper } from '@/components/elements/CustomPaper'
 import Visibility from '@mui/icons-material/Visibility'
 import VisibilityOff from '@mui/icons-material/VisibilityOff'
-import { path, strage, requests, errStatus } from '@/const/Consts'
+import { pagePath, errStatus } from '@/const/Consts'
 import { useRouter } from 'next/router'
 import { useUserInfo } from '@/hooks/useUserInfo'
 import * as yup from 'yup'
@@ -54,7 +54,6 @@ export default function Mypage() {
   const [isEdit, setIsEdit] = React.useState<boolean>(false)
   const [showPassword, setShowPassword] = React.useState<boolean>(false)
 
-  const { userInfo } = useUserInfo()
   const setUserInfo = useSetRecoilState(userInfoState)
 
   // バリデーションルール
@@ -103,12 +102,8 @@ export default function Mypage() {
 
   const scheme = validScheme()
 
-  const handleLink = (pagePath: string) => {
-    if (pagePath == path.withdrawal) {
-      router.push('/users/' + userInfo?.id + '/withdrawal')
-    }
-
-    router.push(pagePath)
+  const handleLink = (path: string) => {
+    router.push(path)
   }
 
   const handleClickShowPassword = () => {
@@ -164,11 +159,11 @@ export default function Mypage() {
       setUserInfo(userInfo)
 
       dialog.confirm(Dialog.apiOKDialog(response.message))
-      handleLink(path.cafes)
+      handleLink(pagePath('cafes'))
     } else {
       if (errStatus.includes(response.status)) {
         router.push({
-          pathname: path.error,
+          pathname: pagePath('error'),
           query: { status: response.status, error: response.error },
         })
       } else {
@@ -193,7 +188,7 @@ export default function Mypage() {
     <ThemeProvider theme={theme}>
       <LinkPaper elevation={0}>
         <Link
-          onClick={() => handleLink(path.cafes)}
+          onClick={() => handleLink(pagePath('cafes'))}
           component="button"
           variant="body1"
         >
@@ -435,7 +430,11 @@ export default function Mypage() {
                   >
                     変更
                   </Button>
-                  <Button onClick={() => handleLink(path.withdrawal)}>
+                  <Button
+                    onClick={() =>
+                      handleLink(pagePath('withdrawal', response.data?.id))
+                    }
+                  >
                     退会
                   </Button>
                 </Grid>
