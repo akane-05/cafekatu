@@ -1,9 +1,8 @@
 import apiClient from '@/lib/axios'
 import useSWR from 'swr'
-import { requests } from '@/const/Consts'
 import { useRouter } from 'next/router'
 import { useState, useEffect } from 'react'
-import { strage } from '@/const/Consts'
+import { strage, reqPath } from '@/const/Consts'
 
 export function useCafe(id: any) {
   const fetcher = (url: string) =>
@@ -19,7 +18,7 @@ export function useCafe(id: any) {
     data: data,
     error,
     mutate,
-  } = useSWR(id ? requests.cafes + '/' + id : null, fetcher, {
+  } = useSWR(reqPath('cafe', id), fetcher, {
     revalidateOnMount: true,
     onErrorRetry: (error) => {
       // 401でトークンを削除
