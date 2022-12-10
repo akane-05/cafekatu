@@ -1,7 +1,7 @@
 import Header from './Header'
 import { ReactElement } from 'react'
 import React from 'react'
-import styles from '../../styles/layout.module.css'
+import styles from '@/styles/layout.module.css'
 import { Box } from '@mui/material'
 
 type LayoutProps = Required<{
