@@ -18,12 +18,14 @@ export function useReviews(page: number, perPage: number, id: any) {
     error,
     mutate,
   } = useSWR(
-    reqPath('cafeReviews', String(id)) +
-      '?' +
-      new URLSearchParams({
-        per_page: String(perPage),
-        page: String(page),
-      }),
+    id
+      ? reqPath('cafeReviews', String(id)) +
+          '?' +
+          new URLSearchParams({
+            per_page: String(perPage),
+            page: String(page),
+          })
+      : null,
     fetcher,
     {
       revalidateOnMount: true,

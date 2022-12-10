@@ -15,15 +15,19 @@ export function useUser(id: any) {
       })
       .then((res) => res.data)
 
-  const { data: data, error } = useSWR(reqPath('user', String(id)), fetcher, {
-    revalidateOnMount: true,
-    onErrorRetry: (error) => {
-      // 401でトークンを削除
-      if (error.response && error.response.status == 401) {
-        localStorage.removeItem(strage.Token)
-      }
+  const { data: data, error } = useSWR(
+    id ? reqPath('user', String(id)) : null,
+    fetcher,
+    {
+      revalidateOnMount: true,
+      onErrorRetry: (error) => {
+        // 401でトークンを削除
+        if (error.response && error.response.status == 401) {
+          localStorage.removeItem(strage.Token)
+        }
+      },
     },
-  })
+  )
 
   return {
     response: data,

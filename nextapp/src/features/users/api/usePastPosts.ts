@@ -17,12 +17,14 @@ export function usePastPosts(id: any, page: number, perPage: number) {
     error,
     mutate: mutate,
   } = useSWR(
-    reqPath('pastPosts', String(id)) +
-      '?' +
-      new URLSearchParams({
-        per_page: String(perPage),
-        page: String(page),
-      }),
+    id
+      ? reqPath('pastPosts', String(id)) +
+          '?' +
+          new URLSearchParams({
+            per_page: String(perPage),
+            page: String(page),
+          })
+      : null,
     fetcher,
     {
       revalidateOnMount: true,

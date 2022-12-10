@@ -18,7 +18,7 @@ export function useCafe(id: any) {
     data: data,
     error,
     mutate,
-  } = useSWR(reqPath('cafe', id), fetcher, {
+  } = useSWR(id ? reqPath('cafe', id) : null, fetcher, {
     revalidateOnMount: true,
     onErrorRetry: (error) => {
       // 401でトークンを削除

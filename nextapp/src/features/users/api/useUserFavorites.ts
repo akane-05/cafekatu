@@ -13,12 +13,14 @@ export function useUserFavorites(id: any, page: number, perPage: number) {
       .then((res) => res.data)
 
   const { data: data, error } = useSWR(
-    reqPath('favorites', String(id)) +
-      '?' +
-      new URLSearchParams({
-        per_page: String(perPage),
-        page: String(page),
-      }),
+    id
+      ? reqPath('favorites', String(id)) +
+          '?' +
+          new URLSearchParams({
+            per_page: String(perPage),
+            page: String(page),
+          })
+      : null,
     fetcher,
     {
       revalidateOnMount: true,
