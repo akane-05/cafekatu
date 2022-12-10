@@ -18,7 +18,7 @@ import { ThemeProvider } from '@mui/material/styles'
 import React, { useState, useEffect } from 'react'
 import CustomButton from '@/components/elements/CustomButton'
 import { LoginInfo } from '@/features/login/types'
-import { path, errStatus } from '@/const/Consts'
+import { pagePath, errStatus } from '@/const/Consts'
 import { login } from '@/features/login/api/login'
 import * as Dialog from '@/context/MessageDialog'
 import { userInfoState, UserInfo } from '@/globalStates/userInfo'
@@ -93,7 +93,7 @@ export default function Login() {
         setUserInfo(userInfo)
 
         dialog.confirm(Dialog.apiOKDialog(response.message))
-        handleLink(path.cafes)
+        handleLink(pagePath('cafes'))
       } else {
         dialog.confirm(Dialog.apiErrorDialog(response.status, response.error))
       }
@@ -174,7 +174,7 @@ export default function Login() {
         <Grid item xs={12}>
           <CustomButton
             variant="contained"
-            onClick={() => handleLink(path.register)}
+            onClick={() => handleLink(pagePath('register'))}
           >
             新規会員登録
           </CustomButton>

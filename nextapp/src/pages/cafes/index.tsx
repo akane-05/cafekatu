@@ -11,7 +11,7 @@ import { useState, useEffect } from 'react'
 //import { getCafes } from '@/features/cafes/api/getCafes'
 import { useCafes } from '@/features/cafes/api/useCafes'
 import * as Dialog from '@/context/MessageDialog'
-import { path, strage } from '@/const/Consts'
+import { pagePath } from '@/const/Consts'
 import { Pagination } from '@mui/material'
 import Error from '@/pages/_error'
 
@@ -62,7 +62,7 @@ export default function CafesList() {
           direction="row"
         >
           <Link
-            onClick={() => handleLink(path.cafeRegister)}
+            onClick={() => handleLink(pagePath('cafeRegister'))}
             component="button"
             variant="body1"
           >

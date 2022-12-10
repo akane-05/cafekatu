@@ -9,7 +9,7 @@ import { useRouter } from 'next/router'
 import { useState, useEffect } from 'react'
 import { usePastPosts } from '@/features/users/api/usePastPosts'
 import * as Dialog from '@/context/MessageDialog'
-import { path, strage } from '@/const/Consts'
+import { pagePath, strage } from '@/const/Consts'
 import { Pagination } from '@mui/material'
 import ReviewCard from '@/components/elements/ReviewCard'
 import { ReviewInfo } from '@/features/reviews/types'
@@ -64,7 +64,7 @@ export default function pastPosts() {
           direction="row"
         >
           <Link
-            onClick={() => handleLink(path.cafes)}
+            onClick={() => handleLink(pagePath('cafes'))}
             component="button"
             variant="body1"
           >

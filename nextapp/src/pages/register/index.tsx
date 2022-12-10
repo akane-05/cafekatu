@@ -18,7 +18,7 @@ import { UserRgsInfo } from '@/features/register/types'
 import { registerUser } from '@/features/register/api/registerUser'
 import * as Dialog from '@/context/MessageDialog'
 import CustomButton from '@/components/elements/CustomButton'
-import { path, errStatus } from '@/const/Consts'
+import { pagePath, errStatus } from '@/const/Consts'
 import * as yup from 'yup'
 import { validate } from '@/lib/validate'
 import { userInfoState, UserInfo } from '@/globalStates/userInfo'
@@ -119,11 +119,11 @@ export default function Register() {
       setUserInfo(userInfo)
 
       dialog.confirm(Dialog.apiOKDialog(response.message))
-      handleLink(path.cafes)
+      handleLink(pagePath('cafes'))
     } else {
       if (errStatus.includes(response.status)) {
         router.push({
-          pathname: path.error,
+          pathname: pagePath('error'),
           query: { status: response.status, error: response.error },
         })
       } else {
