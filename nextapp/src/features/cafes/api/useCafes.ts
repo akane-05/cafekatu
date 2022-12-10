@@ -20,8 +20,8 @@ export function useCafes(page: number, perPage: number, param?: any) {
     reqPath('cafes') +
       '?' +
       new URLSearchParams({
-        per_page: `${perPage}`,
-        page: `${page}`,
+        per_page: String(perPage),
+        page: String(page),
         search_word: searchWord,
       }),
     fetcher,

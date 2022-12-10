@@ -1,7 +1,5 @@
 import apiClient from '@/lib/axios'
 import useSWR from 'swr'
-import { useRouter } from 'next/router'
-import { useState, useEffect } from 'react'
 import { strage, reqPath } from '@/const/Consts'
 
 export function useUserFavorites(id: any, page: number, perPage: number) {
@@ -18,8 +16,8 @@ export function useUserFavorites(id: any, page: number, perPage: number) {
     reqPath('favorites', String(id)) +
       '?' +
       new URLSearchParams({
-        per_page: `${perPage}`,
-        page: `${page}`,
+        per_page: String(perPage),
+        page: String(page),
       }),
     fetcher,
     {

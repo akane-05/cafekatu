@@ -1,14 +1,3 @@
-const requests = {
-  base: 'http://localhost:8080',
-  login: '/login',
-  register: '/register',
-  cafes: '/cafes',
-  users: '/users',
-  reviews: '/reviews',
-  usersFavorites: '/users/favorites',
-  prefectures: '/prefectures',
-}
-
 const reqPath = (path: string, id?: string): string => {
   const paths: { [key: string]: string } = {
     base: 'http://localhost:8080',
@@ -64,4 +53,4 @@ const ratingList: number[] = [
 
 const errStatus: number[] = [401, 404, 500]
 
-export { requests, reqPath, pagePath, strage, ratingList, errStatus }
+export { reqPath, pagePath, strage, ratingList, errStatus }

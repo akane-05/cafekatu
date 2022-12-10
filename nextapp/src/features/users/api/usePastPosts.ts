@@ -20,8 +20,8 @@ export function usePastPosts(id: any, page: number, perPage: number) {
     reqPath('pastPosts', String(id)) +
       '?' +
       new URLSearchParams({
-        per_page: `${perPage}`,
-        page: `${page}`,
+        per_page: String(perPage),
+        page: String(page),
       }),
     fetcher,
     {

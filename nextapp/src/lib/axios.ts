@@ -1,9 +1,8 @@
 import axios from 'axios'
-import {requests} from '@/const/Consts'
-
+import { reqPath } from '@/const/Consts'
 
 const apiClient = axios.create({
-  baseURL: requests.base,
+  baseURL: reqPath('base'),
   responseType: 'json',
   headers: {
     'Content-Type': 'application/json',
