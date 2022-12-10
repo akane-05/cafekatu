@@ -19,18 +19,19 @@ import { path } from '@/const/Consts'
 import { useRouter } from 'next/router'
 import * as Dialog from '@/context/MessageDialog'
 import { useSetRecoilState, RecoilRoot } from 'recoil'
-import { haveTokenState } from '@/globalStates/haveToken'
+import { useUserInfo } from '@/hooks/useUserInfo'
 import { logout } from '@/features/login/api/logout'
-import { useHaveToken } from '@/hooks/useHaveToken'
 
 export default function Header() {
   const [anchorElUser, setAnchorElUser] = React.useState<null | HTMLElement>(
     null,
   )
+
+  const { userInfo } = useUserInfo()
+
   const settings = ['マイページ', 'お気に入り', '過去の投稿', 'ログアウト']
   const router = useRouter()
   const dialog = Dialog.useDialogContext()
-  const setHaveToken = useSetRecoilState(haveTokenState)
 
   const handleOpenUserMenu = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorElUser(event.currentTarget)
@@ -40,15 +41,21 @@ export default function Header() {
     setAnchorElUser(null)
   }
 
-  const handleLink = (path: string) => {
-    router.push(path)
+  const handleLink = (pagePath: string) => {
+    if (pagePath == path.favorites) {
+      router.push('/users/' + userInfo?.id + '/favorites')
+    } else if (pagePath == path.pastPosts) {
+      router.push('/users/' + userInfo?.id + '/pastPosts')
+    } else {
+      router.push(pagePath)
+    }
   }
 
   const handleClickUserMenu = async (setting: string) => {
     switch (setting) {
       case settings[0]:
         setAnchorElUser(null)
-        handleLink(path.mypage)
+        handleLink(path.mypage + '/' + userInfo?.id)
         break
       case settings[1]:
         setAnchorElUser(null)
@@ -64,7 +71,6 @@ export default function Header() {
           .then(() => {
             setAnchorElUser(null)
             logout()
-            setHaveToken(false)
             dialog.confirm(Dialog.apiOKDialog('ログアウトしました！'))
             handleLink(path.top)
           })
@@ -75,7 +81,7 @@ export default function Header() {
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault()
     router.push({
-      pathname: path.cafesList,
+      pathname: path.cafes,
       query: { searchWord: searchWord },
     })
   }

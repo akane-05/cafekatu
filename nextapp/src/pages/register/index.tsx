@@ -29,7 +29,7 @@ type InputValue = UserRgsInfo & {
   passwordConfirm: ''
 }
 
-export default function RegisterForm() {
+export default function Register() {
   const router = useRouter()
   const dialog = Dialog.useDialogContext()
 
@@ -89,7 +89,13 @@ export default function RegisterForm() {
         error = true
       }
     }
-    dialog.confirm(Dialog.errorDialog('エラーを修正してください。'))
+    if (!error) {
+      register()
+    } else {
+      console.log(errors)
+      console.log(error)
+      dialog.confirm(Dialog.errorDialog('エラーを修正してください。'))
+    }
   }
 
   const handleLink = (path: string) => {
@@ -113,7 +119,7 @@ export default function RegisterForm() {
       setUserInfo(userInfo)
 
       dialog.confirm(Dialog.apiOKDialog(response.message))
-      handleLink(path.cafesList)
+      handleLink(path.cafes)
     } else {
       if (errStatus.includes(response.status)) {
         router.push({

@@ -64,7 +64,7 @@ export default function pastPosts() {
           direction="row"
         >
           <Link
-            onClick={() => handleLink(path.cafesList)}
+            onClick={() => handleLink(path.cafes)}
             component="button"
             variant="body1"
           >

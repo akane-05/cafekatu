@@ -15,7 +15,7 @@ import Visibility from '@mui/icons-material/Visibility'
 import VisibilityOff from '@mui/icons-material/VisibilityOff'
 import theme from '@/styles/theme'
 import { ThemeProvider } from '@mui/material/styles'
-import React, { useState, useRef } from 'react'
+import React, { useState, useEffect } from 'react'
 import CustomButton from '@/components/elements/CustomButton'
 import { LoginInfo } from '@/features/login/types'
 import { path, errStatus } from '@/const/Consts'
@@ -27,8 +27,7 @@ import * as yup from 'yup'
 import { validate } from '@/lib/validate'
 import { useRouter } from 'next/router'
 
-export default function LoginForm() {
-  const router = useRouter()
+export default function Login() {
   const [values, setValues] = React.useState<LoginInfo>({
     email: '',
     password: '',
@@ -94,7 +93,7 @@ export default function LoginForm() {
         setUserInfo(userInfo)
 
         dialog.confirm(Dialog.apiOKDialog(response.message))
-        handleLink(path.cafesList)
+        handleLink(path.cafes)
       } else {
         dialog.confirm(Dialog.apiErrorDialog(response.status, response.error))
       }

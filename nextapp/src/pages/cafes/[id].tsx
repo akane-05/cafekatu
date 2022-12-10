@@ -13,6 +13,7 @@ import Error from '@/pages/_error'
 
 export default function CafeDetail() {
   const router = useRouter()
+
   const { response, isLoading, isError, mutate } = useCafe(router.query.id)
 
   const handleLink = (path: string) => {
@@ -46,7 +47,7 @@ export default function CafeDetail() {
     <>
       <LinkPaper elevation={0}>
         <Link
-          onClick={() => handleLink(path.cafesList)}
+          onClick={() => handleLink(path.cafes)}
           component="button"
           variant="body1"
         >

@@ -50,7 +50,7 @@ export default function UserFavorites() {
     <>
       <LinkPaper elevation={0}>
         <Link
-          onClick={() => handleLink(path.cafesList)}
+          onClick={() => handleLink(path.cafes)}
           component="button"
           variant="body1"
         >

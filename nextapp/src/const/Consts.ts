@@ -11,16 +11,36 @@ const requests = {
 
 const path = {
   top: '/',
-  login: '/users/loginForm',
-  register: '/users/registerForm',
-  cafesList: '/cafes/cafesList',
+  login: '/login',
+  register: '/register',
+  cafes: '/cafes',
   cafeDatail: '/cafes/cafeDetail',
-  cafeRegister: '/cafes/cafeRegister',
-  mypage: '/users/mypage',
+  cafeRegister: '/cafes/register',
+  mypage: '/users',
   favorites: '/users/favorites',
   pastPosts: '/users/pastPosts',
   withdrawal: '/users/withdrawal',
   error: '/error',
+}
+
+const pagePath = (page: string, id?: string): string => {
+  const path: { [key: string]: string } = {
+    top: '/',
+    login: '/login',
+    register: '/register',
+    cafes: '/cafes',
+    cafe: '/cafes/' + { id },
+    cafeRegister: '/cafes/register',
+    mypage: '/users',
+    favorites: '/users/' + { id } + '/favorites',
+    pastPosts: '/users/' + { id } + '/pastPosts',
+    withdrawal: '/users/' + { id } + '/withdrawal',
+    error: '/error',
+  }
+
+  const pagePath = path[page]
+
+  return pagePath
 }
 
 const strage = {
@@ -36,4 +56,4 @@ const ratingList: number[] = [
 
 const errStatus: number[] = [401, 404, 500]
 
-export { requests, path, strage, ratingList, errStatus }
+export { requests, path, pagePath, strage, ratingList, errStatus }

@@ -124,7 +124,7 @@ export default function CafeRegister() {
     const response = await postCafe(values)
     if (response.status == 200) {
       dialog.confirm(Dialog.apiOKDialog(response.message))
-      handleLink(path.cafesList)
+      handleLink(path.cafes)
     } else {
       if (errStatus.includes(response.status)) {
         router.push({
@@ -152,7 +152,7 @@ export default function CafeRegister() {
     <ThemeProvider theme={theme}>
       <LinkPaper elevation={0}>
         <Link
-          onClick={() => handleLink(path.cafesList)}
+          onClick={() => handleLink(path.cafes)}
           component="button"
           variant="body1"
         >

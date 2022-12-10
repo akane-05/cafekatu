@@ -19,7 +19,7 @@ import React, { useState, useEffect } from 'react'
 import FavoriteIcon from '@mui/icons-material/Favorite'
 import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder'
 import { CafeInfo } from '@/features/cafes/types'
-import { path, errStatus } from '@/const/Consts'
+import { pagePath, errStatus } from '@/const/Consts'
 import { useRouter } from 'next/router'
 import { postFavorite } from '@/features/cafes/api/postFavorite'
 import { deleteFavorite } from '@/features/cafes/api/deleteFavorite'
@@ -56,7 +56,7 @@ export default function CafeCard(props: Props) {
     } else {
       if (errStatus.includes(response.status)) {
         router.push({
-          pathname: path.error,
+          pathname: pagePath('error'),
           query: { status: response.status, error: response.error },
         })
       } else {
@@ -179,7 +179,7 @@ export default function CafeCard(props: Props) {
                 <Button
                   variant="contained"
                   color="primary"
-                  onClick={() => handleLink(path.cafeDatail)}
+                  onClick={() => handleLink(pagePath('cafe', `${cafeInfo.id}`))}
                 >
                   詳細
                 </Button>

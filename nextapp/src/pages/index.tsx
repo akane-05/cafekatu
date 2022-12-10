@@ -57,7 +57,9 @@ function Home() {
   }
 
   if (haveToken) {
-    router.push(path.cafesList)
+    router.push({
+      pathname: path.cafes,
+    })
   } else {
     router.push(path.login)
   }

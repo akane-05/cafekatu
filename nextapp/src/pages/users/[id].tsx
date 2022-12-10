@@ -54,6 +54,7 @@ export default function Mypage() {
   const [isEdit, setIsEdit] = React.useState<boolean>(false)
   const [showPassword, setShowPassword] = React.useState<boolean>(false)
 
+  const { userInfo } = useUserInfo()
   const setUserInfo = useSetRecoilState(userInfoState)
 
   // バリデーションルール
@@ -102,8 +103,12 @@ export default function Mypage() {
 
   const scheme = validScheme()
 
-  const handleLink = (path: string) => {
-    router.push(path)
+  const handleLink = (pagePath: string) => {
+    if (pagePath == path.withdrawal) {
+      router.push('/users/' + userInfo?.id + '/withdrawal')
+    }
+
+    router.push(pagePath)
   }
 
   const handleClickShowPassword = () => {
@@ -159,7 +164,7 @@ export default function Mypage() {
       setUserInfo(userInfo)
 
       dialog.confirm(Dialog.apiOKDialog(response.message))
-      handleLink(path.cafesList)
+      handleLink(path.cafes)
     } else {
       if (errStatus.includes(response.status)) {
         router.push({
@@ -188,7 +193,7 @@ export default function Mypage() {
     <ThemeProvider theme={theme}>
       <LinkPaper elevation={0}>
         <Link
-          onClick={() => handleLink(path.cafesList)}
+          onClick={() => handleLink(path.cafes)}
           component="button"
           variant="body1"
         >

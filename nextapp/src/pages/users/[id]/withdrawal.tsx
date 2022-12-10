@@ -11,11 +11,13 @@ import * as Dialog from '@/context/MessageDialog'
 import { deleteUser } from '@/features/users/api/deleteUser'
 import { userInfoState, UserInfo } from '@/globalStates/userInfo'
 import { useSetRecoilState, RecoilRoot } from 'recoil'
+import { useUserInfo } from '@/hooks/useUserInfo'
 
 export default function withdrawal() {
   const router = useRouter()
   const dialog = Dialog.useDialogContext()
 
+  const { userInfo } = useUserInfo()
   const setUserInfo = useSetRecoilState(userInfoState)
 
   const handleLink = (path: string) => {
@@ -46,7 +48,7 @@ export default function withdrawal() {
       <ThemeProvider theme={theme}>
         <LinkPaper elevation={0}>
           <Link
-            onClick={() => handleLink(path.mypage)}
+            onClick={() => handleLink(path.mypage + '/' + userInfo?.id)}
             component="button"
             variant="body1"
           >
