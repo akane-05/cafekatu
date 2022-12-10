@@ -31,7 +31,7 @@ const pagePath = (page: string, id?: string): string => {
     cafes: '/cafes',
     cafe: '/cafes/' + { id },
     cafeRegister: '/cafes/register',
-    mypage: '/users',
+    mypage: '/users/' + { id },
     favorites: '/users/' + { id } + '/favorites',
     pastPosts: '/users/' + { id } + '/pastPosts',
     withdrawal: '/users/' + { id } + '/withdrawal',
