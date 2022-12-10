@@ -1,6 +1,6 @@
 import apiClient from '@/lib/axios'
 import useSWR from 'swr'
-import { requests } from '@/const/Consts'
+import { reqPath } from '@/const/Consts'
 import { strage } from '@/const/Consts'
 
 export function useReviews(page: number, perPage: number, id: any) {
@@ -18,16 +18,12 @@ export function useReviews(page: number, perPage: number, id: any) {
     error,
     mutate,
   } = useSWR(
-    id
-      ? requests.reviews +
-          '/' +
-          id +
-          '?' +
-          new URLSearchParams({
-            per_page: `${perPage}`,
-            page: `${page}`,
-          })
-      : null,
+    reqPath('cafeReviews', String(id)) +
+      '?' +
+      new URLSearchParams({
+        per_page: `${perPage}`,
+        page: `${page}`,
+      }),
     fetcher,
     {
       revalidateOnMount: true,

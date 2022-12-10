@@ -21,6 +21,7 @@ const reqPath = (path: string, id?: string): string => {
     favorites: '/users/' + id + '/favorites',
     pastPosts: '/users/' + id + '/pastPosts',
     reviews: '/reviews',
+    cafeReviews: '/reviews/' + id,
     review: '/reviews/' + id,
     prefectures: '/prefectures',
   }
