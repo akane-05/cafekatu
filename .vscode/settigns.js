@@ -1,6 +1,0 @@
-{
-    "eslint.workingDirectories": [
-        "./front-app"
-    ]
-
-  }
