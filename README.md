@@ -4,6 +4,10 @@
 ユーザーがカフェの情報を検索、投稿、口コミを投稿、お気に入りのカフェを記録することができます。
 
 ## 使用技術
+### 設計
+* draw.io (テーブル設計)
+* Figma （アプリケーションのデザイン）
+* Stoplight Studio (API設計)
 
 ### バックエンド
 * Golang 1.18.8
@@ -32,4 +36,11 @@ Docker/Docker-compose
 ## 実装予定の機能
 * 画像投稿機能
 * AWSにサーバーを構築、アプリケーションを公開
+
+# テーブル設計
+
+## ER図
+draw.ioを用いて作図しました。
+![image](https://user-images.githubusercontent.com/108785532/207324167-c656185c-aa14-4fe4-b069-aefa931deb97.png)
+
 
