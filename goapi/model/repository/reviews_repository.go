@@ -45,17 +45,6 @@ type ReviewQuery struct {
 	Page    int `form:"page" binding:"required"`
 }
 
-// // ポインタレシーバ(*demoRepository)にメソッドを追加
-// func (tr *reviewsRepository) GetUserReviews(userId int, query *ReviewQuery) (reviews []entity.Reviews, err error) {
-// 	log.Println("リポジトリ GetUserReviews")
-
-// 	if err = Db.Debug().Table("reviews").Where("user_id = ?", userId).Limit(query.PerPage).Offset(query.PerPage * (query.Page - 1)).Find(&reviews).Error; err != nil {
-// 		return
-// 	}
-// 	//名前付き変数でreturn
-// 	return
-// }
-
 // ポインタレシーバ(*demoRepository)にメソッドを追加
 func (tr *reviewsRepository) GetCafesReviews(id *int, query *ReviewQuery) (reviews []Review, err error) {
 	log.Println("リポジトリ GetCafesReviews")

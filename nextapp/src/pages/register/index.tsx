@@ -92,8 +92,6 @@ export default function Register() {
     if (!error) {
       register()
     } else {
-      console.log(errors)
-      console.log(error)
       dialog.confirm(Dialog.errorDialog('エラーを修正してください。'))
     }
   }
