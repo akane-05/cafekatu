@@ -17,7 +17,7 @@ var Db *gorm.DB
 // dataSourceNameはDNS(データソース名)
 func init() {
 
-	log.Println("読み込み")
+	log.Println("DB 読み込み")
 
 	user := os.Getenv("MYSQL_USER")
 	pass := os.Getenv("MYSQL_PASSWORD")

@@ -29,7 +29,6 @@ export default function withdrawal() {
     if (response.status == 200) {
       setUserInfo(undefined) //stateを空にする
       dialog.confirm(Dialog.apiOKDialog('退会しました'))
-      console.log('どうなってる')
       handleLink(pagePath('top'))
     } else {
       if (errStatus.includes(response.status)) {
