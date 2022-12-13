@@ -124,6 +124,8 @@ func (dc *reviewsController) PostReview(c *gin.Context) {
 
 	review.User_id = jwtInfo.Id
 
+	log.Println(review.Comment)
+
 	if err := dc.dr.InsertReview(&review); err != nil {
 		log.Println(err)
 		c.JSON(http.StatusInternalServerError, gin.H{

@@ -79,7 +79,8 @@ export default function ReviewsList(props: Props) {
     comment: yup
       .string()
       .required('必須項目です')
-      .matches(/^.{1,250}$/, '必須項目です。250字以内で入力してください。'),
+      .min(2, '2文字以上で入力してください。')
+      .max(250, '250字以内で入力してください。'),
   })
 
   const handleCommentPost = async () => {
@@ -98,6 +99,7 @@ export default function ReviewsList(props: Props) {
   const handleChange =
     (prop: keyof ReviewInfo) =>
     (event: React.ChangeEvent<HTMLInputElement>) => {
+      console.log()
       setValues({ ...values, [prop]: event.target.value })
     }
 
@@ -108,6 +110,7 @@ export default function ReviewsList(props: Props) {
   }
 
   const handlePostReview = async () => {
+    console.log(values.comment)
     const errors = validate({ ...values }, scheme)
     setErrors(errors)
     let error = false

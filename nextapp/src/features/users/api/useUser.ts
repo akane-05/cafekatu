@@ -20,6 +20,7 @@ export function useUser(id: any) {
     fetcher,
     {
       revalidateOnMount: true,
+      revalidateOnFocus: false,
       onErrorRetry: (error) => {
         // 401でトークンを削除
         if (error.response && error.response.status == 401) {
