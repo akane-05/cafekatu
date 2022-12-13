@@ -38,7 +38,7 @@ CREATE TABLE IF NOT EXISTS reviews (
     user_id             INT UNSIGNED NOT NULL,
     cafe_id             INT UNSIGNED NOT NULL,
     comment          VARCHAR(255) NOT NULL,
-    rating    FLOAT NOT NULL,
+    rating    DECIMAL(2, 1) NOT NULL,
     created_at      TIMESTAMP NOT NULL DEFAULT current_timestamp ON UPDATE current_timestamp,
     updated_at     TIMESTAMP NOT NULL DEFAULT current_timestamp ON UPDATE current_timestamp
     -- FOREIGN KEY (`user_id`) REFERENCES users(`id`) ,

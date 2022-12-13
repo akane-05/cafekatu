@@ -88,7 +88,7 @@ func (dc *usersController) GetUser(c *gin.Context) {
 }
 
 func (dc *usersController) PatchUser(c *gin.Context) {
-	log.Println("Register")
+	log.Println("PatchUser")
 
 	jwtInfo, err := unit.GetJwtToken(c)
 	if err != nil {
