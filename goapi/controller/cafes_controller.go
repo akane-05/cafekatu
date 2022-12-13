@@ -135,7 +135,6 @@ func (dc *cafesController) GetCafe(c *gin.Context) {
 		return
 	}
 
-	// パスパラメータの取得、数字じゃなかったらどうするのか確認
 	id, err := strconv.Atoi(c.Param("id"))
 	if err != nil {
 		log.Println(err)

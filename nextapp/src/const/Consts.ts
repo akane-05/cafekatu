@@ -1,16 +1,27 @@
-const requests = {
-  base: 'http://localhost:8080',
-  register: '/register',
-  login: '/login',
-  cafes: '/cafes',
-  users: '/users',
-  reviews: '/reviews',
-  usersFavorites: '/users/favorites',
-  prefectures: '/prefectures',
+const reqPath = (path: string, id?: string): string => {
+  const paths: { [key: string]: string } = {
+    base: 'http://localhost:8080',
+    login: '/login',
+    register: '/register',
+    cafes: '/cafes',
+    cafe: '/cafes/' + id,
+    cafeFavorite: '/cafes/' + id + '/favorite',
+    user: '/users/' + id,
+    favorites: '/users/' + id + '/favorites',
+    pastPosts: '/users/' + id + '/pastPosts',
+    reviews: '/reviews',
+    cafeReviews: '/reviews/' + id,
+    review: '/reviews/' + id,
+    prefectures: '/prefectures',
+  }
+
+  const reqPath = paths[path]
+
+  return reqPath
 }
 
 const pagePath = (page: string, id?: string): string => {
-  const path: { [key: string]: string } = {
+  const paths: { [key: string]: string } = {
     top: '/',
     login: '/login',
     register: '/register',
@@ -24,7 +35,7 @@ const pagePath = (page: string, id?: string): string => {
     error: '/error',
   }
 
-  const pagePath = path[page]
+  const pagePath = paths[page]
 
   return pagePath
 }
@@ -42,4 +53,4 @@ const ratingList: number[] = [
 
 const errStatus: number[] = [401, 404, 500]
 
-export { requests, pagePath, strage, ratingList, errStatus }
+export { reqPath, pagePath, strage, ratingList, errStatus }

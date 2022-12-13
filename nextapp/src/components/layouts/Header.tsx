@@ -49,15 +49,15 @@ export default function Header() {
     switch (setting) {
       case settings[0]:
         setAnchorElUser(null)
-        handleLink(pagePath('mypage', `${userInfo?.id}`))
+        handleLink(pagePath('mypage', String(userInfo?.id)))
         break
       case settings[1]:
         setAnchorElUser(null)
-        handleLink(pagePath('favorites', `${userInfo?.id}`))
+        handleLink(pagePath('favorites', String(userInfo?.id)))
         break
       case settings[2]:
         setAnchorElUser(null)
-        handleLink(pagePath('pastPosts', `${userInfo?.id}`))
+        handleLink(pagePath('pastPosts', String(userInfo?.id)))
         break
       case settings[3]:
         await dialog

@@ -1,11 +1,11 @@
 import apiClient from '@/lib/axios'
-import { strage } from '@/const/Consts'
+import { strage, reqPath } from '@/const/Consts'
 import { BasicRes } from '@/features/index'
 import { resolveHandler, errorHandler } from '@/features/index'
 
 export async function postFavorite(id: number): Promise<BasicRes> {
   return apiClient
-    .post(`/cafes/${id}/favorite`, null, {
+    .post(reqPath('cafeFavorite', String(id)), null, {
       headers: {
         Authorization: `Bearer ${localStorage.getItem(strage.Token)}`,
       },

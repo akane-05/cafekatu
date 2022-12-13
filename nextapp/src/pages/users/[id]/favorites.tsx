@@ -18,7 +18,11 @@ export default function UserFavorites() {
   const router = useRouter()
   const [page, setPage] = React.useState(1)
   const [parPage, setparPage] = React.useState(10)
-  const { response, isLoading, isError } = useUserFavorites(page, parPage)
+  const { response, isLoading, isError } = useUserFavorites(
+    router.query.id,
+    page,
+    parPage,
+  )
 
   const handleLink = (path: string) => {
     router.push(path)

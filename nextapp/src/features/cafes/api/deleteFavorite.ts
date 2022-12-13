@@ -1,11 +1,11 @@
 import apiClient from '@/lib/axios'
-import { strage } from '@/const/Consts'
+import { strage, reqPath } from '@/const/Consts'
 import { BasicRes } from '@/features/index'
 import { resolveHandler, errorHandler } from '@/features/index'
 
 export async function deleteFavorite(id: number): Promise<BasicRes> {
   return apiClient
-    .delete(`/cafes/${id}/favorite`, {
+    .delete(reqPath('cafeFavorite', String(id)), {
       headers: {
         Authorization: `Bearer ${localStorage.getItem(strage.Token)}`,
       },

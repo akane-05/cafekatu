@@ -4,6 +4,7 @@ import (
 	"log"
 	"math"
 	"net/http"
+	"strconv"
 	"time"
 
 	"github.com/akane-05/cafekatu/goapi/model/entity"
@@ -54,6 +55,16 @@ func (dc *usersController) GetUser(c *gin.Context) {
 		return
 	}
 
+	id, err := strconv.Atoi(c.Param("id"))
+	if err != nil || id != jwtInfo.Id {
+		log.Println(err)
+		c.JSON(http.StatusBadRequest, gin.H{
+			"status": http.StatusBadRequest,
+			"error":  "リクエストに不正な値が含まれています。",
+		})
+		return
+	}
+
 	user, err := dc.dr.GetUser(&jwtInfo.Id)
 	if err != nil {
 		log.Println(err.Error())
@@ -77,7 +88,7 @@ func (dc *usersController) GetUser(c *gin.Context) {
 }
 
 func (dc *usersController) PatchUser(c *gin.Context) {
-	log.Println("Register")
+	log.Println("PatchUser")
 
 	jwtInfo, err := unit.GetJwtToken(c)
 	if err != nil {
@@ -85,6 +96,17 @@ func (dc *usersController) PatchUser(c *gin.Context) {
 		c.JSON(http.StatusUnauthorized, gin.H{
 			"status": http.StatusUnauthorized,
 			"error":  "ログイン情報を取得できませんでした。再度ログインしてください。",
+		})
+		return
+	}
+
+	// パスパラメータの取得、数字じゃなかったらどうするのか確認
+	id, err := strconv.Atoi(c.Param("id"))
+	if err != nil || id != jwtInfo.Id {
+		log.Println(err)
+		c.JSON(http.StatusBadRequest, gin.H{
+			"status": http.StatusBadRequest,
+			"error":  "リクエストに不正な値が含まれています。",
 		})
 		return
 	}
@@ -165,6 +187,16 @@ func (dc *usersController) GetUserFavorites(c *gin.Context) {
 		return
 	}
 
+	id, err := strconv.Atoi(c.Param("id"))
+	if err != nil || id != jwtInfo.Id {
+		log.Println(err)
+		c.JSON(http.StatusBadRequest, gin.H{
+			"status": http.StatusBadRequest,
+			"error":  "リクエストに不正な値が含まれています。",
+		})
+		return
+	}
+
 	var query repository.UserQuery
 
 	if err := c.BindQuery(&query); err != nil {
@@ -226,6 +258,16 @@ func (dc *usersController) GetUserPastPosts(c *gin.Context) {
 		c.JSON(http.StatusUnauthorized, gin.H{
 			"status": http.StatusUnauthorized,
 			"error":  "ログイン情報を取得できませんでした。再度ログインしてください。",
+		})
+		return
+	}
+
+	id, err := strconv.Atoi(c.Param("id"))
+	if err != nil || id != jwtInfo.Id {
+		log.Println(err)
+		c.JSON(http.StatusBadRequest, gin.H{
+			"status": http.StatusBadRequest,
+			"error":  "リクエストに不正な値が含まれています。",
 		})
 		return
 	}
@@ -335,6 +377,16 @@ func (dc *usersController) DeleteUser(c *gin.Context) {
 		c.JSON(http.StatusUnauthorized, gin.H{
 			"status": http.StatusUnauthorized,
 			"error":  "ログイン情報を取得できませんでした。再度ログインしてください。",
+		})
+		return
+	}
+
+	id, err := strconv.Atoi(c.Param("id"))
+	if err != nil || id != jwtInfo.Id {
+		log.Println(err)
+		c.JSON(http.StatusBadRequest, gin.H{
+			"status": http.StatusBadRequest,
+			"error":  "idが不正な値です。数値を入力してください。",
 		})
 		return
 	}

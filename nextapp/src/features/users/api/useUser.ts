@@ -1,12 +1,11 @@
 import apiClient from '@/lib/axios'
 import useSWR from 'swr'
-import { requests } from '@/const/Consts'
+import { reqPath } from '@/const/Consts'
 import { useRouter } from 'next/router'
 import { useState, useEffect } from 'react'
 import { strage } from '@/const/Consts'
-import { UserInfo } from '@/globalStates/userInfo'
 
-export function useUser() {
+export function useUser(id: any) {
   const fetcher = (url: string) =>
     apiClient
       .get(url, {
@@ -16,15 +15,19 @@ export function useUser() {
       })
       .then((res) => res.data)
 
-  const { data: data, error } = useSWR(requests.users, fetcher, {
-    revalidateOnMount: true,
-    onErrorRetry: (error) => {
-      // 401でトークンを削除
-      if (error.response && error.response.status == 401) {
-        localStorage.removeItem(strage.Token)
-      }
+  const { data: data, error } = useSWR(
+    id ? reqPath('user', String(id)) : null,
+    fetcher,
+    {
+      revalidateOnMount: true,
+      onErrorRetry: (error) => {
+        // 401でトークンを削除
+        if (error.response && error.response.status == 401) {
+          localStorage.removeItem(strage.Token)
+        }
+      },
     },
-  })
+  )
 
   return {
     response: data,

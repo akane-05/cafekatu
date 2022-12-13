@@ -1,11 +1,8 @@
 import apiClient from '@/lib/axios'
 import useSWR from 'swr'
-import { requests } from '@/const/Consts'
-import { useRouter } from 'next/router'
-import { useState, useEffect } from 'react'
-import { strage } from '@/const/Consts'
+import { strage, reqPath } from '@/const/Consts'
 
-export function usePastPosts(page: number, perPage: number) {
+export function usePastPosts(id: any, page: number, perPage: number) {
   const fetcher = (url: string) =>
     apiClient
       .get(url, {
@@ -20,13 +17,14 @@ export function usePastPosts(page: number, perPage: number) {
     error,
     mutate: mutate,
   } = useSWR(
-    requests.users +
-      '/pastPosts' +
-      '?' +
-      new URLSearchParams({
-        per_page: `${perPage}`,
-        page: `${page}`,
-      }),
+    id
+      ? reqPath('pastPosts', String(id)) +
+          '?' +
+          new URLSearchParams({
+            per_page: String(perPage),
+            page: String(page),
+          })
+      : null,
     fetcher,
     {
       revalidateOnMount: true,

@@ -81,11 +81,11 @@ func GetRouter() *gin.Engine {
 		group.POST("/cafes/:id/favorite", cafesC.PostFavorite)
 		group.DELETE("/cafes/:id/favorite", cafesC.DeleteFavorite)
 
-		group.GET("/users", usersC.GetUser)
-		group.GET("/users/favorites", usersC.GetUserFavorites)
-		group.GET("/users/pastPosts", usersC.GetUserPastPosts)
-		group.PATCH("/users", usersC.PatchUser)
-		group.DELETE("/users", usersC.DeleteUser)
+		group.GET("/users/:id", usersC.GetUser)
+		group.GET("/users/:id/favorites", usersC.GetUserFavorites)
+		group.GET("/users/:id/pastPosts", usersC.GetUserPastPosts)
+		group.PATCH("/users/:id", usersC.PatchUser)
+		group.DELETE("/users/:id", usersC.DeleteUser)
 
 		//group.GET("/reviews", reviewsC.GetUserReviews) //いらないかも
 		group.POST("/reviews", reviewsC.PostReview)

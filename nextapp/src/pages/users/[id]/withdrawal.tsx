@@ -25,11 +25,11 @@ export default function withdrawal() {
   }
 
   const deleteUserInfo = async () => {
-    const response = await deleteUser()
+    const response = await deleteUser(userInfo?.id)
     if (response.status == 200) {
       setUserInfo(undefined) //stateを空にする
-
       dialog.confirm(Dialog.apiOKDialog('退会しました'))
+      console.log('どうなってる')
       handleLink(pagePath('top'))
     } else {
       if (errStatus.includes(response.status)) {

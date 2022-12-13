@@ -1,9 +1,8 @@
 import apiClient from '@/lib/axios'
 import useSWR from 'swr'
-import { requests } from '@/const/Consts'
 import { useRouter } from 'next/router'
 import { useState, useEffect } from 'react'
-import { strage } from '@/const/Consts'
+import { strage, reqPath } from '@/const/Consts'
 
 export function useCafes(page: number, perPage: number, param?: any) {
   const searchWord = param ? param : ''
@@ -18,11 +17,11 @@ export function useCafes(page: number, perPage: number, param?: any) {
       .then((res) => res.data)
 
   const { data: data, error } = useSWR(
-    requests.cafes +
+    reqPath('cafes') +
       '?' +
       new URLSearchParams({
-        per_page: `${perPage}`,
-        page: `${page}`,
+        per_page: String(perPage),
+        page: String(page),
         search_word: searchWord,
       }),
     fetcher,
