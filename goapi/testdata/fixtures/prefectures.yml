@@ -1,0 +1,24 @@
+- id: 1
+  prefecture: 北海道
+  created_at: 2022-10-01 09:00:00
+  updated_at: 2022-11-01 12:00:00
+
+- id: 2
+  prefecture: 青森県
+  created_at: 2022-10-01 09:00:00
+  updated_at: 2022-11-01 12:00:00
+
+- id: 13
+  prefecture: 東京都
+  created_at: 2022-10-01 09:00:00
+  updated_at: 2022-11-01 12:00:00
+
+- id: 38
+  prefecture: 愛知県
+  created_at: 2022-10-01 09:00:00
+  updated_at: 2022-11-01 12:00:00
+
+- id: 47
+  prefecture: 沖縄県
+  created_at: 2022-10-01 09:00:00
+  updated_at: 2022-11-01 12:00:00

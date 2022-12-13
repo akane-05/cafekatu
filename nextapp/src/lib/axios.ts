@@ -1,10 +1,13 @@
 import axios from 'axios'
+import { reqPath } from '@/const/Consts'
 
-export const APIClient = axios.create({
-  baseURL: 'http://localhost:8080',
+const apiClient = axios.create({
+  baseURL: reqPath('base'),
   responseType: 'json',
   headers: {
     'Content-Type': 'application/json',
     'Access-Control-Allow-Origin': '*',
   },
 })
+
+export default apiClient

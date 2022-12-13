@@ -4,6 +4,7 @@ import (
 	"errors"
 	"log"
 	"net/http"
+	"time"
 
 	"github.com/akane-05/cafekatu/goapi/model/entity"
 	"github.com/akane-05/cafekatu/goapi/model/repository"
@@ -45,24 +46,26 @@ func (dc *loginController) Login(c *gin.Context) {
 	loginInfo := LoginInfo{}
 	if err := c.BindJSON(&loginInfo); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
-			"error": "リクエストに不正な値が含まれています。",
+			"status": http.StatusBadRequest,
+			"error":  "リクエストに不正な値が含まれています。",
 		})
 		return
 	}
 
-	//emailが登録済みのものか検証
 	user, err := dc.dr.GetUser(&loginInfo.Email)
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			log.Printf("入力されたemail,またはpasswordが間違っています。%s", loginInfo.Email)
 			c.JSON(http.StatusUnauthorized, gin.H{
-				"error": "入力されたemail,またはpasswordが間違っています。",
+				"status": http.StatusUnauthorized,
+				"error":  "入力されたemail,またはpasswordが間違っています。",
 			})
 			return
 		}
 		log.Println(err.Error())
 		c.JSON(http.StatusInternalServerError, gin.H{
-			"error": "サーバーでエラーが発生しました。",
+			"status": http.StatusInternalServerError,
+			"error":  "サーバーでエラーが発生しました。",
 		})
 		return
 	}
@@ -70,26 +73,26 @@ func (dc *loginController) Login(c *gin.Context) {
 	if err = unit.CompareHashAndPassword(user.PasswordDigest, loginInfo.Password); err != nil {
 		log.Printf("入力されたemail,またはpasswordが間違っています。%s", loginInfo.Password)
 		c.JSON(http.StatusUnauthorized, gin.H{
-			"error": "入力されたemail,またはpasswordが間違っています。",
+			"status": http.StatusUnauthorized,
+			"error":  "入力されたemail,またはpasswordが間違っています。",
 		})
 		return
 	}
 
 	//以下jwt認証
-	jwtInfo := unit.JwtInfo{user.Id, user.Email}
+	jwtInfo := unit.JwtInfo{Id: user.Id, Email: user.Email, ExTime: time.Now().Add(time.Hour)}
 
 	tokenString := unit.CreateToken(&jwtInfo)
-	log.Println("tokenString:", tokenString)
 
 	c.JSON(http.StatusOK, gin.H{
-		"token":   tokenString,
-		"message": "ログインしました。",
+		"status":   http.StatusOK,
+		"token":    tokenString,
+		"id":       user.Id,
+		"email":    user.Email,
+		"nickname": user.Nickname,
+		"message":  "ログインしました。",
 	})
 
-	return
-	log.Println("フロントに返却")
-
-	return
 }
 
 func (dc *loginController) Register(c *gin.Context) {
@@ -98,30 +101,34 @@ func (dc *loginController) Register(c *gin.Context) {
 	registerInfo := RegisterInfo{}
 	if err := c.BindJSON(&registerInfo); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
-			"error": "リクエストに不正な値が含まれています。",
+			"status": http.StatusBadRequest,
+			"error":  "リクエストに不正な値が含まれています。",
 		})
 		return
 	}
 
 	//emailが登録済みのものか検証
-	rerult, err := dc.dr.CheckEmail(&registerInfo.Email)
-	if rerult != true {
-		if errors.Is(err, gorm.ErrRecordNotFound) {
-			log.Printf("登録済みのemailアドレスが入力されました。%s", registerInfo.Email)
-			c.JSON(http.StatusUnauthorized, gin.H{
-				"error": "登録済みのemailアドレスです。別のアドレスで登録してください。",
-			})
-			return
-		}
+	exist, err := dc.dr.CheckEmail(&registerInfo.Email)
+	if exist {
+		log.Printf("登録済みのemailアドレスが入力されました。%s", registerInfo.Email)
+		c.JSON(http.StatusUnauthorized, gin.H{
+			"status": http.StatusUnauthorized,
+			"error":  "登録済みのemailアドレスです。別のアドレスで登録してください。",
+		})
+		return
+	}
+
+	if err != nil {
 		log.Println(err.Error())
 		c.JSON(http.StatusInternalServerError, gin.H{
-			"error": "サーバーでエラーが発生しました。",
+			"status": http.StatusInternalServerError,
+			"error":  "サーバーでエラーが発生しました。",
 		})
 		return
 	}
 
 	//user登録
-	var postUser entity.UserEntity
+	var postUser entity.Users
 	postUser.Email = registerInfo.Email
 	postUser.PasswordDigest, _ = unit.PasswordEncrypt(registerInfo.Password)
 	postUser.Nickname = registerInfo.Nickname
@@ -130,23 +137,23 @@ func (dc *loginController) Register(c *gin.Context) {
 	if err != nil {
 		log.Println(err)
 		c.JSON(http.StatusInternalServerError, gin.H{
-			"error": "サーバーでエラーが発生しました。",
+			"status": http.StatusInternalServerError,
+			"error":  "サーバーでエラーが発生しました。",
 		})
 		return
 	}
 
-	log.Println("DBに登録完了")
-
 	//以下jwt認証
-	jwtInfo := unit.JwtInfo{Id: id, Email: postUser.Email}
+	jwtInfo := unit.JwtInfo{Id: id, Email: postUser.Email, ExTime: time.Now().Add(time.Hour)}
 	tokenString := unit.CreateToken(&jwtInfo)
 	log.Println("tokenString:", tokenString)
 
 	c.JSON(http.StatusOK, gin.H{
-		"token":   tokenString,
-		"message": "ユーザー登録が完了しました。",
+		"status":   http.StatusOK,
+		"token":    tokenString,
+		"id":       id,
+		"email":    postUser.Email,
+		"nickname": postUser.Nickname,
+		"message":  "ユーザー登録が完了しました。",
 	})
-
-	log.Println("フロントに返却")
-	return
 }

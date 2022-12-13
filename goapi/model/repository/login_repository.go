@@ -1,7 +1,6 @@
 package repository
 
 import (
-	"errors"
 	"log"
 
 	"github.com/akane-05/cafekatu/goapi/model/entity"
@@ -12,9 +11,9 @@ import (
 // DIを用いたリポジトリの実装
 // インターフェースで実装すべきメソッドを決める
 type LoginRepository interface {
-	GetUser(email *string) (user entity.UserEntity, err error)
+	GetUser(email *string) (user entity.Users, err error)
 	CheckEmail(email *string) (result bool, err error)
-	InsertUser(user *entity.UserEntity) (id int, err error)
+	InsertUser(user *entity.Users) (id int, err error)
 }
 
 // 構造体の宣言
@@ -27,7 +26,7 @@ func NewLoginRepository() LoginRepository {
 }
 
 // ポインタレシーバ(*demoRepository)にメソッドを追加
-func (tr *loginRepository) GetUser(email *string) (user entity.UserEntity, err error) {
+func (tr *loginRepository) GetUser(email *string) (user entity.Users, err error) {
 	log.Println("リポジトリ Login")
 
 	if err = Db.Debug().Table("users").Where("email = ?", email).First(&user).Error; err != nil {
@@ -38,25 +37,39 @@ func (tr *loginRepository) GetUser(email *string) (user entity.UserEntity, err e
 }
 
 // ポインタレシーバ(*demoRepository)にメソッドを追加
-func (tr *loginRepository) CheckEmail(email *string) (result bool, err error) {
+func (tr *loginRepository) CheckEmail(email *string) (exist bool, err error) {
 	log.Println("リポジトリ CheckEmail")
 
-	result = false
+	exist = false
+	// var user entity.Users
+	// if err = Db.Debug().Where("email = ?", email).Limit(1).Find(&user).Error; err != nil {
+	// 	return
+	// }
 
-	var user entity.UserEntity
-	if err = Db.Debug().Where("email = ?", email).First(&user).Error; err != nil {
-		if errors.Is(err, gorm.ErrRecordNotFound) {
-			result = true
-			return
-		}
-		return
-	}
+	// if errors.Is(err, gorm.ErrRecordNotFound) {
+	// 	exist = false
+	// 	err = nil
+	// 	return
+	// }
+	// if err != nil {
+	// 	exist = false
+	// 	return
+	// }
+
 	//名前付き変数でreturn
+	// exist = true
+
+	var count int64
+	Db.Model(&entity.Users{}).Where("email = ?", email).Count(&count)
+	if count != 0 {
+		exist = true
+	}
+
 	return
 }
 
 // ポインタレシーバ(*demoRepository)にメソッドを追加
-func (tr *loginRepository) InsertUser(user *entity.UserEntity) (id int, err error) {
+func (tr *loginRepository) InsertUser(user *entity.Users) (id int, err error) {
 	log.Println("リポジトリ InsertUser")
 
 	if err = Db.Transaction(func(tx *gorm.DB) error {

@@ -13,44 +13,60 @@ import {
   CardActions,
   Hidden,
   IconButton,
+  Rating,
 } from '@mui/material'
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import FavoriteIcon from '@mui/icons-material/Favorite'
 import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder'
-import { Cafe, CafeInfo } from '@/features/cafes/types'
-
+import { CafeInfo } from '@/features/cafes/types'
+import { pagePath, errStatus } from '@/const/Consts'
 import { useRouter } from 'next/router'
+import { postFavorite } from '@/features/cafes/api/postFavorite'
+import { deleteFavorite } from '@/features/cafes/api/deleteFavorite'
+import * as Dialog from '@/context/MessageDialog'
 
-interface Props {
-  // cafe: Cafe
+type Props = {
   cafeInfo: CafeInfo
-}
-
-interface State {
-  isFavorite: boolean
+  detail?: boolean
 }
 
 export default function CafeCard(props: Props) {
   const router = useRouter() //useRouterフックを定義して
+  const dialog = Dialog.useDialogContext()
 
-  const [values, setValues] = React.useState<State>({
-    isFavorite: false,
-  })
+  const [isFavorite, setIsFavorite] = React.useState<boolean>(
+    props.cafeInfo.is_favorite,
+  )
+  const cafeInfo = props.cafeInfo
 
-  const [cafeInfo] = useState(props.cafeInfo)
+  useEffect(() => {
+    setIsFavorite(props.cafeInfo.is_favorite)
+  }, [props.cafeInfo.is_favorite])
 
-  const handleClickFavorite = () => {
-    setValues({
-      ...values,
-      isFavorite: !values.isFavorite,
-    })
+  const handleClickFavorite = async () => {
+    let response
+    if (!isFavorite) {
+      response = await postFavorite(cafeInfo.id)
+    } else {
+      response = await deleteFavorite(cafeInfo.id)
+    }
+
+    if (response.status == 200) {
+      setIsFavorite(!isFavorite)
+    } else {
+      if (errStatus.includes(response.status)) {
+        router.push({
+          pathname: pagePath('error'),
+          query: { status: response.status, error: response.error },
+        })
+      } else {
+        dialog.confirm(Dialog.apiErrorDialog(response.status, response.error))
+      }
+    }
   }
 
-  const handleDetailsPage = (path: string) => {
-    router.push({
-      pathname: path,
-      query: { id: cafeInfo.id },
-    })
+  const handleLink = (path: string) => {
+    router.push(path)
   }
 
   const handleMouseDownFavorite = (
@@ -94,7 +110,7 @@ export default function CafeCard(props: Props) {
                     edge="end"
                     sx={{ mr: 1 }}
                   >
-                    {values.isFavorite ? (
+                    {isFavorite ? (
                       <FavoriteIcon color="primary" />
                     ) : (
                       <FavoriteBorderIcon color="primary" />
@@ -111,13 +127,12 @@ export default function CafeCard(props: Props) {
 
             <Grid container>
               <Grid item xs={6} sm={3}>
-                <Typography
-                  variant="subtitle1"
-                  color="text.secondary"
-                  sx={{ mr: 3 }}
-                >
-                  ☆☆☆
-                </Typography>
+                <Rating
+                  name="star-rating"
+                  readOnly
+                  value={cafeInfo.rating}
+                  precision={0.1}
+                />
               </Grid>
               <Grid item xs={6} sm={3}>
                 <Typography
@@ -138,25 +153,37 @@ export default function CafeCard(props: Props) {
               color="text.secondary"
               component="div"
             >
-              {cafeInfo.prefecture_id}
+              {cafeInfo.prefecture}
               {cafeInfo.city}
               {cafeInfo.street}
             </Typography>
 
-            <Grid
-              container
-              direction="row"
-              justifyContent="flex-end"
-              alignItems="flex-end"
-            >
-              <Button
-                variant="contained"
-                color="primary"
-                onClick={() => handleDetailsPage('./CafeDetail')}
+            {props.detail ? (
+              <Typography
+                variant="subtitle1"
+                color="text.secondary"
+                component="div"
               >
-                詳細
-              </Button>
-            </Grid>
+                {cafeInfo.business_hours}
+              </Typography>
+            ) : (
+              <Grid
+                container
+                direction="row"
+                justifyContent="flex-end"
+                alignItems="flex-end"
+              >
+                <Button
+                  variant="contained"
+                  color="primary"
+                  onClick={() =>
+                    handleLink(pagePath('cafe', String(cafeInfo.id)))
+                  }
+                >
+                  詳細
+                </Button>
+              </Grid>
+            )}
           </CardContent>
         </Grid>
       </Grid>

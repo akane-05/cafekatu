@@ -5,7 +5,6 @@ import (
 	"log"
 	"net/http"
 	"os"
-	"strconv"
 	"strings"
 	"time"
 
@@ -14,8 +13,9 @@ import (
 )
 
 type JwtInfo struct {
-	Id    int
-	Email string
+	Id     int
+	Email  string
+	ExTime time.Time
 }
 
 // トークンを作成
@@ -24,8 +24,9 @@ func CreateToken(jwtInfo *JwtInfo) (tokenString string) {
 	claims := jwt.MapClaims{
 		"id":    jwtInfo.Id,
 		"email": jwtInfo.Email,
-		"exp":   time.Now().Add(time.Hour).Unix(),
+		"exp":   jwtInfo.ExTime.Unix(),
 	}
+	log.Printf("claims: %#v\n", claims)
 
 	// ヘッダーとペイロードの生成
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
@@ -41,30 +42,40 @@ func CreateToken(jwtInfo *JwtInfo) (tokenString string) {
 
 // Parse は jwt トークンから元になった認証情報を取り出す。
 func CheckJwtToken(c *gin.Context) {
+	log.Println("ミドルウェア トークン確認開始")
 
-	jwtToken, err := extractBearerToken(c.GetHeader("Authorization"))
+	jwtToken, err := ExtractBearerToken(c.GetHeader("Authorization"))
 	if err != nil {
-		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{
-			"message": err.Error(),
+		c.JSON(http.StatusUnauthorized, gin.H{
+			"status": http.StatusUnauthorized,
+			"error":  "ログイン情報を取得できませんでした。再度ログインしてください。",
 		})
+		c.Abort()
 		return
 	}
+	log.Println("ミドルウェア ヘッダーにトークンが設定されていることを確認")
 
-	token, err := parseToken(jwtToken)
+	token, err := ParseToken(jwtToken)
 	if err != nil {
-		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{
-			"message": errors.New("bad jwt token"),
+		c.JSON(http.StatusUnauthorized, gin.H{
+			"status": http.StatusUnauthorized,
+			"error":  "ログイン情報を取得できませんでした。再度ログインしてください。",
 		})
+		c.Abort()
 		return
 	}
+	log.Println("ミドルウェア トークンを取得")
 
 	_, OK := token.Claims.(jwt.MapClaims)
 	if !OK {
-		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{
-			"message": errors.New("unable to parse claims"),
+		c.JSON(http.StatusUnauthorized, gin.H{
+			"status": http.StatusUnauthorized,
+			"error":  "ログイン情報を取得できませんでした。再度ログインしてください。",
 		})
+		c.Abort()
 		return
 	}
+	log.Println("ミドルウェア トークンの情報を取得が完了")
 
 }
 
@@ -72,55 +83,60 @@ func CheckJwtToken(c *gin.Context) {
 func GetJwtToken(c *gin.Context) (JwtInfo, error) {
 	var jwtInfo JwtInfo
 
-	jwtToken, _ := extractBearerToken(c.GetHeader("Authorization"))
+	jwtToken, _ := ExtractBearerToken(c.GetHeader("Authorization"))
 
-	token, _ := parseToken(jwtToken)
+	token, _ := ParseToken(jwtToken)
 
 	claims, _ := token.Claims.(jwt.MapClaims)
 
 	email, OK := claims["email"].(string)
 	if !OK {
-		return jwtInfo, errors.New("トークンの取得に失敗しました。")
+		return jwtInfo, errors.New("トークンの取得に失敗しました。 email")
 	}
 
-	id, OK := claims["id"].(string)
+	idF, OK := claims["id"].(float64)
+	log.Println(idF)
 	if !OK {
-		return jwtInfo, errors.New("トークンの取得に失敗しました。")
+		return jwtInfo, errors.New("トークンの取得に失敗しました。 id")
 	}
 
-	idNum, _ := strconv.Atoi(c.Param(id))
-	jwtInfo = JwtInfo{idNum, email}
+	id := int(idF)
+	jwtInfo = JwtInfo{Id: id, Email: email}
 
 	return jwtInfo, nil
 
 }
 
-func extractBearerToken(header string) (string, error) {
+func ExtractBearerToken(header string) (string, error) {
 	if header == "" {
+		log.Println("bad header value given")
 		return "", errors.New("bad header value given")
 	}
 
 	jwtToken := strings.Split(header, " ")
 	if len(jwtToken) != 2 {
+		log.Println("incorrectly formatted authorization header")
 		return "", errors.New("incorrectly formatted authorization header")
 	}
 
 	return jwtToken[1], nil
 }
 
-func parseToken(jwtToken string) (*jwt.Token, error) {
+func ParseToken(jwtToken string) (*jwt.Token, error) {
+	log.Println(1)
+
 	secret := os.Getenv("SECRET_KEY")
 
+	log.Println(2)
+	// jwtの検証
 	token, err := jwt.Parse(jwtToken, func(token *jwt.Token) (interface{}, error) {
-		if _, OK := token.Method.(*jwt.SigningMethodHMAC); !OK {
-			return nil, errors.New("bad signed method received")
-		}
-		return []byte(secret), nil
+		log.Println(3)
+		return []byte(secret), nil // CreateTokenにて指定した文字列を使います
 	})
-
 	if err != nil {
-		return nil, errors.New("bad jwt token")
+		log.Println(4)
+		return token, err
 	}
-
+	log.Println(5)
 	return token, nil
 }

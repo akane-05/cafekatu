@@ -2,6 +2,7 @@ package controller
 
 import (
 	"log"
+	"math"
 	"net/http"
 	"strconv"
 
@@ -26,6 +27,16 @@ type cafesController struct {
 	dr repository.CafesRepository
 }
 
+type CafesResponse struct {
+	Cafes      []repository.CafeInfo `json:"cafes"`
+	CafesTotal int                   `json:"cafes_total"`
+	PagesTotal int                   `json:"pages_total"`
+}
+
+type CafeResponse struct {
+	Cafe repository.CafeInfo `json:"cafe"`
+}
+
 // demoControllerのコンストラクタ
 func NewCafesController(dr repository.CafesRepository) CafesController {
 	return &cafesController{dr}
@@ -34,31 +45,76 @@ func NewCafesController(dr repository.CafesRepository) CafesController {
 // ポインタレシーバ(*demoController)にメソッドを追加
 func (dc *cafesController) GetCafes(c *gin.Context) {
 
+	//jwtから値取り出し
+	jwtInfo, err := unit.GetJwtToken(c)
+	if err != nil {
+		log.Println(err)
+		c.JSON(http.StatusUnauthorized, gin.H{
+			"status": http.StatusUnauthorized,
+			"error":  "ログイン情報を取得できませんでした。再度ログインしてください。",
+		})
+		return
+	}
+
 	var query repository.CafeQuery
 
 	log.Println("GetCafes")
 	if err := c.BindQuery(&query); err != nil {
 		log.Println("クエリパラメータに不正な値が含まれています。")
 		c.JSON(http.StatusBadRequest, gin.H{
-			"error": "クエリパラメータに不正な値が含まれています。",
+			"status": http.StatusBadRequest,
+			"error":  "クエリパラメータに不正な値が含まれています。",
 		})
 		return
 	}
 
-	// GetDemosメソッドにwhere句追加する
 	cafes, err := dc.dr.GetCafes(&query)
 	if err != nil {
 		log.Println(err.Error())
 		c.JSON(http.StatusInternalServerError, gin.H{
-			"error": "サーバーでエラーが発生しました。",
+			"status": http.StatusInternalServerError,
+			"error":  "サーバーでエラーが発生しました。",
 		})
 		return
 	}
 
+	//件数
+	cafesTotal, err := dc.dr.GetCafesTotal(&query)
+	if err != nil {
+		log.Println(err.Error())
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"status": http.StatusInternalServerError,
+			"error":  "サーバーでエラーが発生しました。",
+		})
+		return
+	}
+
+	//ページ数
+	pageTotals := cafesTotal/int64(query.PerPage) + 1
+
+	favoCafes, err := dc.dr.GetFavoirtes(&jwtInfo.Id, &cafes)
+	if err != nil {
+		log.Println(err.Error())
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"status": http.StatusInternalServerError,
+			"error":  "サーバーでエラーが発生しました。",
+		})
+		return
+	}
+
+	const baseNum = 10
+	for i, cafe := range cafes {
+		result := unit.Include(favoCafes, cafe.Id)
+		cafes[i].IsFavorite = result
+		cafes[i].Rating = (math.Floor(cafe.Rating*baseNum) / baseNum)
+	}
+
+	cafesResponse := CafesResponse{cafes, int(cafesTotal), int(pageTotals)}
 	log.Println("フロントに返却")
 	c.JSON(http.StatusOK, gin.H{
+		"status":  http.StatusOK,
 		"message": "ok",
-		"data":    cafes,
+		"data":    cafesResponse,
 	})
 
 }
@@ -68,34 +124,60 @@ func (dc *cafesController) GetCafe(c *gin.Context) {
 
 	log.Println("GetCafe")
 
-	// パスパラメータの取得、数字じゃなかったらどうするのか確認
+	//jwtから値取り出し
+	jwtInfo, err := unit.GetJwtToken(c)
+	if err != nil {
+		log.Println(err)
+		c.JSON(http.StatusUnauthorized, gin.H{
+			"status": http.StatusUnauthorized,
+			"error":  "ログイン情報を取得できませんでした。再度ログインしてください。",
+		})
+		return
+	}
+
 	id, err := strconv.Atoi(c.Param("id"))
 	if err != nil {
 		log.Println(err)
 		c.JSON(http.StatusBadRequest, gin.H{
-			"error": "idが不正な値です。数値を入力してください。",
+			"status": http.StatusBadRequest,
+			"error":  "idが不正な値です。数値を入力してください。",
 		})
 		return
 	}
 
-	// GetDemosメソッドにwhere句追加する
 	cafe, err := dc.dr.GetCafe(&id)
 	if err != nil {
 		log.Println(err.Error())
 		c.JSON(http.StatusInternalServerError, gin.H{
-			"error": "サーバーでエラーが発生しました。",
+			"status": http.StatusInternalServerError,
+			"error":  err.Error(),
 		})
 		return
 	}
 
+	const baseNum = 10
+	cafe.Rating = (math.Floor(cafe.Rating*baseNum) / baseNum)
+
+	favorite, err := dc.dr.GetFavoirte(&jwtInfo.Id, &id)
+	if err != nil {
+		log.Println(err.Error())
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"status": http.StatusInternalServerError,
+			"error":  err.Error(),
+		})
+		return
+	}
+
+	cafe.IsFavorite = favorite
+
+	cafeResponse := CafeResponse{cafe}
+
 	log.Println("フロントに返却")
 	c.JSON(http.StatusOK, gin.H{
+		"status":  http.StatusOK,
 		"message": "ok",
-		"data":    cafe,
+		"data":    cafeResponse,
 	})
-
-	log.Println("フロントに返却")
-
 }
 
 // ポインタレシーバ(*demoController)にメソッドを追加
@@ -103,10 +185,11 @@ func (dc *cafesController) PostCafe(c *gin.Context) {
 
 	log.Println("PostCafe")
 
-	cafe := entity.CafeEntity{}
+	cafe := entity.Cafes{}
 	if err := c.BindJSON(&cafe); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
-			"error": "リクエストに不正な値が含まれています。",
+			"status": http.StatusBadRequest,
+			"error":  "リクエストに不正な値が含まれています。",
 		})
 		return
 	}
@@ -114,14 +197,16 @@ func (dc *cafesController) PostCafe(c *gin.Context) {
 	if err := dc.dr.InsertCafe(&cafe); err != nil {
 		log.Println(err)
 		c.JSON(http.StatusInternalServerError, gin.H{
-			"error": "サーバーでエラーが発生しました。",
+			"status": http.StatusInternalServerError,
+			"error":  "サーバーでエラーが発生しました。",
 		})
 		return
 	}
 
 	log.Println("登録完了　フロントに返却")
 	c.JSON(http.StatusOK, gin.H{
-		"message": "登録処理が完了しました。管理人が確認するまでお待ちください。",
+		"status":  http.StatusOK,
+		"message": "店舗情報を登録しました。管理人が確認後、店舗情報が反映されます。",
 	})
 
 }
@@ -135,7 +220,8 @@ func (dc *cafesController) PostFavorite(c *gin.Context) {
 	if err != nil {
 		log.Println(err)
 		c.JSON(http.StatusBadRequest, gin.H{
-			"error": "idが不正な値です。数値を入力してください。",
+			"status": http.StatusBadRequest,
+			"error":  "idが不正な値です。数値を入力してください。",
 		})
 		return
 	}
@@ -145,22 +231,25 @@ func (dc *cafesController) PostFavorite(c *gin.Context) {
 	if err != nil {
 		log.Println(err)
 		c.JSON(http.StatusUnauthorized, gin.H{
-			"error": "ログイン情報を取得できませんでした。再度ログインしてください。",
+			"status": http.StatusUnauthorized,
+			"error":  "ログイン情報を取得できませんでした。再度ログインしてください。",
 		})
 		return
 	}
-	favo := entity.FavoriteEntity{User_id: jwtInfo.Id, Cafe_id: cafeId}
+	favo := entity.Favorites{User_id: jwtInfo.Id, Cafe_id: cafeId}
 
 	if err := dc.dr.InsertFavorite(&favo); err != nil {
 		log.Println(err)
 		c.JSON(http.StatusInternalServerError, gin.H{
-			"error": "サーバーでエラーが発生しました。",
+			"status": http.StatusInternalServerError,
+			"error":  "サーバーでエラーが発生しました。",
 		})
 		return
 	}
 
 	log.Println("登録完了　フロントに返却")
 	c.JSON(http.StatusOK, gin.H{
+		"status":  http.StatusOK,
 		"message": "お気に入りに登録しました。",
 	})
 
@@ -175,7 +264,8 @@ func (dc *cafesController) DeleteFavorite(c *gin.Context) {
 	if err != nil {
 		log.Println(err)
 		c.JSON(http.StatusBadRequest, gin.H{
-			"error": "idが不正な値です。数値を入力してください。",
+			"status": http.StatusBadRequest,
+			"error":  "idが不正な値です。数値を入力してください。",
 		})
 		return
 	}
@@ -185,23 +275,26 @@ func (dc *cafesController) DeleteFavorite(c *gin.Context) {
 	if err != nil {
 		log.Println(err)
 		c.JSON(http.StatusUnauthorized, gin.H{
-			"error": "ログイン情報を取得できませんでした。再度ログインしてください。",
+			"status": http.StatusUnauthorized,
+			"error":  "ログイン情報を取得できませんでした。再度ログインしてください。",
 		})
 		return
 	}
 
-	favo := entity.FavoriteEntity{User_id: jwtInfo.Id, Cafe_id: cafeId}
+	favo := entity.Favorites{User_id: jwtInfo.Id, Cafe_id: cafeId}
 
 	if err := dc.dr.DeleteFavorite(&favo); err != nil {
 		log.Println(err)
 		c.JSON(http.StatusInternalServerError, gin.H{
-			"error": "サーバーでエラーが発生しました。",
+			"status": http.StatusInternalServerError,
+			"error":  "サーバーでエラーが発生しました。",
 		})
 		return
 	}
 
 	log.Println("登録完了　フロントに返却")
 	c.JSON(http.StatusOK, gin.H{
+		"status":  http.StatusOK,
 		"message": "お気に入りから削除しました。",
 	})
 

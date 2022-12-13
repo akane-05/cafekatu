@@ -2,6 +2,7 @@ package main
 
 import (
 	"log"
+	"net/http"
 	"time"
 
 	"github.com/akane-05/cafekatu/goapi/controller"
@@ -24,6 +25,9 @@ var reviewsC = controller.NewReviewsController(reviewsR)
 var loginR = repository.NewLoginRepository()
 var loginC = controller.NewLoginController(loginR)
 
+var commonR = repository.NewCommonRepository()
+var commonC = controller.NewCommonController(commonR)
+
 func main() {
 
 	log.Println("main.go")
@@ -44,17 +48,17 @@ func GetRouter() *gin.Engine {
 		AllowOrigins: []string{
 			"http://localhost:3000",
 		},
-		// アクセスを許可したいHTTPメソッド(以下の例だとPUTやDELETEはアクセスできません)
+		// アクセスを許可したいHTTPメソッド
 		AllowMethods: []string{
 			"POST",
 			"GET",
 			"DELETE",
-			"PUT",
+			"PATCH",
 			"OPTIONS",
 		},
 		// 許可したいHTTPリクエストヘッダ
 		AllowHeaders: []string{
-			"Access-Control-Allow-Credentials",
+			//"Access-Control-Allow-Credentials",
 			"Access-Control-Allow-Headers",
 			"Content-Type",
 			"Content-Length",
@@ -63,13 +67,10 @@ func GetRouter() *gin.Engine {
 			"Access-Control-Allow-Origin",
 		},
 		// cookieなどの情報を必要とするかどうか
-		AllowCredentials: true,
+		//AllowCredentials: true,
 		// preflightリクエストの結果をキャッシュする時間
 		MaxAge: 24 * time.Hour,
 	}))
-
-	r.GET("/login", loginC.Login)
-	r.POST("/register", loginC.Register)
 
 	group := r.Group("/")
 	group.Use(unit.CheckJwtToken)
@@ -78,34 +79,25 @@ func GetRouter() *gin.Engine {
 		group.GET("/cafes/:id", cafesC.GetCafe)
 		group.POST("/cafes", cafesC.PostCafe)
 		group.POST("/cafes/:id/favorite", cafesC.PostFavorite)
-		group.PATCH("/cafes/:id/favorite", cafesC.PostFavorite)
+		group.DELETE("/cafes/:id/favorite", cafesC.DeleteFavorite)
 
 		group.GET("/users/:id", usersC.GetUser)
+		group.GET("/users/:id/favorites", usersC.GetUserFavorites)
+		group.GET("/users/:id/pastPosts", usersC.GetUserPastPosts)
 		group.PATCH("/users/:id", usersC.PatchUser)
 		group.DELETE("/users/:id", usersC.DeleteUser)
 
-		group.GET("/reviews", reviewsC.GetReviews)
+		//group.GET("/reviews", reviewsC.GetUserReviews) //いらないかも
 		group.POST("/reviews", reviewsC.PostReview)
+		group.GET("/reviews/:id", reviewsC.GetCafesReviews)
 		group.DELETE("/reviews/:id", reviewsC.DeleteReview)
 
 	}
-
-	// r.GET("/cafes", cafesC.GetCafes)
-	// r.GET("/cafes/:id", cafesC.GetCafe)
-	// r.POST("/cafes", cafesC.PostCafe)
-	// r.POST("/cafes/:id/favorite", cafesC.PostFavorite)
-	// r.DELETE("/cafes/:id/favorite", cafesC.DeleteFavorite)
-
-	// r.GET("/users/:id", usersC.GetUser)
-	// r.PATCH("/users/:id", usersC.PatchUser)
-	// r.DELETE("/users/:id", usersC.DeleteUser)
-
-	// r.GET("/reviews", reviewsC.GetReviews)
-	// r.POST("/reviews", reviewsC.PostReview)
-	// r.DELETE("/reviews/:id", reviewsC.DeleteReview)
-
+	r.POST("/login", loginC.Login)
+	r.POST("/register", loginC.Register)
+	r.GET("/prefectures", commonC.GetPrefectures)
 	r.NoRoute(func(c *gin.Context) {
-		c.JSON(404, gin.H{"code": "PAGE_NOT_FOUND", "message": "Page not found"})
+		c.JSON(http.StatusNotFound, gin.H{"status": http.StatusNotFound, "error": "指定されたページが見つかりませんでした"})
 	})
 
 	return r

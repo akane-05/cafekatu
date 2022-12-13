@@ -24,7 +24,7 @@ func init() {
 	protocol := os.Getenv("MYSQL_PROTOCOL")
 	database := os.Getenv("MYSQL_DATABASE")
 
-	var path string = fmt.Sprintf("%s:%s@tcp(%s)/%s?charset=utf8&parseTime=true", user, pass, protocol, database)
+	var path string = fmt.Sprintf("%s:%s@tcp(%s)/%s?charset=utf8mb4&parseTime=true", user, pass, protocol, database)
 	dialector := mysql.Open(path)
 	var err error
 	if Db, err = gorm.Open(dialector); err != nil {

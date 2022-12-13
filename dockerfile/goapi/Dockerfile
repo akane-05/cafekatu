@@ -4,7 +4,6 @@ ARG ROOT=/go/src/github.com/akane-05/cafekatu/goapi
 WORKDIR ${ROOT}
 
 COPY go.mod go.sum main.go ./
-COPY main_test.go ./
 COPY controller/ ./controller/
 COPY model/ ./model/
 COPY unit/ ./unit/
@@ -13,7 +12,7 @@ RUN CGO_ENABLED=0 GOOS=linux go install -v \
     -ldflags="-w -s" \
     ${ROOT}
 
-FROM alpine:3.15
+FROM golang:1.18-alpine3.15
 COPY --from=builder /go/bin/goapi /goapi
 RUN chmod a+x /goapi
 
