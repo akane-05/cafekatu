@@ -99,7 +99,6 @@ export default function ReviewsList(props: Props) {
   const handleChange =
     (prop: keyof ReviewInfo) =>
     (event: React.ChangeEvent<HTMLInputElement>) => {
-      console.log()
       setValues({ ...values, [prop]: event.target.value })
     }
 
@@ -110,7 +109,6 @@ export default function ReviewsList(props: Props) {
   }
 
   const handlePostReview = async () => {
-    console.log(values.comment)
     const errors = validate({ ...values }, scheme)
     setErrors(errors)
     let error = false

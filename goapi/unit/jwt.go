@@ -26,12 +26,9 @@ func CreateToken(jwtInfo *JwtInfo) (tokenString string) {
 		"email": jwtInfo.Email,
 		"exp":   jwtInfo.ExTime.Unix(),
 	}
-	log.Printf("claims: %#v\n", claims)
 
 	// ヘッダーとペイロードの生成
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
-	log.Printf("Header: %#v\n", token.Header)
-	log.Printf("Claims: %#v\n", token.Claims)
 
 	// トークンに署名を付与
 	secret := os.Getenv("SECRET_KEY")
@@ -95,7 +92,6 @@ func GetJwtToken(c *gin.Context) (JwtInfo, error) {
 	}
 
 	idF, OK := claims["id"].(float64)
-	log.Println(idF)
 	if !OK {
 		return jwtInfo, errors.New("トークンの取得に失敗しました。 id")
 	}
@@ -123,20 +119,16 @@ func ExtractBearerToken(header string) (string, error) {
 }
 
 func ParseToken(jwtToken string) (*jwt.Token, error) {
-	log.Println(1)
 
 	secret := os.Getenv("SECRET_KEY")
 
-	log.Println(2)
 	// jwtの検証
 	token, err := jwt.Parse(jwtToken, func(token *jwt.Token) (interface{}, error) {
-		log.Println(3)
 		return []byte(secret), nil // CreateTokenにて指定した文字列を使います
 	})
 	if err != nil {
-		log.Println(4)
 		return token, err
 	}
-	log.Println(5)
+
 	return token, nil
 }
