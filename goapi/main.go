@@ -76,18 +76,17 @@ func GetRouter() *gin.Engine {
 	group.Use(unit.CheckJwtToken)
 	{
 		group.GET("/cafes", cafesC.GetCafes)
-		group.GET("/cafes/:id", cafesC.GetCafe)
 		group.POST("/cafes", cafesC.PostCafe)
+		group.GET("/cafes/:id", cafesC.GetCafe)
 		group.POST("/cafes/:id/favorite", cafesC.PostFavorite)
 		group.DELETE("/cafes/:id/favorite", cafesC.DeleteFavorite)
 
 		group.GET("/users/:id", usersC.GetUser)
-		group.GET("/users/:id/favorites", usersC.GetUserFavorites)
-		group.GET("/users/:id/pastPosts", usersC.GetUserPastPosts)
 		group.PATCH("/users/:id", usersC.PatchUser)
 		group.DELETE("/users/:id", usersC.DeleteUser)
+		group.GET("/users/:id/favorites", usersC.GetUserFavorites)
+		group.GET("/users/:id/pastPosts", usersC.GetUserPastPosts)
 
-		//group.GET("/reviews", reviewsC.GetUserReviews) //いらないかも
 		group.POST("/reviews", reviewsC.PostReview)
 		group.GET("/reviews/:id", reviewsC.GetCafesReviews)
 		group.DELETE("/reviews/:id", reviewsC.DeleteReview)
