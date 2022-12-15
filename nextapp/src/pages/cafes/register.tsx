@@ -64,7 +64,8 @@ export default function CafeRegister() {
     name: yup
       .string()
       .required('必須項目です')
-      .matches(/^.{1,250}$/, '250文字以下で入力してください。'),
+      .min(2, '2文字以上で入力してください。')
+      .max(250, '250字以内で入力してください。'),
     zipcode: yup
       .string()
       .required('必須項目です')
@@ -72,15 +73,18 @@ export default function CafeRegister() {
     city: yup
       .string()
       .required('必須項目です')
-      .matches(/^.{1,250}$/, '20文字以下で入力してください。'),
+      .min(2, '2文字以上で入力してください。')
+      .max(250, '250字以内で入力してください。'),
     street: yup
       .string()
       .required('必須項目です')
-      .matches(/^.{1,250}$/, '250文字以下で入力してください。'),
+      .min(2, '2文字以上で入力してください。')
+      .max(250, '250字以内で入力してください。'),
     business_hours: yup
       .string()
       .required('必須項目です')
-      .matches(/^.{1,250}$/, '250文字以下で入力してください。'),
+      .min(2, '2文字以上で入力してください。')
+      .max(250, '250字以内で入力してください。'),
   })
 
   const handleChange =

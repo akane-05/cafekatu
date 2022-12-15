@@ -51,8 +51,6 @@ type UpdateInfo struct {
 func (tr *usersRepository) GetUser(id *int) (user entity.Users, err error) {
 	log.Println("リポジトリ GetUser")
 
-	log.Println(id)
-
 	if err = Db.Debug().Table("users").Where("id = ?", id).First(&user).Error; err != nil {
 		return
 	}

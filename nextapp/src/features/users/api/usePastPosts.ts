@@ -28,6 +28,7 @@ export function usePastPosts(id: any, page: number, perPage: number) {
     fetcher,
     {
       revalidateOnMount: true,
+      revalidateOnFocus: false,
       onErrorRetry: (error) => {
         // 401でトークンを削除
         if (error.response && error.response.status == 401) {

@@ -79,7 +79,8 @@ export default function ReviewsList(props: Props) {
     comment: yup
       .string()
       .required('必須項目です')
-      .matches(/^.{1,250}$/, '必須項目です。250字以内で入力してください。'),
+      .min(2, '2文字以上で入力してください。')
+      .max(250, '250字以内で入力してください。'),
   })
 
   const handleCommentPost = async () => {

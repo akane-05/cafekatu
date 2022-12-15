@@ -27,6 +27,7 @@ export function useCafes(page: number, perPage: number, param?: any) {
     fetcher,
     {
       revalidateOnMount: true,
+      revalidateOnFocus: false,
       onErrorRetry: (error) => {
         // 401でトークンを削除
         if (error.response && error.response.status == 401) {

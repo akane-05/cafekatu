@@ -56,7 +56,7 @@ type CafeQuery struct {
 
 // ポインタレシーバ(*demoRepository)にメソッドを追加
 func (tr *cafesRepository) GetCafes(cafeQuery *CafeQuery) (cafeInfos []CafeInfo, err error) {
-	log.Println("リポジトリ")
+	log.Println("GetCafes リポジトリ")
 
 	column := `
 	cafes.id,cafes.name,
@@ -127,7 +127,7 @@ func (tr *cafesRepository) GetFavoirtes(userId *int, cafes *[]CafeInfo) (cafeIds
 
 // ポインタレシーバ(*demoRepository)にメソッドを追加
 func (tr *cafesRepository) GetCafe(id *int) (cafeInfo CafeInfo, err error) {
-	log.Println("リポジトリ")
+	log.Println("GetCafe リポジトリ")
 
 	query := `
 	cafes.id,cafes.name,cafes.zipcode,cafes.prefecture_id,prefectures.prefecture,cafes.city,cafes.street,cafes.business_hours,

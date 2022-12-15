@@ -20,6 +20,7 @@ export function useCafe(id: any) {
     mutate,
   } = useSWR(id ? reqPath('cafe', id) : null, fetcher, {
     revalidateOnMount: true,
+    revalidateOnFocus: false,
     onErrorRetry: (error) => {
       // 401でトークンを削除
       if (error.response && error.response.status == 401) {

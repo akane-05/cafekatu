@@ -146,7 +146,6 @@ func (dc *loginController) Register(c *gin.Context) {
 	//以下jwt認証
 	jwtInfo := unit.JwtInfo{Id: id, Email: postUser.Email, ExTime: time.Now().Add(time.Hour)}
 	tokenString := unit.CreateToken(&jwtInfo)
-	log.Println("tokenString:", tokenString)
 
 	c.JSON(http.StatusOK, gin.H{
 		"status":   http.StatusOK,
