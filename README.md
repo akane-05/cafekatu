@@ -43,9 +43,15 @@
 * 画像投稿機能
 * AWSにサーバーを構築、アプリケーションを公開
 
-# テーブル設計
+## 設計
+### デザイン
+figmaで公開してます。
+当初のデザインと実装は一部異なる部分があります。
+https://www.figma.com/file/Bk9Aq67HIaT26ymqCPmyHY/Cafe%E6%B4%BB?node-id=0%3A1&t=hjiQBFtEGHHDeVjM-1
 
-## ER図
+
+
+### ER図
 draw.ioを用いて作図しました。
 ![image](https://user-images.githubusercontent.com/108785532/207324167-c656185c-aa14-4fe4-b069-aefa931deb97.png)
 
