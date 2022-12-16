@@ -8,6 +8,8 @@
 ![image](https://user-images.githubusercontent.com/108785532/207333031-28a5ae54-e027-4f37-8fc9-2c103f1908b3.png)
 ![image](https://user-images.githubusercontent.com/108785532/207332550-d24f7395-ab10-4c1f-9b99-e33bf3d9551f.png)
 
+https://raw.github.com/wiki/akane-05/cafecatu/ユーザー機能.gif
+
 ## 使用技術
 ### 設計
 * draw.io (テーブル設計)
