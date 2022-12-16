@@ -4,7 +4,7 @@
 ユーザーがカフェの情報を検索、投稿、口コミを投稿、お気に入りのカフェを記録することができます。
 以下のリンクからデモンストレーションをご確認いただけます。
 
-https://raw.github.com/wiki/akane-05/cafekatu/userfunction.gif
+https://raw.github.com/wiki/akane-05/cafekatu/userfunc.gif
 
 
 ## 使用技術
