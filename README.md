@@ -55,7 +55,6 @@ https://www.figma.com/file/Bk9Aq67HIaT26ymqCPmyHY/Cafe%E6%B4%BB?node-id=0%3A1&t=
 ### API設計
 stoplight studioで作図しました。
 リポジトリにyamlファイルがあります。
-
 https://github.com/akane-05/cafekatu/blob/main/cafekatu.yaml
 
 
