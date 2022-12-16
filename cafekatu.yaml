@@ -1,0 +1,993 @@
+openapi: 3.1.0
+x-stoplight:
+  id: wrt2l3h9x6w4q
+info:
+  title: cafekatu
+  version: '1.0'
+  description: This is an API for cafekatu.
+  summary: 'This is an API for cafekatu. User information can be registered, updated and deleted. You can get information about the cafe and review it.'
+servers:
+  - url: 'http://localhost:3000'
+paths:
+  '/users/{id}':
+    parameters:
+      - schema:
+          type: number
+        name: id
+        in: path
+        required: true
+    get:
+      summary: 'Get user info by user ID, update user info and delete user.'
+      tags:
+        - users
+      responses:
+        '200':
+          description: User Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserRes'
+              examples:
+                Get User Alice:
+                  value:
+                    id: 142
+                    email: fjfiLdruw3Hf
+                    nickname: Alice
+                    createdDate: '2000-04-01'
+            application/xml:
+              schema:
+                type: object
+                properties: {}
+            multipart/form-data:
+              schema:
+                type: object
+                properties: {}
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      operationId: get-users
+      description: Retrieve the information of the user with the matching user ID.
+      parameters: []
+    patch:
+      summary: Update User Information
+      operationId: patch-users
+      responses:
+        '200':
+          description: User Update
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserRes'
+              examples: {}
+        '400':
+          description: Resource Not Found
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Error'
+              examples: {}
+        '401':
+          description: Unprocessable Entity
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Error'
+              examples: {}
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Error'
+              examples: {}
+      description: Updatea user.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                nickname:
+                  type: string
+                password:
+                  type: string
+              required:
+                - password
+            examples: {}
+        description: Patch user properties to update.
+      tags:
+        - users
+    delete:
+      summary: ''
+      operationId: delete-users
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DefaultRes'
+              examples: {}
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Resource Not Found
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Error'
+              examples:
+                Resource Not Found:
+                  value:
+                    - code: Resource Not Found
+                      message: The specified resource does not exist.
+                      displayMessage: 指定されたリソースが存在しません。
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Message'
+              examples:
+                Internal Server Error:
+                  value:
+                    - code: Internal Server Error
+                      message: An internal error has occurred on the server. Please try the request again.
+                      displayMessage: エラーが発生しました。
+      description: Delete the information of an existing user.
+      tags:
+        - users
+  '/uesrs/{id}/favorites':
+    parameters:
+      - schema:
+          type: number
+        name: id
+        in: path
+        required: true
+    get:
+      summary: Your GET endpoint
+      tags:
+        - cafes
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: number
+                  message:
+                    type: string
+                  data:
+                    type: object
+                    properties:
+                      cafes:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/CafeInfo'
+                      cafes_total:
+                        type: number
+                      pages_total:
+                        type: number
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      operationId: get-uesrs-id-favorites
+      description: get user's favorite cafes
+      parameters:
+        - schema:
+            type: number
+          in: query
+          required: true
+          name: per_page
+        - schema:
+            type: number
+          in: query
+          name: page
+          required: true
+  '/users/{id}/pastPosts':
+    parameters:
+      - schema:
+          type: number
+        name: id
+        in: path
+        required: true
+    get:
+      summary: Your GET endpoint
+      tags:
+        - users
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: number
+                  message:
+                    type: string
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        cafeInfo:
+                          $ref: '#/components/schemas/CafeInfo'
+                        reviews:
+                          type:
+                            - string
+                            - array
+                          items:
+                            $ref: '#/components/schemas/Review'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      operationId: get-users-id-pastPosts
+      parameters:
+        - schema:
+            type: number
+          in: query
+          name: per_page
+        - schema:
+            type: number
+          in: query
+          name: page
+      description: get user's pastPosts
+  /cafes:
+    get:
+      summary: Get cafe info and add a new cafe to cafes.
+      tags:
+        - cafes
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: number
+                  message:
+                    type: string
+                  data:
+                    type: object
+                    properties:
+                      cafes:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/CafeInfo'
+                      cafes_total:
+                        type: number
+                      pages_total:
+                        type: number
+              examples: {}
+        '400':
+          description: Invalid Query Parameter Value
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Error'
+              examples: {}
+        '401':
+          description: Resource Not Found
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Error'
+              examples: {}
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Error'
+              examples: {}
+      operationId: get-cafe
+      description: Get Cafes.
+      parameters:
+        - schema:
+            type: string
+          in: query
+          name: search_words
+          description: Cafe search words
+        - schema:
+            type: integer
+          in: query
+          name: per_page
+          description: Number of displayed records
+          required: true
+        - schema:
+            type: integer
+          in: query
+          name: page
+          description: Page number
+          required: true
+    parameters: []
+    post:
+      summary: ''
+      operationId: post-cafes
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Message'
+              examples: {}
+        '400':
+          description: 'Unprocessable Entity '
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Error'
+              examples: {}
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Error'
+              examples: {}
+      description: Create a new cafe.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Cafe'
+          application/xml:
+            schema:
+              type: object
+              properties: {}
+        description: 'Cafe Registration information  '
+      tags:
+        - cafes
+  '/cafes/{id}':
+    parameters:
+      - schema:
+          type: number
+        name: id
+        in: path
+        required: true
+        description: Id of an existing cafe.
+    get:
+      summary: 'Get cafe info by cafe ID, update cafe info.'
+      tags:
+        - cafes
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  statis:
+                    type: number
+                  message:
+                    type: string
+                  data:
+                    $ref: '#/components/schemas/CafeInfo'
+            application/xml:
+              schema:
+                type: object
+                properties: {}
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Resource Not Found
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Error'
+              examples: {}
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Error'
+              examples: {}
+      operationId: get-cafes-cafeId
+      description: Retrieve the information of the cafe with the matching cafe ID.
+  '/cafes/{id}/favorite':
+    parameters:
+      - schema:
+          type: string
+        name: id
+        in: path
+        required: true
+    delete:
+      summary: ''
+      operationId: delete-cafes-cafeId-favorite
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DefaultRes'
+        '400':
+          description: Resource Not Found
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Error'
+              examples:
+                Resource Not Found:
+                  value:
+                    - code: Resource Not Found
+                      message: The specified resource does not exist.
+                      displayMessage: 指定されたリソースが存在しません。
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Error'
+              examples:
+                Internal Server Error:
+                  value:
+                    - code: Internal Server Error
+                      message: An internal error has occurred on the server. Please try the request again.
+                      displayMessage: エラーが発生しました。
+      description: Delete favorite.
+      tags:
+        - cafes
+    post:
+      summary: ''
+      operationId: post-cafes-cafeId-favorite
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DefaultRes'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              examples: {}
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      description: Register favorite cafe.
+      tags:
+        - cafes
+  /reviews:
+    post:
+      summary: ''
+      operationId: post-reviews
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DefaultRes'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      description: post review
+      tags:
+        - reviews
+  '/reviews/{id}':
+    parameters:
+      - schema:
+          type: number
+        name: id
+        in: path
+        required: true
+    delete:
+      summary: Get review info by review ID.
+      operationId: delete-reviews-reviewId
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DefaultRes'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Resource Not Found
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Error'
+              examples: {}
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Error'
+              examples:
+                Internal Server Error:
+                  value:
+                    - code: Internal Server Error
+                      message: An internal error has occurred on the server. Please try the request again.
+                      displayMessage: エラーが発生しました。
+      description: Delete the information of an existing review.
+      tags:
+        - reviews
+    get:
+      summary: ''
+      operationId: get-reviews-id
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: number
+                  message:
+                    type: string
+                  data:
+                    type: object
+                    properties:
+                      reviews:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/Review'
+                      reviews_total:
+                        type: number
+                      pages_total:
+                        type: number
+      description: get cafe's reviews
+      parameters:
+        - schema:
+            type: number
+          in: query
+          name: per_page
+        - schema:
+            type: number
+          in: query
+          name: page
+      tags:
+        - reviews
+  /login:
+    post:
+      summary: ''
+      operationId: post-login
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserRes'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      description: 'user login '
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                password:
+                  type: string
+              required:
+                - email
+                - password
+        description: login Infomation
+      tags:
+        - login
+  /register:
+    post:
+      summary: ''
+      operationId: post-register
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserRes'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      description: register uesr
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                password:
+                  type: string
+                nickname:
+                  type: string
+              required:
+                - email
+                - password
+                - nickname
+      tags:
+        - register
+  /prefectures:
+    get:
+      summary: Your GET endpoint
+      tags:
+        - prefectures
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: number
+                  message:
+                    type: string
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Prefecture'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      operationId: get-prefectures
+      description: get prefectures information
+components:
+  schemas:
+    UserRes:
+      title: UserRes
+      type: object
+      description: User Information
+      examples: []
+      properties:
+        status:
+          type: number
+        token:
+          type: string
+        id:
+          type: integer
+          description: Unique identifier for the given user.
+        email:
+          type: string
+        nickname:
+          type: string
+        message:
+          format: date
+          description: The date that the user was created.
+          type: string
+    CafeInfo:
+      title: CafeInfo
+      x-stoplight:
+        id: 59o70b3w38lbe
+      type: object
+      description: Cafe Information
+      examples: []
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        zipcode:
+          type: string
+        prefecture_id:
+          type: number
+        prefecture:
+          type: string
+        city:
+          type: string
+        street:
+          type: string
+        business_hours:
+          type: string
+        rating:
+          type: number
+        favorite:
+          type: boolean
+        created_at:
+          type: string
+        updated_at:
+          type: string
+      x-internal: false
+    Review:
+      title: Review
+      x-stoplight:
+        id: 8l1t9wqx6cxgf
+      type: object
+      description: Review Model
+      examples:
+        - id: 1
+          nickname: アリス
+          cafe_name: カフェ
+          comment: comment
+          rating: 1
+      properties:
+        id:
+          type: integer
+        user_id:
+          type: number
+        cafe_id:
+          type: number
+        comment:
+          type: string
+        rating:
+          type: number
+        created_at:
+          type: string
+        updated_at:
+          type: string
+    Error:
+      title: Error
+      x-stoplight:
+        id: 9q7r1p7rb5rqu
+      type: object
+      description: Error Response
+      properties:
+        status:
+          type: number
+        error:
+          type: string
+      examples: []
+    Message:
+      title: Message
+      x-stoplight:
+        id: 3d1sys5ukxxaw
+      type: object
+      properties:
+        message:
+          type: string
+      description: Message Information
+    DefaultRes:
+      title: DefaultRes
+      x-stoplight:
+        id: cgzbc6mitpkd4
+      type: object
+      description: DefaultResponse
+      properties:
+        status:
+          type: number
+        message:
+          type: string
+      x-extension-1: null
+    Prefecture:
+      title: Prefecture
+      x-stoplight:
+        id: kqgdtrqvsgsa3
+      type: object
+      description: |
+        Prefecture Model
+      properties:
+        id:
+          type: number
+        prefecture:
+          type: string
+        created_at:
+          type: string
+        updated_at:
+          type: string
+    Cafe:
+      title: Cafe
+      x-stoplight:
+        id: vp7ju2s27skr6
+      type: object
+      description: Cafe Model
+      properties:
+        id:
+          type: number
+        name:
+          type: string
+        zipcode:
+          type: string
+        prefecture_id:
+          type: number
+        city:
+          type: string
+        street:
+          type: string
+        business_hours:
+          type: string
+        approved:
+          type: number
+        Deleted:
+          type: number
+        created_at:
+          type: string
+        updated_at:
+          type: string
+      required:
+        - name
+        - zipcode
+        - prefecture_id
+        - city
+        - street
+        - business_hours
+  responses: {}
+  examples: {}
+  securitySchemes: {}
+tags:
+  - name: cafes
+  - name: 'login '
+  - name: prefecture
+  - name: 'register '
+  - name: 'reviews '
+  - name: users
