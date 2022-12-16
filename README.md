@@ -49,7 +49,10 @@ figmaで公開してます。
 当初のデザインと実装は一部異なる部分があります。
 https://www.figma.com/file/Bk9Aq67HIaT26ymqCPmyHY/Cafe%E6%B4%BB?node-id=0%3A1&t=hjiQBFtEGHHDeVjM-1
 
-
+### API設計
+stoplight studioで作図しました。
+リポジトリにyamlファイルを含めています。
+https://github.com/akane-05/cafekatu/blob/main/cafekatu.yaml
 
 ### ER図
 draw.ioを用いて作図しました。
