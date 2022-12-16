@@ -52,8 +52,10 @@ https://www.figma.com/file/Bk9Aq67HIaT26ymqCPmyHY/Cafe%E6%B4%BB?node-id=0%3A1&t=
 ### API設計
 stoplight studioで作図しました。
 リポジトリにyamlファイルがあります。
-
 https://github.com/akane-05/cafekatu/blob/main/cafekatu.yaml
+
+![image](https://user-images.githubusercontent.com/108785532/208001021-fe890d56-cdb4-4754-afcd-7154e84b5652.png)
+
 
 ### ER図
 draw.ioを用いて作図しました。
