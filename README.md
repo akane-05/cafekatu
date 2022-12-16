@@ -5,6 +5,7 @@
 以下のリンクから一部機能のデモンストレーションをご確認いただけます。
 
 https://raw.github.com/wiki/akane-05/cafekatu/userfunc.gif
+
 https://raw.github.com/wiki/akane-05/cafekatu/cafefunc.gif
 
 
