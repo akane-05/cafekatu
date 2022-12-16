@@ -3,6 +3,11 @@
 全国のカフェ、喫茶店を検索、口コミを投稿できるグルメアプリです。
 ユーザーがカフェの情報を検索、投稿、口コミを投稿、お気に入りのカフェを記録することができます。
 
+![image](https://user-images.githubusercontent.com/108785532/207331736-1757371f-d915-498b-926c-bfeec2c41561.png)
+![image](https://user-images.githubusercontent.com/108785532/207332029-7f266bb4-cdbc-4c6d-96c2-863decd3eb1d.png)
+![image](https://user-images.githubusercontent.com/108785532/207333031-28a5ae54-e027-4f37-8fc9-2c103f1908b3.png)
+![image](https://user-images.githubusercontent.com/108785532/207332550-d24f7395-ab10-4c1f-9b99-e33bf3d9551f.png)
+
 ## 使用技術
 ### 設計
 * draw.io (テーブル設計)
@@ -11,16 +16,17 @@
 
 ### バックエンド
 * Golang 1.18.8
-* Gin
+* gin
 * Mysql 8.0
 
 ### フロントエンド
+* TypeScript
 * Next.js 12.2.5
 * Material-UI 5.10.1
 
 ### インフラ・開発環境
-Git/GitHub
-Docker/Docker-compose
+* Git/GitHub
+* Docker/Docker-compose
 
 ## 実装した機能
 * ログイン、ログアウト機能
@@ -37,9 +43,15 @@ Docker/Docker-compose
 * 画像投稿機能
 * AWSにサーバーを構築、アプリケーションを公開
 
-# テーブル設計
+## 設計
+### デザイン
+figmaで公開してます。
+当初のデザインと実装は一部異なる部分があります。
+https://www.figma.com/file/Bk9Aq67HIaT26ymqCPmyHY/Cafe%E6%B4%BB?node-id=0%3A1&t=hjiQBFtEGHHDeVjM-1
 
-## ER図
+
+
+### ER図
 draw.ioを用いて作図しました。
 ![image](https://user-images.githubusercontent.com/108785532/207324167-c656185c-aa14-4fe4-b069-aefa931deb97.png)
 
