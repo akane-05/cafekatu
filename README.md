@@ -2,13 +2,10 @@
 
 全国のカフェ、喫茶店を検索、口コミを投稿できるグルメアプリです。
 ユーザーがカフェの情報を検索、投稿、口コミを投稿、お気に入りのカフェを記録することができます。
-
-![image](https://user-images.githubusercontent.com/108785532/207331736-1757371f-d915-498b-926c-bfeec2c41561.png)
-![image](https://user-images.githubusercontent.com/108785532/207332029-7f266bb4-cdbc-4c6d-96c2-863decd3eb1d.png)
-![image](https://user-images.githubusercontent.com/108785532/207333031-28a5ae54-e027-4f37-8fc9-2c103f1908b3.png)
-![image](https://user-images.githubusercontent.com/108785532/207332550-d24f7395-ab10-4c1f-9b99-e33bf3d9551f.png)
+以下のリンクからデモンストレーションをご確認いただけます。
 
 https://raw.github.com/wiki/akane-05/cafekatu/ユーザー機能.gif
+
 
 ## 使用技術
 ### 設計
