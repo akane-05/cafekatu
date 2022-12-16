@@ -4,10 +4,10 @@
 ユーザーがカフェの情報を検索、投稿、口コミを投稿、お気に入りのカフェを記録することができます。
 以下のリンクから一部機能のデモンストレーションをご確認いただけます。
 
-ユーザー機能(ログイン、ログアウト、新規会員登録、変更、退会)　　
+ユーザー機能(ログイン、ログアウト、新規会員登録、変更、退会)<br>
 https://raw.github.com/wiki/akane-05/cafekatu/userfunc.gif
 
-カフェ検索、レビュー投稿　　
+カフェ検索、レビュー投稿<br>
 https://raw.github.com/wiki/akane-05/cafekatu/cafefunc.gif
 
 
