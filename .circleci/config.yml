@@ -5,15 +5,15 @@ jobs:
     machine:
       true
       #  image: circleci/cci-demo-docker-primary:0.0.2
-    working_directory: ~/repo
+    # working_directory: ~/repo
     steps:
       - checkout
-      - run:
-          name: Install Docker Compose
-          command: |
-            curl -L https://github.com/docker/compose/releases/download/1.19.0/docker-compose-`uname -s`-`uname -m` > ~/docker-compose
-            chmod +x ~/docker-compose
-            sudo mv ~/docker-compose /usr/local/bin/docker-compose
+      # - run:
+      # name: Install Docker Compose
+      # command: |
+      #   curl -L https://github.com/docker/compose/releases/download/1.19.0/docker-compose-`uname -s`-`uname -m` > ~/docker-compose
+      #   chmod +x ~/docker-compose
+      #   sudo mv ~/docker-compose /usr/local/bin/docker-compose
       - run:
           name: docker-compose up
           command: |
