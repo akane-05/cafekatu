@@ -10,6 +10,8 @@ import (
 	"github.com/akane-05/cafekatu/goapi/unit"
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
+
+	healthcheck "github.com/RaMin0/gin-health-check"
 )
 
 // DIを行う
@@ -43,34 +45,42 @@ func GetRouter() *gin.Engine {
 	r := gin.Default()
 
 	// ここからCorsの設定
-	r.Use(cors.New(cors.Config{
-		// アクセスを許可したいアクセス元
-		AllowOrigins: []string{
-			"http://localhost:3000",
-		},
-		// アクセスを許可したいHTTPメソッド
-		AllowMethods: []string{
-			"POST",
-			"GET",
-			"DELETE",
-			"PATCH",
-			"OPTIONS",
-		},
-		// 許可したいHTTPリクエストヘッダ
-		AllowHeaders: []string{
-			//"Access-Control-Allow-Credentials",
-			"Access-Control-Allow-Headers",
-			"Content-Type",
-			"Content-Length",
-			"Accept-Encoding",
-			"Authorization",
-			"Access-Control-Allow-Origin",
-		},
-		// cookieなどの情報を必要とするかどうか
-		//AllowCredentials: true,
-		// preflightリクエストの結果をキャッシュする時間
-		MaxAge: 24 * time.Hour,
-	}))
+	r.Use(
+		healthcheck.New(healthcheck.Config{
+			HeaderName:   "X-Health-Header",
+			HeaderValue:  "1",
+			ResponseCode: http.StatusOK,
+			ResponseText: "ok",
+		}),
+
+		cors.New(cors.Config{
+			// アクセスを許可したいアクセス元
+			AllowOrigins: []string{
+				"http://localhost:3000",
+			},
+			// アクセスを許可したいHTTPメソッド
+			AllowMethods: []string{
+				"POST",
+				"GET",
+				"DELETE",
+				"PATCH",
+				"OPTIONS",
+			},
+			// 許可したいHTTPリクエストヘッダ
+			AllowHeaders: []string{
+				//"Access-Control-Allow-Credentials",
+				"Access-Control-Allow-Headers",
+				"Content-Type",
+				"Content-Length",
+				"Accept-Encoding",
+				"Authorization",
+				"Access-Control-Allow-Origin",
+			},
+			// cookieなどの情報を必要とするかどうか
+			//AllowCredentials: true,
+			// preflightリクエストの結果をキャッシュする時間
+			MaxAge: 24 * time.Hour,
+		}))
 
 	group := r.Group("/")
 	group.Use(unit.CheckJwtToken)
