@@ -10,8 +10,6 @@ import (
 	"github.com/akane-05/cafekatu/goapi/unit"
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
-
-	healthcheck "github.com/RaMin0/gin-health-check"
 )
 
 // DIを行う
@@ -46,17 +44,12 @@ func GetRouter() *gin.Engine {
 
 	// ここからCorsの設定
 	r.Use(
-		healthcheck.New(healthcheck.Config{
-			HeaderName:   "X-Health-Header",
-			HeaderValue:  "1",
-			ResponseCode: http.StatusOK,
-			ResponseText: "ok",
-		}),
 
 		cors.New(cors.Config{
 			// アクセスを許可したいアクセス元
 			AllowOrigins: []string{
 				"http://localhost:3000",
+				"http://cafekatu.com",
 			},
 			// アクセスを許可したいHTTPメソッド
 			AllowMethods: []string{
@@ -107,6 +100,9 @@ func GetRouter() *gin.Engine {
 	r.GET("/prefectures", commonC.GetPrefectures)
 	r.NoRoute(func(c *gin.Context) {
 		c.JSON(http.StatusNotFound, gin.H{"status": http.StatusNotFound, "error": "指定されたページが見つかりませんでした"})
+	})
+	r.GET("/health", func(c *gin.Context) {
+		c.JSON(http.StatusOK, gin.H{"status": http.StatusOK})
 	})
 
 	return r

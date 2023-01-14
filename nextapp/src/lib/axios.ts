@@ -1,8 +1,10 @@
 import axios from 'axios'
-import { reqPath } from '@/const/Consts'
 
 const apiClient = axios.create({
-  baseURL: reqPath('base'),
+  baseURL:
+    process.env.NODE_ENV === 'production'
+      ? 'http://backend.cafekatu.com'
+      : `http://localhost:8080`,
   responseType: 'json',
   headers: {
     'Content-Type': 'application/json',
