@@ -1,6 +1,5 @@
 const reqPath = (path: string, id?: string): string => {
   const paths: { [key: string]: string } = {
-    base: 'http://localhost:8080',
     login: '/login',
     register: '/register',
     cafes: '/cafes',
