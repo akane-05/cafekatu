@@ -13,6 +13,7 @@ https://cafekatu.com
 * レスポンシブデザイン対応。
 
 以下のリンクから、動画で一部機能のデモンストレーションをご確認いただけます。
+
 ユーザー機能(ログイン、ログアウト、新規会員登録、変更、退会)<br>
 https://raw.github.com/wiki/akane-05/cafekatu/userfunc.gif
 
