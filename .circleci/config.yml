@@ -23,7 +23,7 @@ jobs:
       - run:
           name: Decode dotenv file
           command: |
-            cd ../gopai/env
+            cd ../goapi/env
             echo $ENV_FILE | base64 --decode > test.env
       - run:
           name: test
