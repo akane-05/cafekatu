@@ -23,7 +23,7 @@ jobs:
       - run:
           name: Decode dotenv file
           command: |
-            echo $ENV_FILE | base64 --decode > test.env
+            echo $ENV_FILE | base64 --decode > dev.env
       - run:
           name: test
           command: docker-compose exec go-test-server go test -v main_test.go main.go
