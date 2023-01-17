@@ -20,6 +20,8 @@ https://raw.github.com/wiki/akane-05/cafekatu/userfunc.gif
 カフェ検索、レビュー投稿<br>
 https://raw.github.com/wiki/akane-05/cafekatu/cafefunc.gif
 
+## インフラ構成図
+https://github.com/akane-05/cafekatu/blob/main/AWS.drawio.svg
 
 ## 使用技術
 ### 設計
@@ -54,7 +56,7 @@ https://raw.github.com/wiki/akane-05/cafekatu/cafefunc.gif
 
 ## 実装予定の機能
 * 画像投稿機能
-* AWSにサーバーを構築、アプリケーションを公開
+* 自動テスト
 
 ## 設計
 ### デザイン
