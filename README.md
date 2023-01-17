@@ -21,7 +21,7 @@ https://raw.github.com/wiki/akane-05/cafekatu/userfunc.gif
 https://raw.github.com/wiki/akane-05/cafekatu/cafefunc.gif
 
 ## インフラ構成図
-https://github.com/akane-05/cafekatu/blob/main/AWS.drawio.svg
+![image](https://user-images.githubusercontent.com/108785532/212866738-7f61fbfa-9c81-4f83-a275-a8b36f3ccddc.png)
 
 ## 使用技術
 ### 設計
