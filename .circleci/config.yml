@@ -22,7 +22,9 @@ jobs:
 
       - run:
           name: Decode dotenv file
-          command: echo $ENV_FILE | base64 --decode > ../gopai/env/test.env
+          command: |
+            cd ../gopai/env
+            echo $ENV_FILE | base64 --decode > test.env
       - run:
           name: test
           command: docker-compose exec go-test-server go test -v main_test.go main.go
