@@ -49,7 +49,7 @@ func GetRouter() *gin.Engine {
 			// アクセスを許可したいアクセス元
 			AllowOrigins: []string{
 				"http://localhost:3000",
-				"http://cafekatu.com",
+				"https://cafekatu.com",
 			},
 			// アクセスを許可したいHTTPメソッド
 			AllowMethods: []string{

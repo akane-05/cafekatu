@@ -3,7 +3,7 @@ import axios from 'axios'
 const apiClient = axios.create({
   baseURL:
     process.env.NODE_ENV === 'production'
-      ? 'http://backend.cafekatu.com'
+      ? 'https://backend.cafekatu.com'
       : `http://localhost:8080`,
   responseType: 'json',
   headers: {
