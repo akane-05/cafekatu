@@ -1,6 +1,7 @@
 const reqPath = (path: string, id?: string): string => {
   const paths: { [key: string]: string } = {
     login: '/login',
+    guest: '/guest',
     register: '/register',
     cafes: '/cafes',
     cafe: '/cafes/' + id,

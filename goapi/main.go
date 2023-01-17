@@ -96,6 +96,7 @@ func GetRouter() *gin.Engine {
 
 	}
 	r.POST("/login", loginC.Login)
+	r.POST("/guest", loginC.Guest)
 	r.POST("/register", loginC.Register)
 	r.GET("/prefectures", commonC.GetPrefectures)
 	r.NoRoute(func(c *gin.Context) {
