@@ -14,21 +14,15 @@ jobs:
       #   curl -L https://github.com/docker/compose/releases/download/1.19.0/docker-compose-`uname -s`-`uname -m` > ~/docker-compose
       #   chmod +x ~/docker-compose
       #   sudo mv ~/docker-compose /usr/local/bin/docker-compose
-      - run:
-          name: docker-compose up
-          command: |
-            set -x
-            docker-compose up --build -d
-      # - run:
-      #     name: docker-compose stop
-      #     command: |
-      #       set -x
-      #       docker-compose stop
       # - run:
       #     name: docker-compose up
       #     command: |
       #       set -x
-      #       docker-compose up -d
+      #       docker-compose up --build -d
+
+      - run:
+          name: Decode dotenv file
+          command: echo $ENV_FILE | base64 --decode > ../gopai/env/test.env
       - run:
           name: test
           command: docker-compose exec go-test-server go test -v main_test.go main.go
