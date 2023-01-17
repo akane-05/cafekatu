@@ -1,0 +1,37 @@
+version: 2.1
+
+jobs:
+  build:
+    machine:
+      true
+      #  image: circleci/cci-demo-docker-primary:0.0.2
+    # working_directory: ~/repo
+    steps:
+      - checkout
+      # - run:
+      # name: Install Docker Compose
+      # command: |
+      #   curl -L https://github.com/docker/compose/releases/download/1.19.0/docker-compose-`uname -s`-`uname -m` > ~/docker-compose
+      #   chmod +x ~/docker-compose
+      #   sudo mv ~/docker-compose /usr/local/bin/docker-compose
+      - run:
+          name: docker-compose up
+          command: |
+            set -x
+            docker-compose up --build -d
+      # - run:
+      #     name: docker-compose stop
+      #     command: |
+      #       set -x
+      #       docker-compose stop
+      # - run:
+      #     name: docker-compose up
+      #     command: |
+      #       set -x
+      #       docker-compose up -d
+      - run:
+          name: test
+          command: docker-compose exec go-test-server go test -v main_test.go main.go
+      - run:
+          name: docker-compose down
+          command: docker-compose down
