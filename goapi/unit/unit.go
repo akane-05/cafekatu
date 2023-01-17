@@ -1,6 +1,10 @@
 package unit
 
-import "github.com/akane-05/cafekatu/goapi/model/entity"
+import (
+	"math/rand"
+
+	"github.com/akane-05/cafekatu/goapi/model/entity"
+)
 
 func Include(slice []int, target int) bool {
 	for _, num := range slice {
@@ -19,4 +23,15 @@ func ExReviews(reviews *[]entity.Reviews, target int) []entity.Reviews {
 		}
 	}
 	return exReviews
+}
+
+func RandomString() string {
+	num := 10
+	var letters = []rune("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789")
+
+	s := make([]rune, num)
+	for i := range s {
+		s[i] = letters[rand.Intn(len(letters))]
+	}
+	return string(s)
 }

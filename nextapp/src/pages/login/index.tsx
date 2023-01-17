@@ -20,6 +20,7 @@ import CustomButton from '@/components/elements/CustomButton'
 import { LoginInfo } from '@/features/login/types'
 import { pagePath, errStatus } from '@/const/Consts'
 import { login } from '@/features/login/api/login'
+import { guest } from '@/features/login/api/guest'
 import * as Dialog from '@/context/MessageDialog'
 import { userInfoState, UserInfo } from '@/globalStates/userInfo'
 import { useSetRecoilState, RecoilRoot } from 'recoil'
@@ -102,6 +103,23 @@ export default function Login() {
     }
   }
 
+  const handleGuest = async () => {
+    const response = await guest()
+    if (response.status == 200) {
+      const userInfo: UserInfo = {
+        id: response.id,
+        nickname: response.nickname,
+        email: response.email,
+      }
+      setUserInfo(userInfo)
+
+      dialog.confirm(Dialog.apiOKDialog(response.message))
+      handleLink(pagePath('cafes'))
+    } else {
+      dialog.confirm(Dialog.apiErrorDialog(response.status, response.error))
+    }
+  }
+
   return (
     <ThemeProvider theme={theme}>
       <Grid
@@ -178,6 +196,16 @@ export default function Login() {
           >
             新規会員登録
           </CustomButton>
+        </Grid>
+
+        <Grid item xs={12} sx={{ mt: 2 }}>
+          <Button
+            variant="contained"
+            sx={{ maxWidth: '140px', minWidth: '140px' }}
+            onClick={() => handleGuest()}
+          >
+            ゲストログイン
+          </Button>
         </Grid>
       </Grid>
     </ThemeProvider>

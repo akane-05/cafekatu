@@ -17,6 +17,7 @@ import (
 // インターフェースで実装すべきメソッドを決める
 type LoginController interface {
 	Login(c *gin.Context)
+	Guest(c *gin.Context)
 	Register(c *gin.Context)
 }
 
@@ -93,6 +94,57 @@ func (dc *loginController) Login(c *gin.Context) {
 		"message":  "ログインしました。",
 	})
 
+}
+
+func (dc *loginController) Guest(c *gin.Context) {
+	log.Println("Guest")
+
+	registerInfo := RegisterInfo{}
+	create := false
+
+	for !create {
+		registerInfo.Email = unit.RandomString() + "@email.com"
+		exist, err := dc.dr.CheckEmail(&registerInfo.Email)
+		create = !exist
+
+		if err != nil {
+			log.Println(err.Error())
+			c.JSON(http.StatusInternalServerError, gin.H{
+				"status": http.StatusInternalServerError,
+				"error":  "サーバーでエラーが発生しました。",
+			})
+			return
+		}
+	}
+
+	//user登録
+	var postUser entity.Users
+	postUser.Email = registerInfo.Email
+	postUser.PasswordDigest, _ = unit.PasswordEncrypt(registerInfo.Password)
+	postUser.Nickname = "ゲストユーザー"
+
+	id, err := dc.dr.InsertUser(&postUser)
+	if err != nil {
+		log.Println(err)
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"status": http.StatusInternalServerError,
+			"error":  "サーバーでエラーが発生しました。",
+		})
+		return
+	}
+
+	//以下jwt認証
+	jwtInfo := unit.JwtInfo{Id: id, Email: postUser.Email, ExTime: time.Now().Add(time.Hour)}
+	tokenString := unit.CreateToken(&jwtInfo)
+
+	c.JSON(http.StatusOK, gin.H{
+		"status":   http.StatusOK,
+		"token":    tokenString,
+		"id":       id,
+		"email":    postUser.Email,
+		"nickname": postUser.Nickname,
+		"message":  "ユーザー登録が完了しました。",
+	})
 }
 
 func (dc *loginController) Register(c *gin.Context) {
