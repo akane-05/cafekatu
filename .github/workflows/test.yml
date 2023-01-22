@@ -17,5 +17,8 @@ jobs:
           MYSQL_DATABASE: ${{ secrets.MYSQL_DATABASE }}
           SECRET_KEY: ${{ secrets.SECRET_KEY }}
         run: |
-          docker-compose -f docker-compose.test.yaml up -d &&
-          docker-compose exec -T go-test-server go run
+          docker-compose -f docker-compose.test.yaml up -d
+          
+      - name: Test
+        run: |
+         docker-compose -f docker-compose.test.yaml exec -T go-test-server go test -v main_test.go main.go
