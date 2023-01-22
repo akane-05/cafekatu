@@ -37,6 +37,7 @@ func TestMain(m *testing.M) {
 	protocol := os.Getenv("MYSQL_PROTOCOL")
 	database := os.Getenv("MYSQL_DATABASE")
 
+	log.Printf("%s:%s@tcp(%s)/%s?charset=utf8mb4&parseTime=true", user, pass, protocol, database)
 	path := fmt.Sprintf("%s:%s@tcp(%s)/%s?charset=utf8mb4&parseTime=true", user, pass, protocol, database)
 	db, err = sql.Open("mysql", path)
 	if err != nil {
