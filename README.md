@@ -42,6 +42,7 @@ https://raw.github.com/wiki/akane-05/cafekatu/cafefunc.gif
 ### インフラ・開発環境
 * Git/GitHub
 * Docker/Docker-compose
+* github Action
 
 ## 実装した機能
 * ログイン、ログアウト機能
