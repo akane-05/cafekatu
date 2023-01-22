@@ -18,6 +18,6 @@ jobs:
           SECRET_KEY: ${{ secrets.SECRET_KEY }}
         run: |
           docker-compose -f docker-compose.test.yaml up -d
-          docker-compose exec go-test-server go test -v main_test.go main.go
+          docker-compose exec　-T go-test-server go test -v main_test.go main.go
           command: docker-compose down
 
