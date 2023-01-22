@@ -27,12 +27,6 @@ func init() {
 	var path string = fmt.Sprintf("%s:%s@tcp(%s)/%s?charset=utf8mb4&parseTime=true", user, pass, protocol, database)
 	dialector := mysql.Open(path)
 
-	log.Println(user)
-	log.Println(pass)
-	log.Println(protocol)
-	log.Println(database)
-	log.Println(path)
-
 	var err error
 	if Db, err = gorm.Open(dialector); err != nil {
 		connect(dialector, 100)
