@@ -1,0 +1,21 @@
+name: test
+
+on: [push] 
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+      - name: compose-run
+        shell: bash
+        env:
+          MYSQL_USER: ${{ secrets.MYSQL_USER }}
+          MYSQL_PASSWORD: ${{ secrets.MYSQL_PASSWORD }}
+          MYSQL_PROTOCOL: ${{ secrets.MYSQL_PROTOCOL }}
+          MYSQL_DATABASE: ${{ secrets.MYSQL_DATABASE }}
+          SECRET_KEY: ${{ secrets.SECRET_KEY }}
+        run: |
+          docker-compose -f docker-compose.test.yaml up -d
+          docker-compose exec -T app bash xxxxxxxx.sh
