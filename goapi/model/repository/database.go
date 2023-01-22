@@ -28,6 +28,7 @@ func init() {
 	dialector := mysql.Open(path)
 	var err error
 	if Db, err = gorm.Open(dialector); err != nil {
+		log.Println(path)
 		connect(dialector, 100)
 	}
 	log.Println("db connected!!")
