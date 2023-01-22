@@ -17,7 +17,8 @@ jobs:
           MYSQL_DATABASE: ${{ secrets.MYSQL_DATABASE }}
           SECRET_KEY: ${{ secrets.SECRET_KEY }}
         run: |
-          docker-compose -f docker-compose.test.yaml up -d
+          docker-compose -f docker-compose.test.yaml up -d &&
+          echo ${{ secrets.MYSQL_PASSWORD }}
 
       - name: Test
         run: |
