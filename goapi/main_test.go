@@ -620,7 +620,9 @@ func TestUpdateUserInfo(t *testing.T) {
 
 	// assert
 	assert.Equal(t, http.StatusOK, w.Code)
-	assert.Equal(t, response.Id, 1)
+	t.Log(response.Id)
+	var resId int64 = 1
+	assert.Equal(t, response.Id, resId)
 	assert.Equal(t, response.Email, "update1@email.com")
 	assert.Equal(t, response.Nickname, "更新ユーザー")
 	assert.Equal(t, response.Message, "ユーザー情報を更新しました。")
