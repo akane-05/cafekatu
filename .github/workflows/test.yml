@@ -20,5 +20,11 @@ jobs:
           docker-compose -f docker-compose.test.yaml up -d
           
       - name: Test
+        env:
+          MYSQL_USER: ${{ secrets.MYSQL_USER }}
+          MYSQL_PASSWORD: ${{ secrets.MYSQL_PASSWORD }}
+          MYSQL_PROTOCOL: ${{ secrets.MYSQL_PROTOCOL }}
+          MYSQL_DATABASE: ${{ secrets.MYSQL_DATABASE }}
+          SECRET_KEY: ${{ secrets.SECRET_KEY }}
         run: |
          docker-compose -f docker-compose.test.yaml exec -T go-test-server go test -v main_test.go main.go
