@@ -21,18 +21,17 @@ services:
       context: ./goapi
       dockerfile: ../dockerfile/gotest/Dockerfile.local
     # env_file: ./goapi/env/test.env
-    # environment:
-    #   MYSQL_USER: ${MYSQL_USER}
-    #   MYSQL_PASSWORD: ${MYSQL_PASSWORD}
-    #   MYSQL_PROTOCOL: ${MYSQL_PROTOCOL}
-    #   MYSQL_DATABASE: ${MYSQL_DATABASE}
-    #   SECRET_KEY: ${SECRET_KEY}
     environment:
       MYSQL_USER: "root"
       MYSQL_PASSWORD: "Qu849dzp"
       MYSQL_PROTOCOL: "test_db:3306"
       MYSQL_DATABASE: "test_db"
       SECRET_KEY: "9tpvjAWvuqma"
+      # MYSQL_USER: ${MYSQL_USER}
+    #   MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+    #   MYSQL_PROTOCOL: ${MYSQL_PROTOCOL}
+    #   MYSQL_DATABASE: ${MYSQL_DATABASE}
+    #   SECRET_KEY: ${SECRET_KEY}
     ports:
       - "127.0.0.1:8081:8081"
     depends_on:
