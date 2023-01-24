@@ -21,7 +21,8 @@ https://raw.github.com/wiki/akane-05/cafekatu/userfunc.gif
 https://raw.github.com/wiki/akane-05/cafekatu/cafefunc.gif
 
 ## インフラ構成図
-![image](https://user-images.githubusercontent.com/108785532/212866738-7f61fbfa-9c81-4f83-a275-a8b36f3ccddc.png)
+<img width="1091" alt="スクリーンショット 2023-01-24 12 13 44" src="https://user-images.githubusercontent.com/108785532/214205268-4f64d780-562f-4943-8ed3-5e8d05ed1093.png">
+
 
 ## 使用技術
 ### 設計
